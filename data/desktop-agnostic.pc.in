@@ -1,0 +1,12 @@
+prefix=@prefix@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+vapidir=@datarootdir@/vala/vapi
+
+Name: libdesktop-agnostic
+Description: GLib-based desktop-agnostic library
+Version: @VERSION@
+Libs: -L${libdir} -ldesktop-agnostic
+Cflags: -I${includedir}
+Requires: glib-2.0 gmodule-2.0

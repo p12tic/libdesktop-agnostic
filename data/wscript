@@ -1,0 +1,19 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
+import misc
+
+def build(bld):
+    env = bld.env()
+    pc = bld.create_obj('subst')
+    pc.source = 'desktop-agnostic.pc.in'
+    pc.target = 'desktop-agnostic.pc'
+    pc.dict = {
+        'LIBDIR': env['LIBDIR'],
+        'VERSION': env['VERSION'],
+        'prefix': env['PREFIX'],
+        'datarootdir': env['DATADIR']
+        }
+    pc.fun = misc.subst_func
+    pc.inst_var = 'LIBDIR'
+    pc.inst_dir = 'pkgconfig'

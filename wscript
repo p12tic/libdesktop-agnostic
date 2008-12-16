@@ -2,7 +2,7 @@
 # encoding: utf-8
 
 import os
-import Params, intltool, gnome
+import intltool, gnome
 
 # the following two variables are used by the target "waf dist"
 VERSION = '0.0.1'
@@ -38,20 +38,28 @@ def set_options(opt):
 def configure(conf):
     print 'Configuring %s %s' % (APPNAME, VERSION)
 
-    if len(Params.g_options.config_backends) == 0:
+    import Options
+    if len(Options.options.config_backends) == 0:
         conf.fatal('At least one configuration backend needs to be built.')
-    conf.env['BACKENDS_CFG'] = Params.g_options.config_backends.split(',')
+    conf.env['BACKENDS_CFG'] = Options.options.config_backends.split(',')
 
     conf.check_tool('compiler_cc misc gnome vala')
     conf.check_tool('intltool')
 
-    conf.check_pkg('gmodule-2.0', destvar='GMODULE', vnum='2.6.0', mandatory=True)
-    conf.check_pkg('gobject-2.0', destvar='GOBJECT', mandatory=True)
+    conf.check_cfg(package='gmodule-2.0', uselib_store='GMODULE',
+                   atleast_version='2.6.0', mandatory=True,
+                   args='--cflags --libs')
+    conf.check_cfg(package='gobject-2.0', uselib_store='GOBJECT',
+                   mandatory=True, args='--cflags --libs')
     # Needed for the Color class
-    conf.check_pkg('gdk-2.0', destvar='GDK', mandatory=True)
-    conf.check_pkg('vala-1.0', destvar='VALA', vnum='0.3.5', mandatory=True)
+    conf.check_cfg(package='gdk-2.0', uselib_store='GDK', mandatory=True,
+                   args='--cflags --libs')
+    conf.check_cfg(package='vala-1.0', uselib_store='VALA',
+                   atleast_version='0.5.3', mandatory=True,
+                   args='--cflags --libs')
     if 'gconf' in conf.env['BACKENDS_CFG']:
-        conf.check_pkg('gconf-2.0', destvar='GCONF', mandatory=True)
+        conf.check_cfg(package='gconf-2.0', uselib_store='GCONF',
+                       mandatory=True, args='--cflags --libs')
 
     conf.define('VERSION', str(VERSION))
     conf.define('GETTEXT_PACKAGE', APPNAME + '-1.0')
@@ -65,9 +73,7 @@ def build(bld):
     # process subfolders from here
     bld.add_subdirs('libdesktop-agnostic data')
 
-    env = bld.env()
-
-#    if env['INTLTOOL']:
+#    if bld.env['INTLTOOL']:
 #        bld.add_subdirs('po')
 
 def shutdown():

@@ -4,16 +4,15 @@
 import misc
 
 def build(bld):
-    env = bld.env()
-    pc = bld.create_obj('subst')
+    pc = bld.new_task_gen('subst')
     pc.source = 'desktop-agnostic.pc.in'
     pc.target = 'desktop-agnostic.pc'
     pc.dict = {
-        'LIBDIR': env['LIBDIR'],
-        'VERSION': env['VERSION'],
-        'prefix': env['PREFIX'],
-        'datarootdir': env['DATADIR']
+        'LIBDIR': bld.env['LIBDIR'],
+        'VERSION': bld.env['VERSION'],
+        'prefix': bld.env['PREFIX'],
+        'datarootdir': bld.env['DATADIR']
         }
     pc.fun = misc.subst_func
-    pc.inst_var = 'LIBDIR'
-    pc.inst_dir = 'pkgconfig'
+    pc.destvar = 'LIBDIR'
+    pc.subdir = 'pkgconfig'

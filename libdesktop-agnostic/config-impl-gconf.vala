@@ -320,7 +320,7 @@ namespace DesktopAgnostic.Config
     }
 
     public override void
-    reset () throws GLib.Error
+    remove () throws GLib.Error
     {
       // TODO determine when to remove a directory?
       this.client.remove_dir (this.path);
@@ -388,7 +388,7 @@ namespace DesktopAgnostic.Config
     }
 
     public override void
-    load_defaults_from_schema () throws GLib.Error
+    reset () throws GLib.Error
     {
       Process.spawn_command_line_async ("killall -HUP gconfd-2");
     }

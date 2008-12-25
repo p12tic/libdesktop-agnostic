@@ -35,15 +35,60 @@ namespace DesktopAgnostic.Config
     TYPE_NAME_EXISTS,
     TYPE_GTYPE_EXISTS
   }
+  /**
+   * The definition of a custom schema type. That is, a schema type which is
+   * neither one of the primitive types (boolean, integer, float, string) nor
+   * a list.
+   */
   public abstract class SchemaType
   {
+    /**
+     * The name of the schema type, used in the "type" and "list type" schema
+     * options for for configuration keys.
+     */
     public abstract string name { get; }
+    /**
+     * The GType associated with the schema type.
+     */
     public abstract Type schema_type { get; }
-    public abstract string serialize (Value val);
-    public abstract Value deserialize (string serialized);
-    public abstract Value parse_default_value (KeyFile schema, string group);
+    /**
+     * Converts a value into a string, to store in the configuration backend.
+     * @param val the value to convert to a string
+     * @return the string-serialized version of the value
+     * @throws SchemaError if the schema type and the value type are different,
+     * or if the serialization fails
+     */
+    public abstract string serialize (Value val) throws SchemaError;
+    /**
+     * Converts a serialized string into the corresponding value dictated by the
+     * schema type.
+     * @param serialized the string to convert into the value
+     * @return a container containing the converted value
+     * @throws SchemaError if the deserialization fails
+     */
+    public abstract Value deserialize (string serialized) throws SchemaError;
+    /**
+     * Converts the default value specified by the schema into the corresponding
+     * deserialized value.
+     * @param schema the schema from which the default value will be parsed
+     * @param group the configuration option's full group/key
+     * @return the parsed default value
+     * @throws SchemaError if the default value is not found, or could not be
+     * parsed correctly.
+     */
+    public abstract Value parse_default_value (KeyFile schema,
+                                               string group) throws SchemaError;
+    /**
+     * Converts the default list value specified by the schema into the
+     * corresponding deserialized value array.
+     * @param schema the schema from which the default value will be parsed
+     * @param group the configuration option's full group/key
+     * @return the parsed default value(s)
+     * @throws SchemaError if the default value is not found, or could not be
+     * parsed correctly.
+     */
     public abstract ValueArray parse_default_list_value (KeyFile schema,
-                                                         string group);
+                                                         string group) throws SchemaError;
   }
   /**
    * A representation of one configuration option as defined by the schema.
@@ -174,8 +219,17 @@ namespace DesktopAgnostic.Config
         return this._blacklist;
       }
     }
+    /**
+     * Parses a schema option from the specification in the schema configuration
+     * file.
+     * @param schema the schema configuration file
+     * @param group the group associated with the configuration option
+     * @param key the name of the configuration option
+     * @throws Error if any required field for the option is not present, or if
+     * any value could not be parsed correctly
+     */
     public
-    SchemaOption (ref KeyFile schema, string group, string key) throws KeyFileError
+    SchemaOption (ref KeyFile schema, string group, string key) throws Error
     {
       string full_key = group + "/" + key;
       this.parse_type (schema.get_value (full_key, "type"));
@@ -335,6 +389,10 @@ namespace DesktopAgnostic.Config
       }
     }
   }
+  /**
+   * A representation of a configuration schema, comprised of one or more
+   * configuration options.
+   */
   [Compact]
   public class Schema
   {
@@ -397,16 +455,31 @@ namespace DesktopAgnostic.Config
         }
       }
     }
+    /**
+     * Retrieves the configuration groups in the schema.
+     * @return a list of zero or more groups
+     */
     public List<weak string>?
     get_groups ()
     {
       return this.keys.get_keys ();
     }
+    /**
+     * Retrieves the configuration keys for a specified group in the schema.
+     * @param group the group name to search for keys associated with it
+     * @return a list of zero or more keys
+     */
     public weak List<weak string>?
     get_keys (string group)
     {
       return this.keys.lookup (group);
     }
+    /**
+     * Determines if a specified group/key exists in the schema.
+     * @param group the group that the key is associated with
+     * @param key the configuration key to determine if it exists
+     * @return whether the group/key exists
+     */
     public bool
     exists (string group, string key)
     {
@@ -414,6 +487,12 @@ namespace DesktopAgnostic.Config
       return group_keys != null &&
              group_keys.find_custom (key, (CompareFunc)strcmp) != null;
     }
+    /**
+     * Retrieves the metadata associated with a specific group/key.
+     * @param group the group that the key is associated with
+     * @param key the configuration key to retrieve metadata from
+     * @return an object which contains the option metadata
+     */
     public SchemaOption
     get_option (string group, string key)
     {

@@ -55,7 +55,7 @@ namespace DesktopAgnostic.Config
     }
 
     public override void
-    load_defaults_from_schema () throws Error
+    remove () throws Error
     {
     }
 
@@ -122,12 +122,12 @@ namespace DesktopAgnostic.Config
     {
     }
   }
-  [ModuleInit]
-  public Type
-  register_plugin (TypeModule module)
-  {
-    return typeof (Null);
-  }
+}
+[ModuleInit]
+public Type
+register_plugin (TypeModule module)
+{
+  return typeof (DesktopAgnostic.Config.Null);
 }
 
 // vim: set et ts=2 sts=2 sw=2 ai :

@@ -34,6 +34,9 @@ config_backend = None
 def set_options(opt):
     [opt.tool_options(x) for x in ['compiler_cc', 'gnome']]
     opt.sub_options('libdesktop-agnostic')
+    opt.add_option('--enable-debug', action='store_true',
+                   dest='debug', default=False,
+                   help='Enables the library to be built with debug symbols.')
 
 def configure(conf):
     print 'Configuring %s %s' % (APPNAME, VERSION)
@@ -42,6 +45,8 @@ def configure(conf):
     if len(Options.options.config_backends) == 0:
         conf.fatal('At least one configuration backend needs to be built.')
     conf.env['BACKENDS_CFG'] = Options.options.config_backends.split(',')
+
+    conf.env['DEBUG'] = Options.options.debug
 
     conf.check_tool('compiler_cc misc gnome vala')
     conf.check_tool('intltool')
@@ -64,6 +69,10 @@ def configure(conf):
     conf.define('VERSION', str(VERSION))
     conf.define('GETTEXT_PACKAGE', APPNAME + '-1.0')
     conf.define('PACKAGE', APPNAME)
+    
+    if conf.env['DEBUG']:
+        conf.env.append_value('VALAFLAGS', '-g')
+        conf.env.append_value('CCFLAGS', '-ggdb')
 
     conf.env.append_value('CCFLAGS', '-DHAVE_CONFIG_H')
 

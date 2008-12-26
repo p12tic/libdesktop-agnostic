@@ -24,7 +24,6 @@ using GLib;
 
 namespace DesktopAgnostic
 {
-  public static const Quark error_quark = Quark.from_string ("libdesktop-agnostic");
   public errordomain ModuleError
   {
     NO_GMODULE,

@@ -29,6 +29,7 @@ namespace DesktopAgnostic
     NO_GMODULE,
     NO_CONFIG_FOUND
   }
+  public static Datalist<Module> modules;
   /**
    * Based on the PluginRegistrar class in
    * <http://live.gnome.org/Vala/TypeModules>.
@@ -45,7 +46,6 @@ namespace DesktopAgnostic
         return this._module_type;
       }
     }
-    private Module module;
     private static string[] paths;
 
     private delegate Type RegisterModuleFunction ();
@@ -60,6 +60,7 @@ namespace DesktopAgnostic
         Path.build_filename (Environment.get_current_dir ()),
         null
       };
+      modules = Datalist<Module> ();
     }
 
     construct
@@ -77,27 +78,27 @@ namespace DesktopAgnostic
     {
       void* function;
       RegisterModuleFunction register_plugin;
-      this.module = null;
+      Module module = null;
 
       foreach (weak string prefix in this.paths)
       {
         string path = Module.build_path (prefix, this.name);
         debug ("Loading plugin with path: '%s'", path);
-        this.module = Module.open (path, ModuleFlags.BIND_LAZY);
-        if (this.module != null)
+        module = Module.open (path, ModuleFlags.BIND_LAZY);
+        if (module != null)
         {
           break;
         }
       }
-      if (this.module == null)
+      if (module == null)
       {
         warning ("Could not locate the plugin '%s'.", this.name);
         return false;
       }
-      this.module.make_resident ();
 
       module.symbol ("register_plugin", out function);
       register_plugin = (RegisterModuleFunction) function;
+      modules.set_data (this.name, #module);
 
       this._module_type = register_plugin ();
       debug ("Plugin type: %s", this._module_type.name ());

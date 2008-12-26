@@ -478,7 +478,7 @@ namespace DesktopAgnostic.Config
   }
   [ModuleInit]
   public Type
-  register_plugin (TypeModule module)
+  register_plugin ()
   {
     return typeof (GConfBackend);
   }

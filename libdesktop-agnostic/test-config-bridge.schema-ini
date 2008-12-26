@@ -1,0 +1,11 @@
+[group/string]
+type = string
+default = foo
+description = some string.
+
+[group/number]
+type = integer
+default = 10
+description = some number.
+
+; vim: set ft=dosini :

@@ -37,7 +37,14 @@ namespace DesktopAgnostic
   {
     public string name { get; construct; }
 
-    private Type type;
+    private Type _module_type;
+    public Type module_type
+    {
+      get
+      {
+        return this._module_type;
+      }
+    }
     private Module module;
     private static string[] paths;
 
@@ -47,6 +54,7 @@ namespace DesktopAgnostic
     {
       paths = new string[]
       {
+        // FIXME use config.vapi
         Path.build_filename ("@LIBDIR@", "desktop-agnostic"),
         Path.build_filename (Environment.get_home_dir (), ".local", "lib", "desktop-agnostic"),
         Path.build_filename (Environment.get_current_dir ()),
@@ -67,40 +75,38 @@ namespace DesktopAgnostic
     public bool
     load ()
     {
-      uint i, len;
       void* function;
       RegisterModuleFunction register_plugin;
       this.module = null;
 
-      for (len = this.paths.length, i = 0; i < len && this.module == null; i++)
+      foreach (weak string prefix in this.paths)
       {
-        string path = Module.build_path (this.paths[i], this.name);
+        string path = Module.build_path (prefix, this.name);
         debug ("Loading plugin with path: '%s'", path);
         this.module = Module.open (path, ModuleFlags.BIND_LAZY);
+        if (this.module != null)
+        {
+          break;
+        }
       }
       if (this.module == null)
       {
         warning ("Could not locate the plugin '%s'.", this.name);
         return false;
       }
+      this.module.make_resident ();
 
       module.symbol ("register_plugin", out function);
       register_plugin = (RegisterModuleFunction) function;
 
-      this.type = register_plugin ();
-      debug ("Plugin type: %s", type.name ());
+      this._module_type = register_plugin ();
+      debug ("Plugin type: %s", this._module_type.name ());
 
       return true;
     }
-
-    public T
-    create ()
-    {
-      return Object.new (this.type);
-    }
   }
   public Config.Backend?
-  config_get_default () throws GLib.Error
+  config_get_default (string schema_file) throws GLib.Error
   {
     KeyFile config;
     string path;
@@ -122,9 +128,9 @@ namespace DesktopAgnostic
     }
     loader = new ModuleLoader<Config.Backend> ("libda-cfg-" +
                                                config.get_string ("DEFAULT", "config"));
-    if (loader.load ()) 
+    if (loader.load ())
     {
-      return loader.create ();
+      return (Config.Backend)Object.new (loader.module_type, "schema_filename", schema_file);
     }
     else
     {

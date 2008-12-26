@@ -37,7 +37,7 @@ private class Test : Object
 
 int main (string[] args)
 {
-  Config.Backend cfg = config_get_default ();
+  Config.Backend cfg = config_get_default ("test-config-bridge.schema-ini");
   Config.Bridge bridge = Config.Bridge.get_default ();
   Test t = new Test ();
   bridge.bind (cfg, "group", "string", t, "str");

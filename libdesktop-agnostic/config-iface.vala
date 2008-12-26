@@ -57,7 +57,7 @@ namespace DesktopAgnostic.Config
   public abstract class Backend : Object
   {
     public abstract string name { get; }
-    protected Schema _schema;
+    private Schema _schema;
     public Schema schema
     {
       get
@@ -65,10 +65,13 @@ namespace DesktopAgnostic.Config
         return this._schema;
       }
     }
-    public Backend (string schema_filename)
+    public string schema_filename
     {
-      GLib.message ("Backend constructor.");
-      this._schema = new Schema (schema_filename);
+      construct
+      {
+        message ("schema_filename");
+        this._schema = new Schema (value);
+      }
     }
     /**
      * Resets the configuration to the default values.

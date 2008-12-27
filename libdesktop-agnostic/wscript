@@ -22,8 +22,7 @@ def build_cfg_backend(bld, name):
     cfg.target = 'da-cfg-' + name
     cfg.vapi_dirs = '.'
     cfg.includes='..'
-    cfg.destvar = 'LIBDIR'
-    cfg.subdir = 'desktop-agnostic/modules'
+    cfg.install_path = '${LIBDIR}/desktop-agnostic/modules'
 
 def set_options(opt):
     opt.add_option('--config-backends', type='string', help='Determines which configuration backend(s) will be built.', dest='config_backends', default='')
@@ -36,7 +35,6 @@ def build(bld):
     lib.uselib = 'GDK GMODULE'
     lib.vapi_dirs = './vapi'
     lib.includes='..'
-    bld.install_files('DATADIR', 'vala/vapi', 'desktop-agnostic.vapi')
 
     t_cfg_bridge = bld.new_task_gen('cc', 'program')
     t_cfg_bridge.source = 'test-config-bridge.vala'
@@ -45,5 +43,6 @@ def build(bld):
     t_cfg_bridge.vapi_dirs = '.'
     t_cfg_bridge.includes = '..'
     t_cfg_bridge.target = 'test-config-bridge'
+    t_cfg_bridge.install_path = ''
 
     [build_cfg_backend(bld, cfg) for cfg in bld.env['BACKENDS_CFG']]

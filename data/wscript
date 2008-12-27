@@ -8,11 +8,11 @@ def build(bld):
     pc.source = 'desktop-agnostic.pc.in'
     pc.target = 'desktop-agnostic.pc'
     pc.dict = {
+        'API_VERSION': bld.env['API_VERSION'],
         'LIBDIR': bld.env['LIBDIR'],
         'VERSION': bld.env['VERSION'],
         'prefix': bld.env['PREFIX'],
         'datarootdir': bld.env['DATADIR']
         }
     pc.fun = misc.subst_func
-    pc.destvar = 'LIBDIR'
-    pc.subdir = 'pkgconfig'
+    pc.install_path = '${LIBDIR}/pkgconfig'

@@ -4,6 +4,8 @@
 import os
 import intltool, gnome
 
+API_VERSION = '1.0'
+
 # the following two variables are used by the target "waf dist"
 VERSION = '0.0.1'
 if os.path.exists('.bzr'):
@@ -66,6 +68,7 @@ def configure(conf):
         conf.check_cfg(package='gconf-2.0', uselib_store='GCONF',
                        mandatory=True, args='--cflags --libs')
 
+    conf.define('API_VERSION', str(API_VERSION))
     conf.define('VERSION', str(VERSION))
     conf.define('GETTEXT_PACKAGE', APPNAME + '-1.0')
     conf.define('PACKAGE', APPNAME)

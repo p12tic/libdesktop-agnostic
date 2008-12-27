@@ -69,7 +69,6 @@ namespace DesktopAgnostic.Config
     {
       construct
       {
-        message ("schema_filename");
         this._schema = new Schema (value);
       }
     }

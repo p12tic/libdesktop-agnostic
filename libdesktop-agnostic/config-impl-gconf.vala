@@ -49,11 +49,6 @@ namespace DesktopAgnostic.Config
       this.notify_funcs = Datalist<weak SList<weak NotifyData>> ();
     }
 
-    public GConfBackend (string schema_filename)
-    {
-      GLib.message ("GConfBackend constructor.");
-    }
-
     private string
     generate_key (string group, string key)
     {

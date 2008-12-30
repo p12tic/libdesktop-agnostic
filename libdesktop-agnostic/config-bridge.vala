@@ -83,14 +83,19 @@ namespace DesktopAgnostic.Config
           case typeof (string):
             obj.set (property_name, config.get_string (group, key));
             config.notify_add (group, key, this.on_string_changed);
-            break;/*
-          case typeof (ValueArray):
-            obj.set (property_name, config.get_list (group, key));
-            config.notify_add (group, key, this.on_list_changed);
-            break;*/
+            break;
           default:
-            warning ("Invalid property type to bind.");
-            return;
+            if (spec.value_type == typeof (ValueArray))
+            {
+              obj.set (property_name, config.get_list (group, key));
+              config.notify_add (group, key, this.on_list_changed);
+            }
+            else
+            {
+              warning ("Invalid property type to bind.");
+              return;
+            }
+            break;
         }
         binding_key = group + "/" + key;
         bindings.set_data (binding_key, binding);
@@ -141,13 +146,18 @@ namespace DesktopAgnostic.Config
             break;
           case typeof (string):
             config.notify_remove (group, key, this.on_string_changed);
-            break;/*
-          case typeof (ValueArray):
-            config.notify_remove (group, key, this.on_list_changed);
-            break;*/
+            break;
           default:
-            warning ("Invalid property type to remove a binding from.");
-            return;
+            if (spec.value_type == typeof (ValueArray))
+            {
+              config.notify_remove (group, key, this.on_list_changed);
+            }
+            else
+            {
+              warning ("Invalid property type to remove a binding from.");
+              return;
+            }
+            break;
         }
       }
     }

@@ -22,7 +22,8 @@ def build_cfg_backend(bld, name):
     cfg.target = 'da-cfg-' + name
     cfg.vapi_dirs = '.'
     cfg.includes='..'
-    cfg.install_path = '${LIBDIR}/desktop-agnostic/modules'
+    cfg.install_path = None
+    bld.install_files('${LIBDIR}/desktop-agnostic/modules', bld.env['shlib_PATTERN'] % cfg.target)
 
 def set_options(opt):
     opt.add_option('--config-backends', type='string', help='Determines which configuration backend(s) will be built.', dest='config_backends', default='')

@@ -87,7 +87,3 @@ def build(bld):
 
 #    if bld.env['INTLTOOL']:
 #        bld.add_subdirs('po')
-
-def shutdown():
-    # Postinstall tasks:
-    gnome.postinstall_icons() # Updating the icon cache

@@ -32,7 +32,7 @@ namespace DesktopAgnostic.Config
     public string property_name;
   }
 
-  public class Bridge
+  public class Bridge : Object
   {
     private Datalist<weak Binding> bindings;
     private static Bridge bridge = null;

@@ -30,7 +30,15 @@ def set_options(opt):
 
 def build(bld):
     lib = bld.new_task_gen('cc', 'shlib')
-    lib.source = 'color.vala config-iface.vala config-bridge.vala config-schema.vala module.vala'
+    lib.source = ' '.join([
+        'color.vala',
+        'config-iface.vala',
+        'config-bridge.vala',
+        'config-schema.vala',
+        'config-schema-option.vala',
+        'config-schema-type.vala',
+        'module.vala'
+        ])
     lib.packages = 'gdk-2.0 gmodule-2.0'
     lib.target = 'desktop-agnostic'
     lib.uselib = 'GDK GMODULE'

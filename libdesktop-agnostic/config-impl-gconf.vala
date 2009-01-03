@@ -44,9 +44,36 @@ namespace DesktopAgnostic.Config
       }
     }
 
+    static construct
+    {
+      GLib.Value val;
+      val = GLib.Value (typeof (string));
+      val.set_string ("/apps");
+      weak HashTable<string,GLib.Value?> backend_metadata_keys = get_backend_metadata_keys ();
+      backend_metadata_keys.insert ("base_path", val);
+      val = GLib.Value (typeof (string));
+      val.set_string ("${base_path}/instances");
+      backend_metadata_keys.insert ("base_instance_path", val);
+    }
+
     construct
     {
+      string opt_prefix = this.name + ".";
+      string base_path;
       this.notify_funcs = Datalist<weak SList<weak NotifyData>> ();
+      base_path = this.schema.get_metadata_option (opt_prefix + "base_path").get_string ();
+      if (this.instance_id == null)
+      {
+        this.path = base_path + "/" + this.schema.app_name;
+      }
+      else
+      {
+        string option = this.schema.get_metadata_option (opt_prefix +
+                                                         "base_instance_path").get_string ();
+        option = option.replace ("${base_path}", base_path);
+        this.path = option + "/" + this.schema.app_name +
+                    "/" + this.instance_id;
+      }
     }
 
     private string

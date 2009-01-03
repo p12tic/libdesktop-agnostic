@@ -30,6 +30,8 @@ namespace DesktopAgnostic.Config
   public errordomain SchemaError
   {
     PARSE,
+    INVALID_METADATA_OPTION,
+    INVALID_METADATA_TYPE,
     INVALID_TYPE,
     INVALID_LIST_TYPE,
     TYPE_NAME_EXISTS,
@@ -392,26 +394,67 @@ namespace DesktopAgnostic.Config
    * A representation of a configuration schema, comprised of one or more
    * configuration options.
    */
-  [Compact]
-  public class Schema
+  public class Schema : Object
   {
     private string filename;
+    private string _app_name;
+    public string app_name
+    {
+      get
+      {
+        return this._app_name;
+      }
+      construct
+      {
+        this._app_name = value;
+      }
+    }
     private Datalist<SchemaOption> options;
     private KeyFile data;
     private HashTable<string,List<string>> keys;
     private static HashTable<Type,SchemaType> type_registry;
     private static HashTable<string,SchemaType> name_registry;
+    private static HashTable<string,Value?> common_metadata_keys;
+    private List<string> valid_metadata_keys;
+    private Datalist<Value?> metadata_options;
     static construct
     {
       type_registry = new HashTable<Type,SchemaType> (int_hash, int_equal);
       name_registry = new HashTable<string,SchemaType> (str_hash, str_equal);
+      common_metadata_keys = new HashTable<string,Value?> (str_hash, str_equal);
+      Value val = Value (typeof (bool));
+      val.set_boolean (true);
+      common_metadata_keys.insert ("single_instance", val);
     }
-    public Schema (string filename) throws Error
+    public Schema (Backend backend, string filename) throws Error
     {
+      string basename = null;
+      weak HashTable<string,Value?> backend_metadata_keys;
+      if (!filename.has_suffix (".schema-ini"))
+      {
+        throw new SchemaError.PARSE ("Schema files MUST have the extension '.schema-ini'.");
+      }
       this.filename = filename;
+      basename = Path.get_basename (filename);
+      this.app_name = basename.substring (0, basename.length - 11);
       this.options = Datalist<SchemaOption> ();
       this.keys = new HashTable<string,List<string>> (str_hash, str_equal);
       this.data = new KeyFile ();
+      this.valid_metadata_keys = new List<string> ();
+      this.metadata_options = Datalist<Value?> ();
+      foreach (weak string key in common_metadata_keys.get_keys ())
+      {
+        this.valid_metadata_keys.append (key);
+        this.metadata_options.set_data (key, common_metadata_keys.lookup (key));
+      }
+      backend_metadata_keys = backend.get_backend_metadata_keys ();
+      foreach (weak string key in backend_metadata_keys.get_keys ())
+      {
+        string option = backend.name + "." + key;
+        this.valid_metadata_keys.append (option);
+        this.metadata_options.set_data (option,
+                                        backend_metadata_keys.lookup (key));
+      }
       this.parse ();
     }
     private void
@@ -445,7 +488,37 @@ namespace DesktopAgnostic.Config
         else if (group == DesktopAgnostic.Config.GROUP_DEFAULT)
         {
           // parse the schema metadata
-          // TODO
+          foreach (weak string key in this.data.get_keys (group))
+          {
+            if (this.valid_metadata_keys.find (key) == null)
+            {
+              throw new SchemaError.INVALID_METADATA_OPTION ("The option '%s' is not a registered metadata option.", key);
+            }
+            else
+            {
+              Value cur_val, new_val;
+              cur_val = this.metadata_options.get_data (key);
+              new_val = Value (cur_val.type ());
+              switch (cur_val.type ())
+              {
+                case typeof (bool):
+                  new_val.set_boolean (this.data.get_boolean (group, key));
+                  break;
+                case typeof (int):
+                  new_val.set_int (this.data.get_integer (group, key));
+                  break;
+                case typeof (float):
+                  new_val.set_float ((float)this.data.get_double (group, key));
+                  break;
+                case typeof (string):
+                  new_val.set_string (this.data.get_string (group, key));
+                  break;
+                default:
+                  throw new SchemaError.INVALID_METADATA_TYPE ("The metadata option type can only be a simple type.");
+              }
+              this.metadata_options.set_data (key, new_val);
+            }
+          }
         }
         else
         {
@@ -497,6 +570,18 @@ namespace DesktopAgnostic.Config
     {
       string full_key = group + "/" + key;
       return this.options.get_data (full_key);
+    }
+    public Value?
+    get_metadata_option (string name) throws SchemaError
+    {
+      if (this.valid_metadata_keys.find (name) == null)
+      {
+        throw new SchemaError.INVALID_METADATA_OPTION ("The option '%s' is not a registered metadata option.", name);
+      }
+      else
+      {
+        return this.metadata_options.get_data (name);
+      }
     }
     public static void
     register_type (SchemaType st) throws SchemaError

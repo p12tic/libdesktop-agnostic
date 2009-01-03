@@ -57,6 +57,16 @@ namespace DesktopAgnostic.Config
   public abstract class Backend : Object
   {
     public abstract string name { get; }
+    private static HashTable<string,Value?> _backend_metadata_keys;
+    static construct
+    {
+      _backend_metadata_keys = new HashTable<string,Value?> (str_hash, str_equal);
+    }
+    public static weak HashTable<string,Value?>
+    get_backend_metadata_keys ()
+    {
+      return _backend_metadata_keys;
+    }
     private Schema _schema;
     public Schema schema
     {
@@ -69,7 +79,19 @@ namespace DesktopAgnostic.Config
     {
       construct
       {
-        this._schema = new Schema (value);
+        this._schema = new Schema (this, value);
+      }
+    }
+    private string? _instance_id;
+    public string? instance_id
+    {
+      get
+      {
+        return this._instance_id;
+      }
+      construct
+      {
+        this._instance_id = value;
       }
     }
     /**

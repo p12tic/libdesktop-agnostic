@@ -24,6 +24,10 @@ if os.path.exists('.bzr'):
         VERSION += '-bzr%d-%s' % (revno, branch_name)
     except ImportError:
         pass
+elif os.path.exists('BZR_VERSION'):
+    # the BZR_VERSION file should contain only the following:
+    # $revno-$branch_name
+    VERSION += '-bzr' + open('BZR_VERSION').read()
 
 APPNAME = 'libdesktop-agnostic'
 

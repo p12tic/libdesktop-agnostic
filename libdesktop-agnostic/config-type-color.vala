@@ -48,31 +48,53 @@ namespace DesktopAgnostic.Config
       return color.to_string ();
     }
     public override Value
-    deserialize (string serialized)
+    deserialize (string serialized) throws SchemaError
     {
       Value val = Value (this.schema_type);
-      Color color = Color.from_string (serialized);
-      val.take_object ((Object)color);
-      return val;
+      try
+      {
+        Color color = new Color.from_string (serialized);
+        val.take_object (color);
+        return val;
+      }
+      catch (ColorParseError err)
+      {
+        throw new SchemaError.PARSE ("Could not deserialize value: %s",
+                                     err.message);
+      }
     }
     public override Value
-    parse_default_value (KeyFile schema, string group)
+    parse_default_value (KeyFile schema, string group) throws SchemaError
     {
       return this.deserialize (schema.get_string (group, DEFAULT_KEY));
     }
     public override ValueArray
-    parse_default_list_value (KeyFile schema, string group)
+    parse_default_list_value (KeyFile schema, string group) throws SchemaError
     {
       ValueArray array;
-      string[] list = schema.get_string_list (group, DEFAULT_KEY);
-      array = new ValueArray (list.length);
-      foreach (weak string item in list)
+      try
       {
-        array.append (this.deserialize (item));
-      }
+        string[] list = schema.get_string_list (group, DEFAULT_KEY);
+        array = new ValueArray (list.length);
+        foreach (weak string item in list)
+        {
+          array.append (this.deserialize (item));
+        }
       return array;
+      }
+      catch (KeyFileError err)
+      {
+        throw new SchemaError.PARSE ("Could not parse the default list value: %s",
+                                     err.message);
+      }
     }
   }
+}
+[ModuleInit]
+public Type
+register_plugin ()
+{
+  return typeof (DesktopAgnostic.Config.ColorType);
 }
 
 // vim: set et ts=2 sts=2 sw=2 ai :

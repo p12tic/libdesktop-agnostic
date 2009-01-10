@@ -21,6 +21,7 @@
  */
 
 using GLib;
+using DesktopAgnostic.VFS;
 
 namespace DesktopAgnostic.Config
 {
@@ -59,16 +60,77 @@ namespace DesktopAgnostic.Config
     private Datalist<SchemaOption> options;
     private KeyFile data;
     private HashTable<string,List<string>> keys;
-    private static HashTable<Type,SchemaType> type_registry;
-    private static HashTable<string,SchemaType> name_registry;
-    private static HashTable<string,Value?> common_metadata_keys;
+    private static HashTable<Type,SchemaType> type_registry = 
+      new HashTable<Type,SchemaType> (type_hash, type_equal);
+    private static HashTable<string,SchemaType> name_registry =
+      new HashTable<string,SchemaType> (str_hash, str_equal);
+    private static HashTable<string,Value?> common_metadata_keys =
+      new HashTable<string,Value?> (str_hash, str_equal);
     private List<string> valid_metadata_keys;
     private Datalist<Value?> metadata_options;
     static construct
     {
-      type_registry = new HashTable<Type,SchemaType> (int_hash, int_equal);
-      name_registry = new HashTable<string,SchemaType> (str_hash, str_equal);
-      common_metadata_keys = new HashTable<string,Value?> (str_hash, str_equal);
+      List<string> type_modules = new List<string> ();
+      string[] paths = ModuleLoader.get_search_paths ();
+      SList<string> search_paths = new SList<string> ();
+      foreach (weak string path in paths)
+      {
+        if (path != null)
+        {
+          search_paths.append (path);
+        }
+      }
+      search_paths.append (Environment.get_current_dir ());
+      foreach (weak string path in search_paths)
+      {
+        if (!FileUtils.test (path, FileTest.IS_DIR))
+        {
+          continue;
+        }
+        Glob found_modules;
+        string module = Path.build_filename (path, "libda-cfg-type-*");
+        try
+        {
+          found_modules = Glob.execute (module);
+        }
+        catch (GlobError err)
+        {
+          if (err is GlobError.NOMATCH)
+          {
+            continue;
+          }
+          else
+          {
+            throw err;
+          }
+        }
+        foreach (weak string fm in found_modules.paths)
+        {
+          if (type_modules.find (fm) == null)
+          {
+            ModuleLoader<SchemaType> loader =
+              new ModuleLoader<SchemaType> (Path.get_basename (fm));
+            if (loader.load_from_path (fm))
+            {
+              try
+              {
+                Type type = loader.module_type;
+                Object obj = Object.new (type);
+                register_type ((SchemaType)(#obj));
+                type_modules.append (fm);
+              }
+              catch (SchemaError err)
+              {
+                warning (err.message);
+              }
+            }
+            else
+            {
+              warning ("Could not load the config type module: %s", fm);
+            }
+          }
+        }
+      }
       Value val = Value (typeof (bool));
       val.set_boolean (true);
       common_metadata_keys.insert ("single_instance", val);
@@ -229,6 +291,16 @@ namespace DesktopAgnostic.Config
       {
         return this.metadata_options.get_data (name);
       }
+    }
+    private static uint
+    type_hash (void* key)
+    {
+      return (uint)key;
+    }
+    private static bool
+    type_equal (void* a, void* b)
+    {
+      return (Type)a == (Type)b;
     }
     public static void
     register_type (SchemaType st) throws SchemaError

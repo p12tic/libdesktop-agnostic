@@ -27,7 +27,7 @@ namespace DesktopAgnostic.Config
    * neither one of the primitive types (boolean, integer, float, string) nor
    * a list.
    */
-  public abstract class SchemaType
+  public abstract class SchemaType : Object
   {
     /**
      * The name of the schema type, used in the "type" and "list type" schema

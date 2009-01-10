@@ -1,0 +1,11 @@
+[DEFAULT/color]
+type = color
+default = red
+description = Some oclor.
+
+[DEFAULT/color_list]
+type = list-color
+default = red;green;blue
+description = Some color list.
+
+; vim: set ft=dosini :

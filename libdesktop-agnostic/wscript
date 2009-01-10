@@ -82,6 +82,15 @@ def build(bld):
     t_cfg_bridge.target = 'test-config-bridge'
     t_cfg_bridge.install_path = ''
 
+    t_color = bld.new_task_gen('cc', 'program')
+    t_color.source = 'test-color.vala'
+    t_color.uselib = 'GMODULE GDK'
+    t_color.uselib_local = 'desktop-agnostic'
+    t_color.vapi_dirs = '.'
+    t_color.includes = '..'
+    t_color.target = 'test-color'
+    t_color.install_path = ''
+
     t_glob = bld.new_task_gen('cc', 'program')
     t_glob.source = 'test-vfs-glob.vala'
     t_glob.uselib_local = 'desktop-agnostic'

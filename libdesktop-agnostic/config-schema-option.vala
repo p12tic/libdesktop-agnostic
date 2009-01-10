@@ -214,11 +214,16 @@ namespace DesktopAgnostic.Config
         case "string":
           type = typeof (string);
           break;
-        case "color":
-          type = typeof (Color);
-          break;
         default:
-          type = Type.INVALID;
+          SchemaType st = Schema.find_type_by_name (serialized);
+          if (st == null)
+          {
+            type = Type.INVALID;
+          }
+          else
+          {
+            type = st.schema_type;
+          }
           break;
       }
       return type;

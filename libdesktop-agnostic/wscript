@@ -40,12 +40,14 @@ def build(bld):
         'config-schema.vala',
         'config-schema-option.vala',
         'config-schema-type.vala',
-        'module.vala'
+        'module.vala',
+        'vfs-glob.vala'
         ])
     lib.packages = 'gdk-2.0 gmodule-2.0'
     lib.target = 'desktop-agnostic'
     lib.uselib = 'GDK GMODULE'
-    lib.vapi_dirs = './vapi'
+    lib.packages_private = 'posix-glob posix-errno'
+    lib.vapi_dirs = '.'
     lib.includes='..'
 
     t_cfg_bridge = bld.new_task_gen('cc', 'program')
@@ -56,5 +58,13 @@ def build(bld):
     t_cfg_bridge.includes = '..'
     t_cfg_bridge.target = 'test-config-bridge'
     t_cfg_bridge.install_path = ''
+
+    t_glob = bld.new_task_gen('cc', 'program')
+    t_glob.source = 'test-vfs-glob.vala'
+    t_glob.uselib_local = 'desktop-agnostic'
+    t_glob.vapi_dirs = '.'
+    t_glob.includes = '..'
+    t_glob.target = 'test-vfs-glob'
+    t_glob.install_path = ''
 
     [build_cfg_backend(bld, cfg) for cfg in bld.env['BACKENDS_CFG']]

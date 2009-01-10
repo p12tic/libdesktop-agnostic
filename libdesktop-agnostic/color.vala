@@ -103,7 +103,6 @@ namespace DesktopAgnostic
       if (spec.get_char () == '#')
       {
         long cd_len = 0;
-        GLib.message ("pound");
         weak string color_hex = spec.offset (1);
         // adapted from pango_color_parse (), licensed under the LGPL2.1+.
         cd_len = color_hex.size ();
@@ -134,7 +133,6 @@ namespace DesktopAgnostic
         // assume color name + no alpha
         color_data = spec;
       }
-      GLib.message ("color_data: %s", color_data);
       if (!Gdk.Color.parse (color_data, out this._color))
       {
         throw new ColorParseError.INVALID_INPUT ("Could not parse color string: %s",

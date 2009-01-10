@@ -29,7 +29,10 @@ namespace DesktopAgnostic
     INVALID_INPUT,
     INVALID_ALPHA
   }
-  public class Color
+  /**
+   * Note: cannot use ushort in properties as Value cannot be mapped to it.
+   */
+  public class Color : Object
   {
     const string HTML_STRING = "#%02hx%02hx%02hx%02hx";
     const ushort HTML_SCALE = 256;
@@ -45,7 +48,17 @@ namespace DesktopAgnostic
         this._color = value;
       }
     }
-    public ushort red
+    private ushort
+    ushortify (int value) throws ColorParseError
+    {
+      if (value < 0 || value > ushort.MAX)
+      {
+        throw new ColorParseError.INVALID_INPUT ("RGB values must be between 0 and %hu.",
+                                                 ushort.MAX);
+      }
+      return (ushort)value;
+    }
+    public int red
     {
       get
       {
@@ -53,10 +66,10 @@ namespace DesktopAgnostic
       }
       set
       {
-        this._color.red = value;
+        this._color.red = this.ushortify (value);
       }
     }
-    public ushort green
+    public int green
     {
       get
       {
@@ -64,10 +77,10 @@ namespace DesktopAgnostic
       }
       set
       {
-        this._color.green = value;
+        this._color.green = this.ushortify (value);
       }
     }
-    public ushort blue
+    public int blue
     {
       get
       {
@@ -75,7 +88,7 @@ namespace DesktopAgnostic
       }
       set
       {
-        this._color.blue = value;
+        this._color.blue = this.ushortify (value);
       }
     }
     public ushort alpha;

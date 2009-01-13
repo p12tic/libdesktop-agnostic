@@ -73,30 +73,4 @@ def build(bld):
 
     [build_cfg_type(bld, name) for name in ['color']]
 
-    t_cfg_bridge = bld.new_task_gen('cc', 'program')
-    t_cfg_bridge.source = 'test-config-bridge.vala'
-    t_cfg_bridge.uselib = 'GMODULE GOBJECT'
-    t_cfg_bridge.uselib_local = 'desktop-agnostic'
-    t_cfg_bridge.vapi_dirs = '.'
-    t_cfg_bridge.includes = '..'
-    t_cfg_bridge.target = 'test-config-bridge'
-    t_cfg_bridge.install_path = ''
-
-    t_color = bld.new_task_gen('cc', 'program')
-    t_color.source = 'test-color.vala'
-    t_color.uselib = 'GMODULE GDK'
-    t_color.uselib_local = 'desktop-agnostic'
-    t_color.vapi_dirs = '.'
-    t_color.includes = '..'
-    t_color.target = 'test-color'
-    t_color.install_path = ''
-
-    t_glob = bld.new_task_gen('cc', 'program')
-    t_glob.source = 'test-vfs-glob.vala'
-    t_glob.uselib_local = 'desktop-agnostic'
-    t_glob.vapi_dirs = '.'
-    t_glob.includes = '..'
-    t_glob.target = 'test-vfs-glob'
-    t_glob.install_path = ''
-
     [build_cfg_backend(bld, cfg) for cfg in bld.env['BACKENDS_CFG']]

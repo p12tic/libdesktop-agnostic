@@ -87,7 +87,7 @@ def configure(conf):
 
 def build(bld):
     # process subfolders from here
-    bld.add_subdirs('libdesktop-agnostic data')
+    bld.add_subdirs('libdesktop-agnostic tests data')
 
 #    if bld.env['INTLTOOL']:
 #        bld.add_subdirs('po')

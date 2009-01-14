@@ -1,7 +1,7 @@
 /* 
  * Desktop Agnostic Library: glob() wrapper.
  *
- * Copyright (C) 2008, 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>
+ * Copyright (C) 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public

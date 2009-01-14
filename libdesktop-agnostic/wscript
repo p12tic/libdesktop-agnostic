@@ -1,51 +1,30 @@
 #! /usr/bin/env python
 # encoding: utf-8
 
-cfg_deps = {
-    'gconf': {
-        'uselib': 'GCONF',
-        'packages': 'gconf-2.0'
+deps = {
+    'cfg': {
+        'gconf': {
+            'uselib': 'GCONF',
+            'packages': 'gconf-2.0'
+        }
     }
 }
 
-cfg_type_deps = {
-}
-
-def build_cfg_backend(bld, name):
-    cfg = bld.new_task_gen('cc', 'shlib')
-    cfg.source = 'config-impl-%s.vala' % name
-    deps = 'GMODULE GOBJECT'
-    pkgs = 'gmodule-2.0'
-    if name in cfg_deps:
-        deps += ' ' + cfg_deps[name]['uselib']
-        pkgs += ' ' + cfg_deps[name]['packages']
-    cfg.uselib = deps
-    cfg.packages = pkgs
-    cfg.uselib_local = 'desktop-agnostic'
-    cfg.target = 'da-cfg-' + name
-    cfg.vapi_dirs = '../vapi'
-    cfg.includes='..'
-    cfg.install_path = None
-    bld.install_files('${LIBDIR}/desktop-agnostic/modules',
-                      bld.env['shlib_PATTERN'] % cfg.target)
-
-def build_cfg_type(bld, name):
-    cfg = bld.new_task_gen('cc', 'shlib')
-    cfg.source = 'config-type-%s.vala' % name
-    deps = 'GMODULE GOBJECT'
-    pkgs = 'gmodule-2.0'
-    if name in cfg_type_deps:
-        deps += ' ' + cfg_type_deps[name]['uselib']
-        pkgs += ' ' + cfg_type_deps[name]['packages']
-    cfg.uselib = deps
-    cfg.packages = pkgs
-    cfg.uselib_local = 'desktop-agnostic'
-    cfg.target = 'da-cfg-type-' + name
-    cfg.vapi_dirs = '../vapi'
-    cfg.includes='..'
-    cfg.install_path = None
-    bld.install_files('${LIBDIR}/desktop-agnostic/modules',
-                      bld.env['shlib_PATTERN'] % cfg.target)
+def task_module(type_name, src_prefix):
+    def build_module(bld, name):
+        module = bld.new_task_gen('cc', 'shlib')
+        module.source = '%s-%s.vala' % (src_prefix, name)
+        if type_name in deps and name in deps[type_name]:
+            module.uselib = deps[type_name][name]['uselib']
+            module.packages = deps[type_name][name]['packages']
+        module.uselib_local = 'desktop-agnostic'
+        module.target = 'da-%s-%s' % (type_name, name)
+        module.vapi_dirs = '../vapi'
+        module.includes = '..'
+        module.install_path = None
+        bld.install_files('${LIBDIR}/desktop-agnostic/modules',
+                          bld.env['shlib_PATTERN'] % module.target)
+    return build_module
 
 def set_options(opt):
     opt.add_option('--config-backends', type='string',
@@ -71,6 +50,7 @@ def build(bld):
     lib.vapi_dirs = '../vapi'
     lib.includes='..'
 
-    [build_cfg_type(bld, name) for name in ['color']]
-
-    [build_cfg_backend(bld, cfg) for cfg in bld.env['BACKENDS_CFG']]
+    [task_module('cfg', 'config-impl')(bld, name)
+     for name in bld.env['BACKENDS_CFG']]
+    [task_module('cfg-type', 'config-type')(bld, name)
+     for name in ['color']]

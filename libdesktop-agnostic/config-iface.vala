@@ -21,7 +21,6 @@
  */
 
 using DesktopAgnostic;
-using GLib;
 
 namespace DesktopAgnostic.Config
 {

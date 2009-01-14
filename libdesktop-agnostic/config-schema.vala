@@ -20,7 +20,6 @@
  * Author : Mark Lee <libdesktop-agnostic@lazymalevolence.com>
  */
 
-using GLib;
 using DesktopAgnostic.VFS;
 
 namespace DesktopAgnostic.Config

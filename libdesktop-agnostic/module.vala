@@ -20,8 +20,6 @@
  * Author : Mark Lee <libdesktop-agnostic@lazymalevolence.com>
  */
 
-using GLib;
-
 namespace DesktopAgnostic
 {
   public errordomain ModuleError

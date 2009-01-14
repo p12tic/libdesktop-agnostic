@@ -21,8 +21,6 @@
  * Author : Mark Lee <libdesktop-agnostic@lazymalevolence.com>
  */
 
-using GLib;
-
 namespace DesktopAgnostic.Config
 {
   [Compact]

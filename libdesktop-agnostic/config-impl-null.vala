@@ -20,8 +20,6 @@
  * Author : Mark Lee <libdesktop-agnostic@lazymalevolence.com>
  */
 
-using GLib;
-
 namespace DesktopAgnostic.Config
 {
   public class Null : Backend

@@ -23,7 +23,7 @@ def build_cfg_backend(bld, name):
     cfg.packages = pkgs
     cfg.uselib_local = 'desktop-agnostic'
     cfg.target = 'da-cfg-' + name
-    cfg.vapi_dirs = '.'
+    cfg.vapi_dirs = '../vapi'
     cfg.includes='..'
     cfg.install_path = None
     bld.install_files('${LIBDIR}/desktop-agnostic/modules',
@@ -41,7 +41,7 @@ def build_cfg_type(bld, name):
     cfg.packages = pkgs
     cfg.uselib_local = 'desktop-agnostic'
     cfg.target = 'da-cfg-type-' + name
-    cfg.vapi_dirs = '.'
+    cfg.vapi_dirs = '../vapi'
     cfg.includes='..'
     cfg.install_path = None
     bld.install_files('${LIBDIR}/desktop-agnostic/modules',
@@ -68,7 +68,7 @@ def build(bld):
     lib.target = 'desktop-agnostic'
     lib.uselib = 'GDK GMODULE'
     lib.packages_private = 'posix-glob posix-errno'
-    lib.vapi_dirs = '.'
+    lib.vapi_dirs = '../vapi'
     lib.includes='..'
 
     [build_cfg_type(bld, name) for name in ['color']]

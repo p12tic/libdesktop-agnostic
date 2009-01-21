@@ -11,4 +11,6 @@ def build_test_program(bld, name):
     test.install_path = ''
 
 def build(bld):
-    [build_test_program(bld, 'test-' + name) for name in ['color', 'config-bridge', 'vfs-glob']]
+    [build_test_program(bld, 'test-' + name)
+     for name in ['color', 'config-bridge', 'vfs-file', 'vfs-file-monitor',
+                  'vfs-glob']]

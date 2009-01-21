@@ -166,6 +166,38 @@ namespace DesktopAgnostic
       return null;
     }
   }
+  
+  public VFS.Implementation?
+  vfs_get_default () throws GLib.Error
+  {
+    KeyFile config;
+    ModuleLoader<VFS.Implementation> loader;
+    string cfg_file = "desktop-agnostic.ini";
+
+    if (!Module.supported ())
+    {
+      throw new ModuleError.NO_GMODULE ("libdesktop-agnostic requires GModule support.");
+    }
+    config = new KeyFile ();
+    if (!config.load_from_file (Path.build_filename (Environment.get_user_config_dir (), cfg_file),
+                                KeyFileFlags.NONE))
+    {
+      if (!config.load_from_data_dirs (cfg_file, null, KeyFileFlags.NONE))
+      {
+        throw new ModuleError.NO_CONFIG_FOUND ("Could not find any libdesktop-agnostic configuration files.");
+      }
+    }
+    loader = new ModuleLoader<VFS.Implementation> ("libda-vfs-" +
+                                                   config.get_string ("DEFAULT", "vfs"));
+    if (loader.load ())
+    {
+      return (VFS.Implementation)Object.new (loader.module_type);
+    }
+    else
+    {
+      return null;
+    }
+  }
 }
 
 // vim: set et ts=2 sts=2 sw=2 ai :

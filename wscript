@@ -51,6 +51,7 @@ def configure(conf):
     if len(Options.options.config_backends) == 0:
         conf.fatal('At least one configuration backend needs to be built.')
     conf.env['BACKENDS_CFG'] = Options.options.config_backends.split(',')
+    conf.env['BACKENDS_VFS'] = Options.options.vfs_backends.split(',')
 
     conf.env['DEBUG'] = Options.options.debug
 
@@ -70,6 +71,15 @@ def configure(conf):
                    args='--cflags --libs')
     if 'gconf' in conf.env['BACKENDS_CFG']:
         conf.check_cfg(package='gconf-2.0', uselib_store='GCONF',
+                       mandatory=True, args='--cflags --libs')
+    if 'gio' in conf.env['BACKENDS_VFS']:
+        conf.check_cfg(package='gio-2.0', uselib_store='GIO',
+                       mandatory=True, args='--cflags --libs')
+    if 'thunar-vfs' in conf.env['BACKENDS_VFS']:
+        conf.check_cfg(package='thunar-vfs-1', uselib_store='THUNAR_VFS',
+                       mandatory=True, args='--cflags --libs')
+    if 'gnome-vfs' in conf.env['BACKENDS_VFS']:
+        conf.check_cfg(package='gnome-vfs-2.0', uselib_store='GNOME_VFS',
                        mandatory=True, args='--cflags --libs')
 
     conf.define('API_VERSION', str(API_VERSION))

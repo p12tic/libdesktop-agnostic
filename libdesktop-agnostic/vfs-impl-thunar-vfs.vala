@@ -56,6 +56,20 @@ namespace DesktopAgnostic.VFS
     {
       ThunarVfs.init ();
     }
+    public SList<File.Backend>
+    files_from_uri_list (string uri_list)
+    {
+      SList<File.Backend> files = new SList<File.Backend> ();
+      weak List<ThunarVfs.Path> paths = ThunarVfs.PathList.from_string (uri_list);
+      foreach (weak ThunarVfs.Path path in paths)
+      {
+        weak string uri = path.dup_uri ();
+        File.Backend file = (File.Backend)Object.new (this.file_type,
+                                                      "uri", uri);
+        files.append (#file);
+      }
+      return files;
+    }
     public void shutdown ()
     {
       ThunarVfs.shutdown ();

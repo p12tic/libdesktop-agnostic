@@ -55,6 +55,19 @@ namespace DesktopAgnostic.VFS
     public void init ()
     {
     }
+    public SList<File.Backend>
+    files_from_uri_list (string uri_list)
+    {
+      SList<File.Backend> files = new SList<File.Backend> ();
+      string[] uris = Uri.list_extract_uris (uri_list);
+      foreach (weak string uri in uris)
+      {
+        File.Backend file = (File.Backend)Object.new (this.file_type,
+                                                      "uri", uri);
+        files.append (#file);
+      }
+      return files;
+    }
     public void shutdown ()
     {
     }

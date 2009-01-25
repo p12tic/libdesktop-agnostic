@@ -52,8 +52,7 @@ namespace DesktopAgnostic
     {
       paths = new string[]
       {
-        // FIXME use config.vapi
-        Path.build_filename ("@LIBDIR@", "desktop-agnostic"),
+        Path.build_filename (Build.LIBDIR, "desktop-agnostic", "modules"),
         Path.build_filename (Environment.get_home_dir (), ".local", "lib",
                              "desktop-agnostic"),
         Environment.get_variable ("DESKTOP_AGNOSTIC_MODULE_DIR")

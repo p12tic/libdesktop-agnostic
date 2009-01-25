@@ -38,7 +38,7 @@ blddir = 'build'
 config_backend = None
 
 def set_options(opt):
-    [opt.tool_options(x) for x in ['compiler_cc', 'gnome']]
+    [opt.tool_options(x) for x in ['compiler_cc']]
     opt.sub_options('libdesktop-agnostic')
     opt.add_option('--enable-debug', action='store_true',
                    dest='debug', default=False,
@@ -55,7 +55,7 @@ def configure(conf):
 
     conf.env['DEBUG'] = Options.options.debug
 
-    conf.check_tool('compiler_cc misc gnome vala')
+    conf.check_tool('compiler_cc misc vala')
     conf.check_tool('intltool')
 
     conf.check_cfg(package='gmodule-2.0', uselib_store='GMODULE',

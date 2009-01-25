@@ -45,6 +45,13 @@ namespace DesktopAgnostic.VFS
         return typeof (File.GnomeVFSMonitor);
       }
     }
+    public Type trash_type
+    {
+      get
+      {
+        return typeof (Trash.GnomeVFSImplementation);
+      }
+    }
     public void init ()
     {
       GnomeVFS.init ();

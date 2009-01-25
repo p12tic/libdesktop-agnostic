@@ -78,6 +78,8 @@ def configure(conf):
     if 'thunar-vfs' in conf.env['BACKENDS_VFS']:
         conf.check_cfg(package='thunar-vfs-1', uselib_store='THUNAR_VFS',
                        mandatory=True, args='--cflags --libs')
+        conf.check_cfg(package='dbus-glib-1', uselib_store='DBUS_GLIB',
+                       mandatory=True, args='--cflags --libs')
     if 'gnome-vfs' in conf.env['BACKENDS_VFS']:
         conf.check_cfg(package='gnome-vfs-2.0', uselib_store='GNOME_VFS',
                        mandatory=True, args='--cflags --libs')

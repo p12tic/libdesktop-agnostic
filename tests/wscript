@@ -6,6 +6,7 @@ def build_test_program(bld, name):
     test.source = name + '.vala'
     test.uselib_local = 'desktop-agnostic'
     test.vapi_dirs = '../libdesktop-agnostic'
+    #test.threading = True
     test.includes = '..'
     test.target = name
     test.install_path = ''
@@ -13,4 +14,4 @@ def build_test_program(bld, name):
 def build(bld):
     [build_test_program(bld, 'test-' + name)
      for name in ['color', 'config-bridge', 'vfs-file', 'vfs-file-monitor',
-                  'vfs-glob']]
+                  'vfs-glob', 'vfs-trash']]

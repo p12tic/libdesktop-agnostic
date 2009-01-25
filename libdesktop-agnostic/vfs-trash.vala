@@ -1,7 +1,7 @@
 /* 
- * Desktop Agnostic Library: VFS implementation interface.
+ * Desktop Agnostic Library: Trash interface.
  *
- * Copyright (C) 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>
+ * Copyright (C) 2008, 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,19 +20,16 @@
  * Author : Mark Lee <libdesktop-agnostic@lazymalevolence.com>
  */
 
-namespace DesktopAgnostic.VFS
+using DesktopAgnostic.VFS;
+
+namespace DesktopAgnostic.VFS.Trash
 {
-  public interface Implementation : Object
+  public interface Backend : Object
   {
-    /**
-     * The (unique) name of the implementation.
-     */
-    public abstract string name { get; }
-    public abstract Type file_type { get; }
-    public abstract Type file_monitor_type { get; }
-    public abstract Type trash_type { get; }
-    public abstract void init ();
-    public abstract void shutdown ();
+    public abstract uint file_count { get; }
+    public signal void file_count_changed ();
+    public abstract void send_to_trash (File.Backend file) throws GLib.Error;
+    public abstract void empty ();
   }
 }
 

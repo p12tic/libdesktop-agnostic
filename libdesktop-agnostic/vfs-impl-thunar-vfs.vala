@@ -45,6 +45,13 @@ namespace DesktopAgnostic.VFS
         return typeof (File.ThunarVFSMonitor);
       }
     }
+    public Type trash_type
+    {
+      get
+      {
+        return typeof (Trash.ThunarVFSImplementation);
+      }
+    }
     public void init ()
     {
       ThunarVfs.init ();

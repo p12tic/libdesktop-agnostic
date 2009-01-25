@@ -14,8 +14,8 @@ deps = {
             'packages': 'gio-2.0'
         },
         'thunar-vfs': {
-            'uselib': 'THUNAR_VFS',
-            'packages': 'thunar-vfs-1'
+            'uselib': 'THUNAR_VFS DBUS_GLIB',
+            'packages': 'thunar-vfs-1 dbus-glib-1'
         },
         'gnome-vfs': {
             'uselib': 'GNOME_VFS',
@@ -62,7 +62,8 @@ def build(bld):
         'vfs.vala',
         'vfs-file.vala',
         'vfs-file-monitor.vala',
-        'vfs-glob.vala'
+        'vfs-glob.vala',
+        'vfs-trash.vala'
         ])
     lib.packages = 'gdk-2.0 gmodule-2.0'
     lib.target = 'desktop-agnostic'
@@ -75,5 +76,7 @@ def build(bld):
      for name in bld.env['BACKENDS_CFG']]
     [task_module('cfg-type', 'config-type')(bld, name)
      for name in ['color']]
-    [task_module('vfs', 'vfs-impl vfs-file-impl vfs-file-monitor-impl')(bld, name)
+    vfs_types = ['vfs-impl', 'vfs-file-impl', 'vfs-file-monitor-impl',
+                 'vfs-trash-impl']
+    [task_module('vfs', ' '.join(vfs_types))(bld, name)
      for name in bld.env['BACKENDS_VFS']]

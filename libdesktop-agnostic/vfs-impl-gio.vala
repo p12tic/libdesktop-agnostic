@@ -45,6 +45,13 @@ namespace DesktopAgnostic.VFS
         return typeof (File.GIOMonitor);
       }
     }
+    public Type trash_type
+    {
+      get
+      {
+        return typeof (Trash.GIOImplementation);
+      }
+    }
     public void init ()
     {
     }

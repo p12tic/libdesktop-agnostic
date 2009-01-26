@@ -57,7 +57,7 @@ namespace DesktopAgnostic.VFS
       ThunarVfs.init ();
     }
     public SList<File.Backend>
-    files_from_uri_list (string uri_list)
+    files_from_uri_list (string uri_list) throws GLib.Error
     {
       SList<File.Backend> files = new SList<File.Backend> ();
       weak List<ThunarVfs.Path> paths = ThunarVfs.PathList.from_string (uri_list);

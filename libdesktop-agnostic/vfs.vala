@@ -33,7 +33,7 @@ namespace DesktopAgnostic.VFS
     public abstract Type trash_type { get; }
     public abstract void init ();
     public abstract SList<File.Backend>
-      files_from_uri_list (string uri_list);
+      files_from_uri_list (string uri_list) throws GLib.Error;
     public abstract void shutdown ();
   }
 }

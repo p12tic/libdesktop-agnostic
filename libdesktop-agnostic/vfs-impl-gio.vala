@@ -56,7 +56,7 @@ namespace DesktopAgnostic.VFS
     {
     }
     public SList<File.Backend>
-    files_from_uri_list (string uri_list)
+    files_from_uri_list (string uri_list) throws GLib.Error
     {
       SList<File.Backend> files = new SList<File.Backend> ();
       string[] uris = Uri.list_extract_uris (uri_list);

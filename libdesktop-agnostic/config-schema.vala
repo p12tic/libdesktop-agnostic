@@ -107,8 +107,7 @@ namespace DesktopAgnostic.Config
         {
           if (type_modules.find (fm) == null)
           {
-            ModuleLoader<SchemaType> loader =
-              new ModuleLoader<SchemaType> (Path.get_basename (fm));
+            ModuleLoader loader = new ModuleLoader (Path.get_basename (fm));
             if (loader.load_from_path (fm))
             {
               try

@@ -32,7 +32,7 @@ namespace DesktopAgnostic
    * Based on the PluginRegistrar class in
    * <http://live.gnome.org/Vala/TypeModules>.
    */
-  public class ModuleLoader<T> : Object
+  public class ModuleLoader : Object
   {
     public string name { get; construct; }
 
@@ -134,67 +134,69 @@ namespace DesktopAgnostic
       return true;
     }
   }
-  public Config.Backend?
-  config_get_default (string schema_file) throws GLib.Error
+  private static KeyFile module_config = null;
+  private Type
+  get_module_type (string prefix, string key) throws GLib.Error
   {
-    KeyFile config;
-    ModuleLoader<Config.Backend> loader;
+    ModuleLoader loader;
     string cfg_file = "desktop-agnostic.ini";
 
     if (!Module.supported ())
     {
       throw new ModuleError.NO_GMODULE ("libdesktop-agnostic requires GModule support.");
     }
-    config = new KeyFile ();
-    if (!config.load_from_file (Path.build_filename (Environment.get_user_config_dir (), cfg_file),
-                                KeyFileFlags.NONE))
+    if (module_config == null)
     {
-      if (!config.load_from_data_dirs (cfg_file, null, KeyFileFlags.NONE))
+      module_config = new KeyFile ();
+      if (!module_config.load_from_file (Path.build_filename (Environment.get_user_config_dir (),
+                                                              cfg_file),
+                                         KeyFileFlags.NONE))
       {
-        throw new ModuleError.NO_CONFIG_FOUND ("Could not find any libdesktop-agnostic configuration files.");
+        if (!module_config.load_from_data_dirs (cfg_file, null,
+                                                KeyFileFlags.NONE))
+        {
+          throw new ModuleError.NO_CONFIG_FOUND ("Could not find any libdesktop-agnostic configuration files.");
+        }
       }
     }
-    loader = new ModuleLoader<Config.Backend> ("libda-cfg-" +
-                                               config.get_string ("DEFAULT", "config"));
+    string library = "libda-%s-%s".printf (prefix,
+                                           module_config.get_string ("DEFAULT", key));
+    loader = new ModuleLoader (library);
     if (loader.load ())
     {
-      return (Config.Backend)Object.new (loader.module_type, "schema_filename", schema_file);
+      return loader.module_type;
     }
     else
     {
+      return Type.INVALID;
+    }
+  }
+  public Config.Backend?
+  config_get_default (string schema_file) throws GLib.Error
+  {
+    Type type = get_module_type ("cfg", "config");
+    if (type == Type.INVALID)
+    {
       return null;
+    }
+    else
+    {
+      return (Config.Backend)Object.new (type,
+                                         "schema_filename", schema_file);
     }
   }
   
   public VFS.Implementation?
   vfs_get_default () throws GLib.Error
   {
-    KeyFile config;
-    ModuleLoader<VFS.Implementation> loader;
-    string cfg_file = "desktop-agnostic.ini";
-
-    if (!Module.supported ())
+    Type type = get_module_type ("vfs", "vfs");
+    if (type == Type.INVALID)
     {
-      throw new ModuleError.NO_GMODULE ("libdesktop-agnostic requires GModule support.");
-    }
-    config = new KeyFile ();
-    if (!config.load_from_file (Path.build_filename (Environment.get_user_config_dir (), cfg_file),
-                                KeyFileFlags.NONE))
-    {
-      if (!config.load_from_data_dirs (cfg_file, null, KeyFileFlags.NONE))
-      {
-        throw new ModuleError.NO_CONFIG_FOUND ("Could not find any libdesktop-agnostic configuration files.");
-      }
-    }
-    loader = new ModuleLoader<VFS.Implementation> ("libda-vfs-" +
-                                                   config.get_string ("DEFAULT", "vfs"));
-    if (loader.load ())
-    {
-      return (VFS.Implementation)Object.new (loader.module_type);
+      return null;
     }
     else
     {
-      return null;
+      return (VFS.Implementation)Object.new (type);
     }
   }
 }

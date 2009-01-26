@@ -185,19 +185,25 @@ namespace DesktopAgnostic
                                          "schema_filename", schema_file);
     }
   }
+
+  private static VFS.Implementation vfs = null;
   
-  public VFS.Implementation?
+  public weak VFS.Implementation?
   vfs_get_default () throws GLib.Error
   {
-    Type type = get_module_type ("vfs", "vfs");
-    if (type == Type.INVALID)
+    if (vfs == null)
     {
-      return null;
+      Type type = get_module_type ("vfs", "vfs");
+      if (type == Type.INVALID)
+      {
+        return null;
+      }
+      else
+      {
+        vfs = (VFS.Implementation)Object.new (type);
+      }
     }
-    else
-    {
-      return (VFS.Implementation)Object.new (type);
-    }
+    return vfs;
   }
 }
 

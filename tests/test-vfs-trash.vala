@@ -50,4 +50,4 @@ public class TestTrash
   }
 }
 
-// vim: set ft=cs et ts=2 sts=2 sw=2 ai :
+// vim: set ft=vala et ts=2 sts=2 sw=2 ai :

@@ -52,6 +52,13 @@ namespace DesktopAgnostic.VFS
         return typeof (Trash.GIOImplementation);
       }
     }
+    public Type volume_type
+    {
+      get
+      {
+        return typeof (Volume.GIOBackend);
+      }
+    }
     public void init ()
     {
     }
@@ -67,6 +74,16 @@ namespace DesktopAgnostic.VFS
         files.append (#file);
       }
       return files;
+    }
+    private Volume.Monitor vmonitor;
+    public unowned Volume.Monitor
+    volume_monitor_get_default ()
+    {
+      if (vmonitor == null)
+      {
+        vmonitor = new Volume.GIOMonitor ();
+      }
+      return vmonitor;
     }
     public void shutdown ()
     {

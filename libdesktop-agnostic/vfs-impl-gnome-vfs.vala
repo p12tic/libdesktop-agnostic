@@ -52,6 +52,13 @@ namespace DesktopAgnostic.VFS
         return typeof (Trash.GnomeVFSImplementation);
       }
     }
+    public Type volume_type
+    {
+      get
+      {
+        return Type.INVALID;
+      }
+    }
     public void init ()
     {
       GnomeVFS.init ();
@@ -69,6 +76,16 @@ namespace DesktopAgnostic.VFS
         files.append (#file);
       }
       return files;
+    }
+    private Volume.Monitor vmonitor;
+    public unowned Volume.Monitor
+    volume_monitor_get_default ()
+    {
+      if (vmonitor == null)
+      {
+        vmonitor = new Volume.GnomeVFSMonitor ();
+      }
+      return vmonitor;
     }
     public void shutdown ()
     {

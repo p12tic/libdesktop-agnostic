@@ -63,7 +63,8 @@ def build(bld):
         'vfs-file.vala',
         'vfs-file-monitor.vala',
         'vfs-glob.vala',
-        'vfs-trash.vala'
+        'vfs-trash.vala',
+        'vfs-volume.vala'
         ])
     lib.packages = 'gdk-2.0 gmodule-2.0'
     lib.target = 'desktop-agnostic'
@@ -77,6 +78,6 @@ def build(bld):
     [task_module('cfg-type', 'config-type')(bld, name)
      for name in ['color']]
     vfs_types = ['vfs-impl', 'vfs-file-impl', 'vfs-file-monitor-impl',
-                 'vfs-trash-impl']
+                 'vfs-trash-impl', 'vfs-volume-impl']
     [task_module('vfs', ' '.join(vfs_types))(bld, name)
      for name in bld.env['BACKENDS_VFS']]

@@ -31,9 +31,11 @@ namespace DesktopAgnostic.VFS
     public abstract Type file_type { get; }
     public abstract Type file_monitor_type { get; }
     public abstract Type trash_type { get; }
+    public abstract Type volume_type { get; }
     public abstract void init ();
     public abstract SList<File.Backend>
       files_from_uri_list (string uri_list) throws GLib.Error;
+    public abstract unowned Volume.Monitor volume_monitor_get_default ();
     public abstract void shutdown ();
   }
 }

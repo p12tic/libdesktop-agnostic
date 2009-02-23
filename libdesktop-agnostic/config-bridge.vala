@@ -117,7 +117,7 @@ namespace DesktopAgnostic.Config
       }
     }
 
-    private void
+    public void
     remove (Backend config, string group, string key, Object obj, string property_name)
     {
       weak Binding binding;

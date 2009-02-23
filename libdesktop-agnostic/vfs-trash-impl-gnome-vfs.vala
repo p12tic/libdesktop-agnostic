@@ -90,16 +90,16 @@ namespace DesktopAgnostic.VFS.Trash
     {
       message ("reset_file_count");
       weak DirectoryHandle handle;
-      Result result;
+      Result res;
       this._file_count = 0;
       // iterate through folder contents
-      result = directory_open_from_uri (out handle, this.uri,
-                                        FileInfoOptions.NAME_ONLY);
-      if (result == Result.OK)
+      res = directory_open_from_uri (out handle, this.uri,
+                                     FileInfoOptions.NAME_ONLY);
+      if (res == Result.OK)
       {
         GnomeVFS.FileInfo file_info;
         file_info = new GnomeVFS.FileInfo ();
-        while ((result = directory_read_next (handle, file_info)) == Result.OK)
+        while ((res = directory_read_next (handle, file_info)) == Result.OK)
         {
           if (file_info.name != "." && file_info.name != "..")
           {
@@ -129,15 +129,15 @@ namespace DesktopAgnostic.VFS.Trash
     private static void
     do_empty (URI dir)
     {
-      Result result;
-      result = directory_visit_uri (dir,
-                                    FileInfoOptions.DEFAULT,
-                                    DirectoryVisitOptions.LOOPCHECK,
-                                    (DirectoryVisitFunc)TrashVolume.visit_callback,
-                                    &dir);
-      if (result != Result.OK)
+      Result res;
+      res = directory_visit_uri (dir,
+                                 FileInfoOptions.DEFAULT,
+                                 DirectoryVisitOptions.LOOPCHECK,
+                                 (DirectoryVisitFunc)TrashVolume.visit_callback,
+                                 &dir);
+      if (res != Result.OK)
       {
-        warning ("Error occurred: %s", result_to_string (result));
+        warning ("Error occurred: %s", result_to_string (res));
       }
     }
 
@@ -183,25 +183,25 @@ namespace DesktopAgnostic.VFS.Trash
     send_to_trash (File.Backend uri)
     {
       URI g_uri, trash_uri;
-      Result result;
+      Result res;
 
       g_uri = (URI)uri.implementation;
-      result = find_directory (g_uri, FindDirectoryKind.TRASH,
-                               out trash_uri,
-                               true, false, 0777);
-      if (result == Result.OK)
+      res = find_directory (g_uri, FindDirectoryKind.TRASH,
+                            out trash_uri,
+                            true, false, 0777);
+      if (res == Result.OK)
       {
         URI new_uri = trash_uri.append_file_name (g_uri.extract_short_path_name ());
         message ("Moving '%s' to '%s'...", g_uri.to_string (URIHideOptions.NONE), new_uri.to_string (URIHideOptions.NONE));
-        result = move_uri (g_uri, new_uri, false);
-        if (result != Result.OK)
+        res = move_uri (g_uri, new_uri, false);
+        if (res != Result.OK)
         {
-          warning ("Error occurred: %s", result_to_string (result));
+          warning ("Error occurred: %s", result_to_string (res));
         }
       }
       else
       {
-        warning ("Error occurred: %s", result_to_string (result));
+        warning ("Error occurred: %s", result_to_string (res));
       }
     }
 
@@ -238,14 +238,14 @@ namespace DesktopAgnostic.VFS.Trash
     {
       if (vol.handles_trash ())
       {
-        Result result;
+        Result res;
         URI uri;
         URI trash_uri;
         uri = new URI (vol.get_activation_uri ());
-        result = find_directory (uri, FindDirectoryKind.TRASH,
-                                 out trash_uri,
-                                 false, true, 0777);
-        if (result == Result.OK)
+        res = find_directory (uri, FindDirectoryKind.TRASH,
+                              out trash_uri,
+                              false, true, 0777);
+        if (res == Result.OK)
         {
           TrashVolume tv;
           tv = new TrashVolume (this, trash_uri);

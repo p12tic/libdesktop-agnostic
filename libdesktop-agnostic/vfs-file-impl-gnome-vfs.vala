@@ -40,9 +40,9 @@ namespace DesktopAgnostic.VFS.File
         return this._uri_str;
       }
     }
-    protected override string? #impl_path
+    protected override string? impl_path
     {
-      get
+      owned get
       {
         return this._uri.get_path ();
       }

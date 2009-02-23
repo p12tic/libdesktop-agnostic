@@ -350,7 +350,7 @@ namespace ThunarVfs {
 	}
 	[CCode (cheader_filename = "thunar-vfs/thunar-vfs.h")]
 	public class Volume : GLib.Object {
-		public bool eject (Gtk.Widget window) throws GLib.Error;
+		public bool eject (Gtk.Widget? window) throws GLib.Error;
 		public ThunarVfs.VolumeKind get_kind ();
 		public weak ThunarVfs.Path get_mount_point ();
 		public weak string get_name ();
@@ -362,8 +362,8 @@ namespace ThunarVfs {
 		public bool is_present ();
 		public bool is_removable ();
 		public weak string lookup_icon_name (Gtk.IconTheme icon_theme);
-		public bool mount (Gtk.Widget window) throws GLib.Error;
-		public bool unmount (Gtk.Widget window) throws GLib.Error;
+		public bool mount (Gtk.Widget? window) throws GLib.Error;
+		public bool unmount (Gtk.Widget? window) throws GLib.Error;
 		public virtual signal void changed ();
 		public virtual signal void mounted ();
 		public virtual signal void pre_unmount ();

@@ -37,12 +37,20 @@ private class Test : Object
 
 int main (string[] args)
 {
-  Config.Backend cfg = config_get_default ("test-config-bridge.schema-ini");
-  Config.Bridge bridge = Config.Bridge.get_default ();
-  Test t = new Test ();
-  bridge.bind (cfg, "group", "string", t, "str");
-  bridge.bind (cfg, "group", "number", t, "num");
-  message ("Backend: '%s'; String: '%s'; Integer: %d", cfg.name, t.str, t.num);
+  try
+  {
+    Config.Backend cfg = config_get_default ("test-config-bridge.schema-ini");
+    Config.Bridge bridge = Config.Bridge.get_default ();
+    Test t = new Test ();
+    bridge.bind (cfg, "group", "string", t, "str");
+    bridge.bind (cfg, "group", "number", t, "num");
+    message ("Backend: '%s'; String: '%s'; Integer: %d", cfg.name, t.str, t.num);
+  }
+  catch (Error err)
+  {
+    critical (err.message);
+    return 1;
+  }
   return 0;
 }
 

@@ -117,7 +117,14 @@ namespace DesktopAgnostic.VFS.Trash
 
     public void empty ()
     {
-      this.xfce_trash.EmptyTrash ("");
+      try
+      {
+        this.xfce_trash.EmptyTrash ("");
+      }
+      catch (DBus.Error err)
+      {
+        critical (err.message);
+      }
     }
   }
 }

@@ -119,11 +119,11 @@ namespace DesktopAgnostic.VFS
     private void
     run_glob (string pattern, int flags) throws GlobError
     {
-      int result = POSIX.glob (pattern, flags, (void*)on_glob_error,
-                               out this.glob);
-      if (result != 0)
+      int res = POSIX.glob (pattern, flags, (void*)on_glob_error,
+                            out this.glob);
+      if (res != 0)
       {
-        switch (result)
+        switch (res)
         {
           case glob_t.ERR_NOSPACE:
             throw new GlobError.NOSPACE ("Ran out of memory.");
@@ -132,7 +132,7 @@ namespace DesktopAgnostic.VFS
           case glob_t.ERR_NOMATCH:
             throw new GlobError.NOMATCH ("No matches found.");
           default:
-            critical ("Unknown error code: %d", result);
+            critical ("Unknown error code: %d", res);
             break;
         }
       }

@@ -24,19 +24,27 @@ using DesktopAgnostic;
 
 int main (string[] args)
 {
-  Config.Backend cfg = config_get_default ("test-color.schema-ini");
   try
   {
-    Color green = new Color.from_string ("green");
-    assert (green.alpha == 0);
-    message ("green = %s", green.to_string ());
+    Config.Backend cfg = config_get_default ("test-color.schema-ini");
+    try
+    {
+      Color green = new Color.from_string ("green");
+      assert (green.alpha == 0);
+      message ("green = %s", green.to_string ());
+    }
+    catch (ColorParseError err)
+    {
+      critical (err.message);
+    }
+    Color clr = (Color)cfg.get_value (Config.GROUP_DEFAULT, "color").get_object ();
+    message ("cfg color = %s", clr.to_string ());
   }
-  catch (ColorParseError err)
+  catch (Error err)
   {
     critical (err.message);
+    return 1;
   }
-  Color clr = (Color)cfg.get_value (Config.GROUP_DEFAULT, "color").get_object ();
-  message ("cfg color = %s", clr.to_string ());
   return 0;
 }
 

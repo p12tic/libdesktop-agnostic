@@ -67,12 +67,12 @@ namespace DesktopAgnostic.VFS.File
      * Implementation detail. Implementing classes override this to allow the
      * path property to return the correct value.
      */
-    protected abstract string? #impl_path { get; }
+    protected abstract string? impl_path { owned get; }
     /**
      * The path that the object represents.
      */
-    public string? #path {
-      get
+    public string? path {
+      owned get
       {
         return this.impl_path;
       }

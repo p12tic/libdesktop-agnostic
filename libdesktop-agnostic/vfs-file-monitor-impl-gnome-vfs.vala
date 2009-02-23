@@ -114,8 +114,8 @@ namespace DesktopAgnostic.VFS.File
     }
     public bool cancel ()
     {
-      GnomeVFS.Result result = GnomeVFS.monitor_cancel (this.handle);
-      this._cancelled = (result == GnomeVFS.Result.OK);
+      GnomeVFS.Result res = GnomeVFS.monitor_cancel (this.handle);
+      this._cancelled = (res == GnomeVFS.Result.OK);
       return this._cancelled;
     }
   }

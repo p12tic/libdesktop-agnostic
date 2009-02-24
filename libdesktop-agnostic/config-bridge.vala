@@ -64,6 +64,13 @@ namespace DesktopAgnostic.Config
       return bridge;
     }
 
+    private weak ParamSpec?
+    get_property_spec (Object obj, string property_name)
+    {
+      weak ObjectClass obj_cls = (ObjectClass)(obj.get_type ().class_peek ());
+      return obj_cls.find_property (property_name);
+    }
+
     /**
      * Binds a specific object's property with a specific configuration key.
      */
@@ -72,12 +79,12 @@ namespace DesktopAgnostic.Config
     {
       Binding binding;
       string binding_key, full_key;
-      ParamSpec spec;
+      weak ParamSpec spec;
 
       binding = new Binding ();
       binding.obj = obj;
       binding.property_name = property_name;
-      spec = ((ObjectClass)(obj.get_type ().class_peek ())).find_property (property_name);
+      spec = this.get_property_spec (obj, property_name);
       if (spec != null)
       {
         switch (spec.value_type)
@@ -150,7 +157,7 @@ namespace DesktopAgnostic.Config
     {
       weak List<Binding> bindings_list;
       string binding_key;
-      ParamSpec spec;
+      weak ParamSpec spec;
 
       binding_key = group + "/" + key;
       bindings_list = this.bindings.get_data (binding_key);
@@ -159,7 +166,7 @@ namespace DesktopAgnostic.Config
         if (binding.obj == obj)
         {
           binding.obj = null;
-          spec = ((ObjectClass)(obj.get_type ().class_peek ())).find_property (property_name);
+          spec = this.get_property_spec (obj, property_name);
           switch (spec.value_type)
           {
             case typeof (bool):

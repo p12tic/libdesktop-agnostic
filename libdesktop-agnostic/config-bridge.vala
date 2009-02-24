@@ -114,8 +114,15 @@ namespace DesktopAgnostic.Config
             }
             else
             {
-              warning ("Invalid property type to bind.");
-              return;
+              SchemaType st = Schema.find_type (spec.value_type);
+              if (st == null)
+              {
+                throw new ConfigError.INVALID_TYPE ("Invalid property type to bind.");
+              }
+              else
+              {
+                config.notify_add (group, key, this.on_serialized_object_changed);
+              }
             }
             break;
         }
@@ -183,14 +190,22 @@ namespace DesktopAgnostic.Config
               config.notify_remove (group, key, this.on_string_changed);
               break;
             default:
+              // special case because typeof (ValueArray) is not constant in C.
               if (spec.value_type == typeof (ValueArray))
               {
                 config.notify_remove (group, key, this.on_list_changed);
               }
               else
               {
-                warning ("Invalid property type to remove a binding from.");
-                return;
+                SchemaType st = Schema.find_type (spec.value_type);
+                if (st == null)
+                {
+                  throw new ConfigError.INVALID_TYPE ("Invalid property type to remove a binding from.");
+                }
+                else
+                {
+                  config.notify_remove (group, key, this.on_serialized_object_changed);
+                }
               }
               break;
           }
@@ -287,6 +302,34 @@ namespace DesktopAgnostic.Config
       foreach (weak Binding binding in bindings_list)
       {
         binding.obj.set (binding.property_name, entry.value.get_boxed ());
+      }
+    }
+
+    private void
+    on_serialized_object_changed (NotifyEntry entry)
+    {
+      weak List<Binding> bindings_list;
+      string key;
+
+      key = entry.group + "/" + entry.key;
+      bindings_list = this.bindings.get_data (key);
+      foreach (weak Binding binding in bindings_list)
+      {
+        ParamSpec spec = this.get_property_spec (binding.obj,
+                                                 binding.property_name);
+        SchemaType? st = Schema.find_type (spec.value_type);
+        if (st != null)
+        {
+          try
+          {
+            Value val = st.deserialize (entry.value.get_string ());
+            binding.obj.set_property (binding.property_name, val);
+          }
+          catch (SchemaError err)
+          {
+            critical (err.message);
+          }
+        }
       }
     }
   }

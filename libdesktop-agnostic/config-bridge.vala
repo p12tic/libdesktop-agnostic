@@ -44,7 +44,7 @@ namespace DesktopAgnostic.Config
     private HashTable<Object,List<string>> bindings_by_obj;
     private static Bridge bridge = null;
 
-    construct
+    private Bridge ()
     {
       this.bindings = Datalist<List<Binding>> ();
       this.bindings_by_obj =

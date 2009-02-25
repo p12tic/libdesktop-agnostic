@@ -90,21 +90,12 @@ namespace DesktopAgnostic.Config
         switch (spec.value_type)
         {
           case typeof (bool):
-            obj.set (property_name, config.get_bool (group, key));
-            config.notify_add (group, key, this.on_bool_changed);
-            break;
           case typeof (float):
           case typeof (double):
-            obj.set (property_name, config.get_float (group, key));
-            config.notify_add (group, key, this.on_float_changed);
-            break;
           case typeof (int):
-            obj.set (property_name, config.get_int (group, key));
-            config.notify_add (group, key, this.on_int_changed);
-            break;
           case typeof (string):
-            obj.set (property_name, config.get_string (group, key));
-            config.notify_add (group, key, this.on_string_changed);
+            obj.set_property (property_name, config.get_value (group, key));
+            config.notify_add (group, key, this.on_simple_value_changed);
             break;
           default:
             if (spec.value_type == typeof (ValueArray))
@@ -177,17 +168,11 @@ namespace DesktopAgnostic.Config
           switch (spec.value_type)
           {
             case typeof (bool):
-              config.notify_remove (group, key, this.on_bool_changed);
-              break;
             case typeof (float):
             case typeof (double):
-              config.notify_remove (group, key, this.on_float_changed);
-              break;
             case typeof (int):
-              config.notify_remove (group, key, this.on_int_changed);
-              break;
             case typeof (string):
-              config.notify_remove (group, key, this.on_string_changed);
+              config.notify_remove (group, key, this.on_simple_value_changed);
               break;
             default:
               // special case because typeof (ValueArray) is not constant in C.
@@ -234,9 +219,9 @@ namespace DesktopAgnostic.Config
       }
       this.bindings_by_obj.remove (obj);
     }
-    
+
     private void
-    on_bool_changed (NotifyEntry entry)
+    on_simple_value_changed (NotifyEntry entry)
     {
       weak List<Binding> bindings_list;
       string key;
@@ -245,49 +230,7 @@ namespace DesktopAgnostic.Config
       bindings_list = this.bindings.get_data (key);
       foreach (weak Binding binding in bindings_list)
       {
-        binding.obj.set (binding.property_name, entry.value.get_boolean ());
-      }
-    }
-
-    private void
-    on_float_changed (NotifyEntry entry)
-    {
-      weak List<Binding> bindings_list;
-      string key;
-
-      key = entry.group + "/" + entry.key;
-      bindings_list = this.bindings.get_data (key);
-      foreach (weak Binding binding in bindings_list)
-      {
-        binding.obj.set (binding.property_name, entry.value.get_float ());
-      }
-    }
-
-    private void
-    on_int_changed (NotifyEntry entry)
-    {
-      weak List<Binding> bindings_list;
-      string key;
-
-      key = entry.group + "/" + entry.key;
-      bindings_list = this.bindings.get_data (key);
-      foreach (weak Binding binding in bindings_list)
-      {
-        binding.obj.set (binding.property_name, entry.value.get_int ());
-      }
-    }
-
-    private void
-    on_string_changed (NotifyEntry entry)
-    {
-      weak List<Binding> bindings_list;
-      string key;
-
-      key = entry.group + "/" + entry.key;
-      bindings_list = this.bindings.get_data (key);
-      foreach (weak Binding binding in bindings_list)
-      {
-        binding.obj.set (binding.property_name, entry.value.get_string ());
+        binding.obj.set_property (binding.property_name, entry.value);
       }
     }
 

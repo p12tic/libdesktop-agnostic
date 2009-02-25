@@ -113,6 +113,8 @@ namespace DesktopAgnostic.Config
               }
               else
               {
+                Value val = st.deserialize (entry.value.get_string ());
+                obj.set_property (binding.property_name, val);
                 config.notify_add (group, key, this.on_serialized_object_changed);
               }
             }

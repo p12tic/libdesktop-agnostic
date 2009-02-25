@@ -131,7 +131,7 @@ namespace DesktopAgnostic.Config
      * @param group the group the key is associated with
      * @param key the config key that is associated with the value
      * @param value the new value of the configuration option
-     * @throws Error if the grouop/key does not exist, the value type is not
+     * @throws Error if the group/key does not exist, the value type is not
      * supported, or something bad happened while trying to set the value
      */
     public void

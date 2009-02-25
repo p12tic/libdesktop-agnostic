@@ -177,8 +177,14 @@ namespace DesktopAgnostic.Config
           long offset = group.pointer_to_offset (last_slash);
           string option_group = group.substring (0, offset);
           weak string option_key = group.offset (offset + 1);
-          weak List<string> list = this.keys.lookup (option_group);
-          if (!this.exists (option_group, option_key))
+          weak List<string>? list = this.keys.lookup (option_group);
+          if (list == null)
+          {
+            List<string> key_list = new List<string> ();
+            key_list.append (option_key);
+            this.keys.insert (option_group, #key_list);
+          }
+          else if (!this.exists (option_group, option_key))
           {
             list.append (option_key);
           }

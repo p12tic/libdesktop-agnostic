@@ -75,7 +75,8 @@ namespace DesktopAgnostic.Config
      * Binds a specific object's property with a specific configuration key.
      */
     public void
-    bind (Backend config, string group, string key, Object obj, string property_name)
+    bind (Backend config, string group, string key, Object obj,
+          string property_name) throws Error
     {
       Binding binding;
       string binding_key, full_key;
@@ -151,7 +152,8 @@ namespace DesktopAgnostic.Config
      * object's property.
      */
     public void
-    remove (Backend config, string group, string key, Object obj, string property_name)
+    remove (Backend config, string group, string key, Object obj,
+            string property_name) throws Error
     {
       weak List<Binding> bindings_list;
       string binding_key;

@@ -30,8 +30,12 @@ namespace DesktopAgnostic.Config
   [Compact]
   private class Binding
   {
+    public Backend cfg;
+    public string group;
+    public string key;
     public Object obj;
     public string property_name;
+    public ulong notify_id;
   }
 
   /**
@@ -83,6 +87,9 @@ namespace DesktopAgnostic.Config
       weak ParamSpec spec;
 
       binding = new Binding ();
+      binding.cfg = config;
+      binding.group = group;
+      binding.key = key;
       binding.obj = obj;
       binding.property_name = property_name;
       spec = this.get_property_spec (obj, property_name);
@@ -120,6 +127,9 @@ namespace DesktopAgnostic.Config
             }
             break;
         }
+        binding.notify_id = Signal.connect (obj, "notify::" + spec.name,
+                                            (Callback)this.on_property_changed,
+                                            binding);
         binding_key = group + "/" + key;
         weak List<Binding> bindings_list = this.bindings.get_data (binding_key);
         bindings_list.append (#binding);
@@ -198,6 +208,7 @@ namespace DesktopAgnostic.Config
               }
               break;
           }
+          SignalHandler.disconnect (obj, binding.notify_id);
           bindings_list.remove (binding);
         }
       }
@@ -234,7 +245,9 @@ namespace DesktopAgnostic.Config
       bindings_list = this.bindings.get_data (key);
       foreach (weak Binding binding in bindings_list)
       {
+        SignalHandler.block (binding.obj, binding.notify_id);
         binding.obj.set_property (binding.property_name, entry.value);
+        SignalHandler.unblock (binding.obj, binding.notify_id);
       }
     }
 
@@ -248,7 +261,9 @@ namespace DesktopAgnostic.Config
       bindings_list = this.bindings.get_data (key);
       foreach (weak Binding binding in bindings_list)
       {
+        SignalHandler.block (binding.obj, binding.notify_id);
         binding.obj.set (binding.property_name, entry.value.get_boxed ());
+        SignalHandler.unblock (binding.obj, binding.notify_id);
       }
     }
 
@@ -270,13 +285,30 @@ namespace DesktopAgnostic.Config
           try
           {
             Value val = st.deserialize (entry.value.get_string ());
+            SignalHandler.block (binding.obj, binding.notify_id);
             binding.obj.set_property (binding.property_name, val);
+            SignalHandler.unblock (binding.obj, binding.notify_id);
           }
           catch (SchemaError err)
           {
             critical (err.message);
           }
         }
+      }
+    }
+
+    private static void
+    on_property_changed (Object obj, ParamSpec spec, Binding binding)
+    {
+      try
+      {
+        Value val = Value (spec.value_type);
+        obj.get_property (spec.name, ref val);
+        binding.cfg.set_value (binding.group, binding.key, val);
+      }
+      catch (Error err)
+      {
+        critical (err.message);
       }
     }
   }

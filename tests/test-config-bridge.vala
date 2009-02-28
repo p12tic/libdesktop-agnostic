@@ -45,6 +45,11 @@ int main (string[] args)
     bridge.bind (cfg, "group", "string", t, "str");
     bridge.bind (cfg, "group", "number", t, "num");
     message ("Backend: '%s'; String: '%s'; Integer: %d", cfg.name, t.str, t.num);
+    t.str = "Some new string";
+    t.num = 100;
+    message ("String: '%s'; Integer: %d", cfg.get_string ("group", "string"),
+             cfg.get_int ("group", "number"));
+    bridge.remove_all_for_object (cfg, t);
   }
   catch (Error err)
   {

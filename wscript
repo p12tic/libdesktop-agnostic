@@ -67,7 +67,7 @@ def configure(conf):
     conf.check_cfg(package='gdk-2.0', uselib_store='GDK', mandatory=True,
                    args='--cflags --libs')
     conf.check_cfg(package='vala-1.0', uselib_store='VALA',
-                   atleast_version='0.5.4', mandatory=True,
+                   atleast_version='0.5.8', mandatory=True,
                    args='--cflags --libs')
     if 'gconf' in conf.env['BACKENDS_CFG']:
         conf.check_cfg(package='gconf-2.0', uselib_store='GCONF',

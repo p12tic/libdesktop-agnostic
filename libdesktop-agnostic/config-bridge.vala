@@ -36,6 +36,7 @@ namespace DesktopAgnostic.Config
     public Object obj;
     public string property_name;
     public ulong notify_id;
+    public bool read_only;
   }
 
   /**
@@ -80,7 +81,7 @@ namespace DesktopAgnostic.Config
      */
     public void
     bind (Backend config, string group, string key, Object obj,
-          string property_name) throws Error
+          string property_name, bool read_only) throws Error
     {
       Binding binding;
       string binding_key, full_key;
@@ -127,9 +128,13 @@ namespace DesktopAgnostic.Config
             }
             break;
         }
-        binding.notify_id = Signal.connect (obj, "notify::" + spec.name,
-                                            (Callback)this.on_property_changed,
-                                            binding);
+        if (!read_only)
+        {
+          binding.notify_id = Signal.connect (obj, "notify::" + spec.name,
+                                              (Callback)this.on_property_changed,
+                                              binding);
+        }
+        binding.read_only = read_only;
         binding_key = group + "/" + key;
         weak List<Binding> bindings_list = this.bindings.get_data (binding_key);
         bindings_list.append (#binding);
@@ -208,7 +213,10 @@ namespace DesktopAgnostic.Config
               }
               break;
           }
-          SignalHandler.disconnect (obj, binding.notify_id);
+          if (!binding.read_only)
+          {
+            SignalHandler.disconnect (obj, binding.notify_id);
+          }
           bindings_list.remove (binding);
         }
       }
@@ -245,9 +253,15 @@ namespace DesktopAgnostic.Config
       bindings_list = this.bindings.get_data (key);
       foreach (weak Binding binding in bindings_list)
       {
-        SignalHandler.block (binding.obj, binding.notify_id);
+        if (!binding.read_only)
+        {
+          SignalHandler.block (binding.obj, binding.notify_id);
+        }
         binding.obj.set_property (binding.property_name, entry.value);
-        SignalHandler.unblock (binding.obj, binding.notify_id);
+        if (!binding.read_only)
+        {
+          SignalHandler.unblock (binding.obj, binding.notify_id);
+        }
       }
     }
 
@@ -261,9 +275,15 @@ namespace DesktopAgnostic.Config
       bindings_list = this.bindings.get_data (key);
       foreach (weak Binding binding in bindings_list)
       {
-        SignalHandler.block (binding.obj, binding.notify_id);
+        if (!binding.read_only)
+        {
+          SignalHandler.block (binding.obj, binding.notify_id);
+        }
         binding.obj.set (binding.property_name, entry.value.get_boxed ());
-        SignalHandler.unblock (binding.obj, binding.notify_id);
+        if (!binding.read_only)
+        {
+          SignalHandler.unblock (binding.obj, binding.notify_id);
+        }
       }
     }
 
@@ -285,9 +305,15 @@ namespace DesktopAgnostic.Config
           try
           {
             Value val = st.deserialize (entry.value.get_string ());
-            SignalHandler.block (binding.obj, binding.notify_id);
+            if (!binding.read_only)
+            {
+              SignalHandler.block (binding.obj, binding.notify_id);
+            }
             binding.obj.set_property (binding.property_name, val);
-            SignalHandler.unblock (binding.obj, binding.notify_id);
+            if (!binding.read_only)
+            {
+              SignalHandler.unblock (binding.obj, binding.notify_id);
+            }
           }
           catch (SchemaError err)
           {

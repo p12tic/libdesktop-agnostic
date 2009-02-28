@@ -42,8 +42,8 @@ int main (string[] args)
     Config.Backend cfg = config_get_default ("test-config-bridge.schema-ini");
     Config.Bridge bridge = Config.Bridge.get_default ();
     Test t = new Test ();
-    bridge.bind (cfg, "group", "string", t, "str");
-    bridge.bind (cfg, "group", "number", t, "num");
+    bridge.bind (cfg, "group", "string", t, "str", false);
+    bridge.bind (cfg, "group", "number", t, "num", true);
     message ("Backend: '%s'; String: '%s'; Integer: %d", cfg.name, t.str, t.num);
     t.str = "Some new string";
     t.num = 100;

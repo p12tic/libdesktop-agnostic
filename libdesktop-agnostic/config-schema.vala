@@ -69,6 +69,7 @@ namespace DesktopAgnostic.Config
     private Datalist<Value?> metadata_options;
     static construct
     {
+      // Load the type modules
       List<string> type_modules = new List<string> ();
       string[] paths = ModuleLoader.get_search_paths ();
       SList<string> search_paths = new SList<string> ();
@@ -129,10 +130,16 @@ namespace DesktopAgnostic.Config
           }
         }
       }
+      // initialize the common metadata keys hashtable
       Value val = Value (typeof (bool));
       val.set_boolean (true);
       common_metadata_keys.insert ("single_instance", val);
     }
+    /**
+     * Creates a new Schema object.
+     * @param backend the configuration backend associated with the schema
+     * @param filename the name of the schema file to parse
+     */
     public Schema (Backend backend, string filename) throws Error
     {
       string basename = null;
@@ -147,6 +154,7 @@ namespace DesktopAgnostic.Config
       this.options = Datalist<SchemaOption> ();
       this.keys = new HashTable<string,List<string>> (str_hash, str_equal);
       this.data = new KeyFile ();
+      // populate the common metadata keys table
       this.valid_metadata_keys = new List<string> ();
       this.metadata_options = Datalist<Value?> ();
       foreach (weak string key in common_metadata_keys.get_keys ())
@@ -154,6 +162,7 @@ namespace DesktopAgnostic.Config
         this.valid_metadata_keys.append (key);
         this.metadata_options.set_data (key, common_metadata_keys.lookup (key));
       }
+      // populate the backend-specific metadata keys table
       backend_metadata_keys = backend.get_backend_metadata_keys ();
       foreach (weak string key in backend_metadata_keys.get_keys ())
       {
@@ -284,6 +293,10 @@ namespace DesktopAgnostic.Config
       string full_key = group + "/" + key;
       return this.options.get_data (full_key);
     }
+    /**
+     * Retrieves the value of the specified metadata option.
+     * @throws SchemaError if the option named specified is not registered
+     */
     public Value?
     get_metadata_option (string name) throws SchemaError
     {
@@ -306,6 +319,11 @@ namespace DesktopAgnostic.Config
     {
       return (Type)a == (Type)b;
     }
+    /**
+     * Registers a configuration schema type with the class. This is usually
+     * not called manually - the class loads all of the configuration schema
+     * type modules that it can find when the class is first instantiated.
+     */
     public static void
     register_type (SchemaType st) throws SchemaError
     {
@@ -323,11 +341,17 @@ namespace DesktopAgnostic.Config
         name_registry.insert (st.name, st);
       }
     }
+    /**
+     * Looks for a registered SchemaType by its GType.
+     */
     public static weak SchemaType?
     find_type (Type type)
     {
       return type_registry.lookup (type);
     }
+    /**
+     * Looks for a registered SchemaType by its declared name.
+     */
     public static weak SchemaType?
     find_type_by_name (string name)
     {

@@ -151,6 +151,19 @@ namespace DesktopAgnostic.Config
         return this._blacklist;
       }
     }
+    private bool _per_instance = true;
+    /**
+     * Determines whether a configuration option is per instance, or applied
+     * towards all instances of the configuration. Defaults to true. Note that
+     * this option only applies if the "single_instance" metadata key is false.
+     */
+    public bool per_instance
+    {
+      get
+      {
+        return this._per_instance;
+      }
+    }
     /**
      * Parses a schema option from the specification in the schema configuration
      * file.
@@ -174,6 +187,10 @@ namespace DesktopAgnostic.Config
       }
       // TODO handle optional upper/lower boundaries
       // TODO handle optional blacklist/whitelist
+      if (schema.has_key (full_key, "per_instance"))
+      {
+        this._per_instance = schema.get_boolean (full_key, "per_instance");
+      }
     }
     /**
      * Determines which GType (and possibly list GType for list types) is described by a string.

@@ -1,0 +1,22 @@
+#!/usr/bin/make -f
+
+build:
+	dh $@ --before configure
+	./waf --nocache configure --prefix=/usr --enable-debug --config-backends=gconf --vfs-backends=gio,gnome-vfs,thunar-vfs
+	./waf --nocache build
+	./waf --nocache check
+	dh $@ --remaining
+binary: binary-arch binary-indep
+binary-arch:
+	dh $@ --until dh_auto_install
+	./waf --nocache install --destdir=$(CURDIR)/debian/tmp
+	dh $@ --remaining --before dh_strip
+	dh_strip --dbg-package=libdesktop-agnostic0-dbg
+	dh $@ --remaining
+clean:
+	dh $@
+	rm -rf build
+	./waf --nocache distclean
+	rm -f configure	# so dh_auto_configure doesn't try to use this broken fallback
+%:
+	dh $@

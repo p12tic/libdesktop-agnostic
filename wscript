@@ -56,7 +56,6 @@ def configure(conf):
     conf.env['DEBUG'] = Options.options.debug
 
     conf.check_tool('compiler_cc misc vala')
-    conf.check_tool('intltool')
 
     conf.check_cfg(package='gmodule-2.0', uselib_store='GMODULE',
                    atleast_version='2.6.0', mandatory=True,
@@ -101,6 +100,3 @@ def configure(conf):
 def build(bld):
     # process subfolders from here
     bld.add_subdirs('libdesktop-agnostic tests data')
-
-#    if bld.env['INTLTOOL']:
-#        bld.add_subdirs('po')

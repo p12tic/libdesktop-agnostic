@@ -4,7 +4,7 @@ Priority: extra
 Maintainer: Mark Lee <launchpad-net@lazymalevolence.com>
 Build-Depends: debhelper (>= 7),
 # for waf
-               python, python-gnome2,
+               python,
 # "real" deps
                valac (>= 0.6.0),
                libvala-dev (>= 0.6.0),

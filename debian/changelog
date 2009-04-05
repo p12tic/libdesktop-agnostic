@@ -2,4 +2,4 @@ libdesktop-agnostic (0.0.1-1) experimental; urgency=low
 
   * Initial release. Closes: #
 
- -- Emanuele Rocca <ema@debian.org>  Mon, 10 Sep 2007 23:37:01 +0200
+ -- Mark Lee <launchpad-net@lazymalevolence.com>  Tue, 24 Mar 2009 02:40:32 +0100

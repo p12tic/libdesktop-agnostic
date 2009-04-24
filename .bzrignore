@@ -2,3 +2,8 @@ waf
 .lock-wscript
 build
 .waf*
+debian/tmp
+debian/*.debhelper*
+debian/files
+debian/*.substvars
+debian/*libdesktop-agnostic*/

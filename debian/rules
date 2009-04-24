@@ -4,7 +4,6 @@ build:
 	dh $@ --before configure
 	./waf --nocache configure --prefix=/usr --enable-debug --config-backends=gconf --vfs-backends=gio,gnome-vfs,thunar-vfs
 	./waf --nocache build
-	./waf --nocache check
 	dh $@ --remaining
 binary: binary-arch binary-indep
 binary-arch:

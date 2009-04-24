@@ -6,8 +6,8 @@ Build-Depends: debhelper (>= 7),
 # for waf
                python,
 # "real" deps
-               valac (>= 0.6.0),
-               libvala-dev (>= 0.6.0),
+               valac (>= 0.7.0),
+               libvala-dev (>= 0.7.0),
                libglib2.0-dev (>= 2.16.0),
                libgtk2.0-dev,
 # module deps

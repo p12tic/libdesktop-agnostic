@@ -70,11 +70,23 @@ namespace DesktopAgnostic.VFS.Volume
             {
               this._icon = icon_names[0];
             }
+            else
+            {
+              // set fallback
+              warning ("Could not find any icon names.");
+              this._icon = "drive-harddisk";
+            }
           }
           else if (icon is GLib.FileIcon)
           {
             string path = ((GLib.FileIcon)icon).get_file ().get_path ();
             this._icon = path;
+          }
+          else
+          {
+            // set fallback
+            warning ("Unknown icon type: %s", icon.get_type ().name ());
+            this._icon = "drive-harddisk";
           }
         }
         return this._icon;

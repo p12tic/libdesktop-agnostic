@@ -48,9 +48,13 @@ namespace DesktopAgnostic.VFS.Volume
       {
         if (this._uri == null)
         {
-          GLib.File file = this.vol.get_mount ().get_root ();
-          this._uri = (File.Backend)Object.new (vfs_get_default ().file_type,
-                                                "uri", file.get_uri ());
+          GLib.Mount? mount = this.vol.get_mount ();
+          if (mount != null)
+          {
+            GLib.File file = mount.get_root ();
+            this._uri = (File.Backend)Object.new (vfs_get_default ().file_type,
+                                                  "uri", file.get_uri ());
+          }
         }
         return this._uri;
       }
@@ -233,20 +237,36 @@ namespace DesktopAgnostic.VFS.Volume
       }
       return vol;
     }
-    private Backend
+    private Backend?
     get_volume_from_mount (Mount mount)
     {
-      return this.check_volume (mount.get_volume ());
+      GLib.Volume? gvol = mount.get_volume ();
+      if (gvol == null)
+      {
+        return null;
+      }
+      else
+      {
+        return this.check_volume (gvol);
+      }
     }
     private void
     on_mount_added (VolumeMonitor vmonitor, Mount mount)
     {
-      this.volume_mounted (this.get_volume_from_mount (mount));
+      Backend? volume = this.get_volume_from_mount (mount);
+      if (volume != null)
+      {
+        this.volume_mounted (volume);
+      }
     }
     private void
     on_mount_removed (VolumeMonitor vmonitor, Mount mount)
     {
-      this.volume_unmounted (this.get_volume_from_mount (mount));
+      Backend? volume = this.get_volume_from_mount (mount);
+      if (volume != null)
+      {
+        this.volume_unmounted (volume);
+      }
     }
     private void
     on_volume_added (VolumeMonitor vmonitor, GLib.Volume gvol)
@@ -260,6 +280,7 @@ namespace DesktopAgnostic.VFS.Volume
       if (vol != null)
       {
         this._volumes.remove (gvol);
+        this.volume_unmounted (vol);
       }
     }
     public void* implementation

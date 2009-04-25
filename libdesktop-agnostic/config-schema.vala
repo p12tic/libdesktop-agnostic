@@ -60,7 +60,8 @@ namespace DesktopAgnostic.Config
     private KeyFile data;
     private HashTable<string,List<string>> keys;
     private static HashTable<Type,SchemaType> type_registry = 
-      new HashTable<Type,SchemaType> (type_hash, type_equal);
+      new HashTable<Type,SchemaType> ((HashFunc)type_hash,
+                                      (EqualFunc)type_equal);
     private static HashTable<string,SchemaType> name_registry =
       new HashTable<string,SchemaType> (str_hash, str_equal);
     private static HashTable<string,Value?> common_metadata_keys =
@@ -115,7 +116,7 @@ namespace DesktopAgnostic.Config
               {
                 Type type = loader.module_type;
                 Object obj = Object.new (type);
-                register_type ((SchemaType)(#obj));
+                register_type ((SchemaType)((owned)obj));
                 type_modules.append (fm);
               }
               catch (SchemaError err)
@@ -191,7 +192,7 @@ namespace DesktopAgnostic.Config
           {
             List<string> key_list = new List<string> ();
             key_list.append (option_key);
-            this.keys.insert (option_group, #key_list);
+            this.keys.insert (option_group, (owned)key_list);
           }
           else if (!this.exists (option_group, option_key))
           {

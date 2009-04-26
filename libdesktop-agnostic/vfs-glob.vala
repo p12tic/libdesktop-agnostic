@@ -142,20 +142,20 @@ namespace DesktopAgnostic.VFS
     {
       switch (eerrno)
       {
-        case POSIX.Error.EACCES:
-        case POSIX.Error.EBADF:
-        case POSIX.Error.EMFILE:
-        case POSIX.Error.ENFILE:
-        case POSIX.Error.ENOENT:
-        case POSIX.Error.ENOMEM:
-        case POSIX.Error.ENOTDIR:
-        case POSIX.Error.EFAULT:
-        case POSIX.Error.EINVAL:
-        case POSIX.Error.ELOOP:
-        case POSIX.Error.ENAMETOOLONG:
+        case Posix.EACCES:
+        case Posix.EBADF:
+        case Posix.EMFILE:
+        case Posix.ENFILE:
+        case Posix.ENOENT:
+        case Posix.ENOMEM:
+        case Posix.ENOTDIR:
+        case Posix.EFAULT:
+        case Posix.EINVAL:
+        case Posix.ELOOP:
+        case Posix.ENAMETOOLONG:
           throw new GlobError.ERRNO ("Miscellaneous error for '%s' (%d): %s",
                                      path, eerrno,
-                                     POSIX.Error.to_string (eerrno));
+                                     Posix.strerror (eerrno));
         default:
           critical ("Unknown error code: %d", eerrno);
           break;

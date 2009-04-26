@@ -66,10 +66,10 @@ def build(bld):
         'vfs-trash.vala',
         'vfs-volume.vala'
         ])
-    lib.packages = 'gdk-2.0 gmodule-2.0'
+    lib.packages = 'gdk-2.0 gmodule-2.0 posix'
     lib.target = 'desktop-agnostic'
     lib.uselib = 'GDK GMODULE'
-    lib.packages_private = 'build posix-glob posix-errno'
+    lib.packages_private = 'build posix-glob'
     lib.vapi_dirs = '../vapi'
     lib.includes='..'
 

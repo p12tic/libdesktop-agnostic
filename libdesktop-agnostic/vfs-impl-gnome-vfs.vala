@@ -73,7 +73,7 @@ namespace DesktopAgnostic.VFS
         string uri_str = uri.to_string (GnomeVFS.URIHideOptions.NONE);
         File.Backend file = (File.Backend)Object.new (this.file_type,
                                                       "uri", uri_str);
-        files.append (#file);
+        files.append ((owned)file);
       }
       return files;
     }

@@ -374,7 +374,7 @@ namespace DesktopAgnostic.Config
         notify.func_id = 0;
       }
       callbacks = this.notify_funcs.get_data (full_key);
-      callbacks.append (#notify);
+      callbacks.append ((owned)notify);
       this.notify_funcs.set_data (full_key, callbacks);
     }
 

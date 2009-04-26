@@ -249,7 +249,7 @@ namespace DesktopAgnostic.VFS.Trash
         {
           TrashVolume tv;
           tv = new TrashVolume (this, trash_uri);
-          this.trash_dirs.insert (vol, #tv);
+          this.trash_dirs.insert (vol, (owned)tv);
           message ("Volume added");
         }
       }

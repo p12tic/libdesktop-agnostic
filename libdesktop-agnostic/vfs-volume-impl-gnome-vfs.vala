@@ -91,7 +91,7 @@ namespace DesktopAgnostic.VFS.Volume
       if (this._mount_callback == null)
       {
         this._mount_callback = callback;
-        this.drive.mount (this.on_drive_mounted);
+        this.drive.mount ((GnomeVFS.VolumeOpCallback)this.on_drive_mounted);
       }
     }
     public bool
@@ -125,7 +125,7 @@ namespace DesktopAgnostic.VFS.Volume
       if (this._unmount_callback == null)
       {
         this._unmount_callback = callback;
-        this.drive.unmount (this.on_drive_unmounted);
+        this.drive.unmount ((GnomeVFS.VolumeOpCallback)this.on_drive_unmounted);
       }
     }
     public bool
@@ -164,7 +164,7 @@ namespace DesktopAgnostic.VFS.Volume
       if (this._eject_callback == null)
       {
         this._eject_callback = callback;
-        this.drive.eject (this.on_drive_ejected);
+        this.drive.eject ((GnomeVFS.VolumeOpCallback)this.on_drive_ejected);
       }
     }
     public bool

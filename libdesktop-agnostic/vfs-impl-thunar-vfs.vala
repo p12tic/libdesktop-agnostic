@@ -73,7 +73,7 @@ namespace DesktopAgnostic.VFS
         weak string uri = path.dup_uri ();
         File.Backend file = (File.Backend)Object.new (this.file_type,
                                                       "uri", uri);
-        files.append (#file);
+        files.append ((owned)file);
       }
       return files;
     }

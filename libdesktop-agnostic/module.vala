@@ -89,7 +89,7 @@ namespace DesktopAgnostic
       }
       module.symbol ("register_plugin", out function);
       register_plugin = (RegisterModuleFunction) function;
-      modules.set_data (this.name, #module);
+      modules.set_data (this.name, (owned)module);
 
       this._module_type = register_plugin ();
       debug ("Plugin type: %s", this._module_type.name ());

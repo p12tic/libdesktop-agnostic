@@ -137,7 +137,7 @@ namespace DesktopAgnostic.Config
         binding.read_only = read_only;
         binding_key = group + "/" + key;
         weak List<Binding> bindings_list = this.bindings.get_data (binding_key);
-        bindings_list.append (#binding);
+        bindings_list.append ((owned)binding);
         full_key = binding_key + ":" + property_name;
         weak List<string> key_list = this.bindings_by_obj.lookup (obj);
         if (key_list.find_custom (full_key, (CompareFunc)strcmp) == null)

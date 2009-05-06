@@ -95,6 +95,7 @@ Description: A desktop-agnostic library for GLib-based projects.
  This package contains the GConf module.
 
 Package: libdesktop-agnostic0-dbg
+Section: debug
 Architecture: any
 Depends: 	${shlibs:Depends}, 
 		${misc:Depends}, 
@@ -123,7 +124,7 @@ Description: A desktop-agnostic library for GLib-based projects.
  This package contains the development files for the core library.
 
 Package: vala-libdesktop-agnostic
-Architecture: any
+Architecture: all
 Depends: 	${shlibs:Depends}, 
 		${misc:Depends}, 
 		libdesktop-agnostic0 (>= ${source:Version}), 

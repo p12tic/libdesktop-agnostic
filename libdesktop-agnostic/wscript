@@ -72,6 +72,7 @@ def build(bld):
     lib.packages_private = 'build posix-glob'
     lib.vapi_dirs = '../vapi'
     lib.includes='..'
+    bld.install_files('${DATADIR}/gir-1.0', lib.target + '.gir')
 
     [task_module('cfg', 'config-impl')(bld, name)
      for name in bld.env['BACKENDS_CFG']]

@@ -96,37 +96,33 @@ namespace DesktopAgnostic.Config
       spec = this.get_property_spec (obj, property_name);
       if (spec != null)
       {
-        switch (spec.value_type)
+        if (spec.value_type == typeof (bool) ||
+            spec.value_type == typeof (float) ||
+            spec.value_type == typeof (double) ||
+            spec.value_type == typeof (int) ||
+            spec.value_type == typeof (string))
         {
-          case typeof (bool):
-          case typeof (float):
-          case typeof (double):
-          case typeof (int):
-          case typeof (string):
-            obj.set_property (property_name, config.get_value (group, key));
-            config.notify_add (group, key, this.on_simple_value_changed);
-            break;
-          default:
-            if (spec.value_type == typeof (ValueArray))
-            {
-              obj.set (property_name, config.get_list (group, key));
-              config.notify_add (group, key, this.on_list_changed);
-            }
-            else
-            {
-              SchemaType st = Schema.find_type (spec.value_type);
-              if (st == null)
-              {
-                throw new ConfigError.INVALID_TYPE ("Invalid property type to bind.");
-              }
-              else
-              {
-                Value val = st.deserialize (config.get_string (group, key));
-                obj.set_property (binding.property_name, val);
-                config.notify_add (group, key, this.on_serialized_object_changed);
-              }
-            }
-            break;
+          obj.set_property (property_name, config.get_value (group, key));
+          config.notify_add (group, key, this.on_simple_value_changed);
+        }
+        else if (spec.value_type == typeof (ValueArray))
+        {
+          obj.set (property_name, config.get_list (group, key));
+          config.notify_add (group, key, this.on_list_changed);
+        }
+        else
+        {
+          SchemaType st = Schema.find_type (spec.value_type);
+          if (st == null)
+          {
+            throw new ConfigError.INVALID_TYPE ("Invalid property type to bind.");
+          }
+          else
+          {
+            Value val = st.deserialize (config.get_string (group, key));
+            obj.set_property (binding.property_name, val);
+            config.notify_add (group, key, this.on_serialized_object_changed);
+          }
         }
         if (!read_only)
         {
@@ -184,34 +180,30 @@ namespace DesktopAgnostic.Config
         {
           binding.obj = null;
           spec = this.get_property_spec (obj, property_name);
-          switch (spec.value_type)
+          if (spec.value_type == typeof (bool) ||
+              spec.value_type == typeof (float) ||
+              spec.value_type == typeof (double) ||
+              spec.value_type == typeof (int) ||
+              spec.value_type == typeof (string))
           {
-            case typeof (bool):
-            case typeof (float):
-            case typeof (double):
-            case typeof (int):
-            case typeof (string):
-              config.notify_remove (group, key, this.on_simple_value_changed);
-              break;
-            default:
-              // special case because typeof (ValueArray) is not constant in C.
-              if (spec.value_type == typeof (ValueArray))
-              {
-                config.notify_remove (group, key, this.on_list_changed);
-              }
-              else
-              {
-                SchemaType st = Schema.find_type (spec.value_type);
-                if (st == null)
-                {
-                  throw new ConfigError.INVALID_TYPE ("Invalid property type to remove a binding from.");
-                }
-                else
-                {
-                  config.notify_remove (group, key, this.on_serialized_object_changed);
-                }
-              }
-              break;
+            config.notify_remove (group, key, this.on_simple_value_changed);
+          }
+          else if (spec.value_type == typeof (ValueArray))
+          {
+            config.notify_remove (group, key, this.on_list_changed);
+
+          }
+          else
+          {
+            SchemaType st = Schema.find_type (spec.value_type);
+            if (st == null)
+            {
+              throw new ConfigError.INVALID_TYPE ("Invalid property type to remove a binding from.");
+            }
+            else
+            {
+              config.notify_remove (group, key, this.on_serialized_object_changed);
+            }
           }
           if (!binding.read_only)
           {

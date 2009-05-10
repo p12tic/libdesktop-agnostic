@@ -152,35 +152,33 @@ namespace DesktopAgnostic.Config
     type_to_valuetype (Type type)
     {
       ValueType vt;
-      switch (type)
+      if (type == typeof (bool))
       {
-        case typeof (bool):
-          vt = ValueType.BOOL;
-          break;
-        case typeof (float):
-          vt = ValueType.FLOAT;
-          break;
-        case typeof (int):
-          vt = ValueType.INT;
-          break;
-        case typeof (string):
-          vt = ValueType.STRING;
-          break;
-        default:
-          // special case because typeof (ValueArray) is not constant in C.
-          if (type == typeof (ValueArray))
-          {
-            vt = ValueType.LIST;
-          }
-          else if (this.schema.find_type (type) != null)
-          {
-            vt = ValueType.STRING;
-          }
-          else
-          {
-            vt = ValueType.INVALID;
-          }
-          break;
+        vt = ValueType.BOOL;
+      }
+      else if (type == typeof (float))
+      {
+        vt = ValueType.FLOAT;
+      }
+      else if (type == typeof (int))
+      {
+        vt = ValueType.INT;
+      }
+      else if (type == typeof (string))
+      {
+        vt = ValueType.STRING;
+      }
+      else if (type == typeof (ValueArray))
+      {
+        vt = ValueType.LIST;
+      }
+      else if (this.schema.find_type (type) != null)
+      {
+        vt = ValueType.STRING;
+      }
+      else
+      {
+        vt = ValueType.INVALID;
       }
       return vt;
     }
@@ -192,42 +190,40 @@ namespace DesktopAgnostic.Config
       GLib.Value value;
       type = this.valuetype_to_type (gc_val.type, true);
       value = GLib.Value (type);
-      switch (type)
+      if (type == typeof (bool))
       {
-        case typeof (bool):
-          value.set_boolean (gc_val.get_bool ());
-          break;
-        case typeof (float):
-          value.set_float ((float)gc_val.get_float ());
-          break;
-        case typeof (int):
-          value.set_int (gc_val.get_int ());
-          break;
-        case typeof (string):
-          value.set_string (gc_val.get_string ());
-          break;
-        default:
-          // special case because typeof (ValueArray) is not constant in C.
-          if (type == typeof (ValueArray))
-          {
-            Type list_type;
-            list_type = this.valuetype_to_type (gc_val.get_list_type (), false);
-            value.set_boxed (this.slist_to_valuearray (gc_val.get_list (), 
-                                                       list_type));
-          }
-          else
-          {
-            SchemaType st = this.schema.find_type (type);
-            if (st == null)
-            {
-              throw new ConfigError.INVALID_TYPE ("Invalid config value type.");
-            }
-            else
-            {
-              value = st.deserialize (gc_val.get_string ());
-            }
-          }
-          break;
+        value.set_boolean (gc_val.get_bool ());
+      }
+      else if (type == typeof (float))
+      {
+        value.set_float ((float)gc_val.get_float ());
+      }
+      else if (type == typeof (int))
+      {
+        value.set_int (gc_val.get_int ());
+      }
+      else if (type == typeof (string))
+      {
+        value.set_string (gc_val.get_string ());
+      }
+      else if (type == typeof (ValueArray))
+      {
+        Type list_type;
+        list_type = this.valuetype_to_type (gc_val.get_list_type (), false);
+        value.set_boxed (this.slist_to_valuearray (gc_val.get_list (), 
+                                                   list_type));
+      }
+      else
+      {
+        SchemaType st = this.schema.find_type (type);
+        if (st == null)
+        {
+          throw new ConfigError.INVALID_TYPE ("Invalid config value type.");
+        }
+        else
+        {
+          value = st.deserialize (gc_val.get_string ());
+        }
       }
       return value;
     }
@@ -251,31 +247,33 @@ namespace DesktopAgnostic.Config
         weak GConf.Value gc_val;
         val = GLib.Value (type);
         gc_val = (GConf.Value)l.data;
-        switch (type)
+        if (type == typeof (bool))
         {
-          case typeof (bool):
-            val.set_boolean (gc_val.get_bool ());
-            break;
-          case typeof (float):
-            val.set_float ((float)gc_val.get_float ());
-            break;
-          case typeof (int):
-            val.set_int (gc_val.get_int ());
-            break;
-          case typeof (string):
-            val.set_string (gc_val.get_string ());
-            break;
-          default:
-            SchemaType st = this.schema.find_type (type);
-            if (st == null)
-            {
-              throw new ConfigError.INVALID_TYPE ("Invalid config value type.");
-            }
-            else
-            {
-              val = st.deserialize (gc_val.get_string ());
-            }
-            break;
+          val.set_boolean (gc_val.get_bool ());
+        }
+        else if (type == typeof (float))
+        {
+          val.set_float ((float)gc_val.get_float ());
+        }
+        else if (type == typeof (int))
+        {
+          val.set_int (gc_val.get_int ());
+        }
+        else if (type == typeof (string))
+        {
+          val.set_string (gc_val.get_string ());
+        }
+        else
+        {
+          SchemaType st = this.schema.find_type (type);
+          if (st == null)
+          {
+            throw new ConfigError.INVALID_TYPE ("Invalid config value type.");
+          }
+          else
+          {
+            val = st.deserialize (gc_val.get_string ());
+          }
         }
         arr.append (val);
       }
@@ -302,22 +300,25 @@ namespace DesktopAgnostic.Config
           weak GConf.Value gc_val2;
           val = arr.values[i];
           gc_val = new GConf.Value (this.type_to_valuetype (type));
-          switch (type)
+          if (type == typeof (bool))
           {
-            case typeof (bool):
-              gc_val.set_bool (val.get_boolean ());
-              break;
-            case typeof (float):
-              gc_val.set_float (val.get_float ());
-              break;
-            case typeof (int):
-              gc_val.set_int (val.get_int ());
-              break;
-            case typeof (string):
-              gc_val.set_string (val.get_string ());
-              break;
-            default:
-              throw new ConfigError.INVALID_TYPE ("Invalid config value type.");
+            gc_val.set_bool (val.get_boolean ());
+          }
+          else if (type == typeof (float))
+          {
+            gc_val.set_float (val.get_float ());
+          }
+          else if (type == typeof (int))
+          {
+            gc_val.set_int (val.get_int ());
+          }
+          else if (type == typeof (string))
+          {
+            gc_val.set_string (val.get_string ());
+          }
+          else
+          {
+            throw new ConfigError.INVALID_TYPE ("Invalid config value type.");
           }
           gc_val2 = gc_val;
           list.append (gc_val);

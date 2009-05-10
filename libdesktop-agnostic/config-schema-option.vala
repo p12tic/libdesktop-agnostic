@@ -250,95 +250,99 @@ namespace DesktopAgnostic.Config
     {
       string key = "default";
       this._default_value = Value (this._type);
-      switch (this._type)
+      if (this._type == typeof (bool))
       {
-        case typeof (bool):
-          this._default_value.set_boolean (schema.get_boolean (group, key));
-          break;
-        case typeof (int):
-          this._default_value.set_int (schema.get_integer (group, key));
-          break;
-        case typeof (float):
-          this._default_value.set_float ((float)schema.get_double (group, key));
-          break;
-        case typeof (string):
-          this._default_value.take_string (schema.get_string (group, key));
-          break;
-        default:
-          SchemaType st = Schema.find_type (this._type);
-          if (st != null)
+        this._default_value.set_boolean (schema.get_boolean (group, key));
+      }
+      else if (this._type == typeof (int))
+      {
+        this._default_value.set_int (schema.get_integer (group, key));
+      }
+      else if (this._type == typeof (float))
+      {
+        this._default_value.set_float ((float)schema.get_double (group, key));
+      }
+      else if (this._type == typeof (string))
+      {
+        this._default_value.take_string (schema.get_string (group, key));
+      }
+      else
+      {
+        SchemaType st = Schema.find_type (this._type);
+        if (st != null)
+        {
+          this._default_value = st.deserialize (schema.get_string (group, key));
+        }
+        else if (this._type == typeof (ValueArray))
+        {
+          ValueArray array = null;
+          if (this.list_type == typeof (bool))
           {
-            this._default_value = st.deserialize (schema.get_string (group, key));
-          }
-          else if (this._type == typeof (ValueArray))
-          {
-            ValueArray array = null;
-            switch (this.list_type)
+            bool[] list = schema.get_boolean_list (group, key);
+            array = new ValueArray (list.length);
+            foreach (bool item in list)
             {
-              case typeof (bool):
-                bool[] list = schema.get_boolean_list (group, key);
-                array = new ValueArray (list.length);
-                foreach (bool item in list)
-                {
-                  Value val = Value (typeof (bool));
-                  val.set_boolean (item);
-                  array.append (val);
-                }
-                break;
-              case typeof (int):
-                int[] list = schema.get_integer_list (group, key);
-                array = new ValueArray (list.length);
-                foreach (int item in list)
-                {
-                  Value val = Value (typeof (int));
-                  val.set_int (item);
-                  array.append (val);
-                }
-                break;
-              case typeof (float):
-                double[] list = schema.get_double_list (group, key);
-                array = new ValueArray (list.length);
-                foreach (double item in list)
-                {
-                  Value val = Value (typeof (float));
-                  val.set_float ((float)item);
-                  array.append (val);
-                }
-                break;
-              case typeof (string):
-                string[] list = schema.get_string_list (group, key);
-                array = new ValueArray (list.length);
-                foreach (weak string item in list)
-                {
-                  Value val = Value (typeof (string));
-                  val.take_string (item);
-                  array.append (val);
-                }
-                break;
-              default:
-                st = Schema.find_type (this._list_type);
-                if (st == null)
-                {
-                  throw new SchemaError.INVALID_LIST_TYPE ("Invalid option list type.");
-                }
-                else
-                {
-                  string[] list = schema.get_string_list (group, key);
-                  array = new ValueArray (list.length);
-                  foreach (weak string item in list)
-                  {
-                    array.append (st.deserialize (item));
-                  }
-                }
-                break;
+              Value val = Value (typeof (bool));
+              val.set_boolean (item);
+              array.append (val);
             }
-            this._default_value.set_boxed (array);
+          }
+          else if (this.list_type == typeof (int))
+          {
+            int[] list = schema.get_integer_list (group, key);
+            array = new ValueArray (list.length);
+            foreach (int item in list)
+            {
+              Value val = Value (typeof (int));
+              val.set_int (item);
+              array.append (val);
+            }
+          }
+          else if (this.list_type == typeof (float))
+          {
+            double[] list = schema.get_double_list (group, key);
+            array = new ValueArray (list.length);
+            foreach (double item in list)
+            {
+              Value val = Value (typeof (float));
+              val.set_float ((float)item);
+              array.append (val);
+            }
+          }
+          else if (this.list_type == typeof (string))
+          {
+            string[] list = schema.get_string_list (group, key);
+            array = new ValueArray (list.length);
+            foreach (weak string item in list)
+            {
+              Value val = Value (typeof (string));
+              val.take_string (item);
+              array.append (val);
+            }
           }
           else
           {
-            throw new SchemaError.INVALID_TYPE ("Invalid option type.");
+            st = Schema.find_type (this._list_type);
+            if (st == null)
+            {
+              throw new SchemaError.INVALID_LIST_TYPE ("Invalid option list type.");
+            }
+            else
+            {
+              string[] list = schema.get_string_list (group, key);
+              array = new ValueArray (list.length);
+              foreach (weak string item in list)
+              {
+                array.append (st.deserialize (item));
+              }
+            }
           }
-          break;
+          this._default_value.set_boxed (array);
+        }
+        else
+        {
+          throw new SchemaError.INVALID_TYPE ("Invalid option type.");
+        }
       }
     }
   }

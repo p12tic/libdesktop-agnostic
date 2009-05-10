@@ -142,39 +142,37 @@ namespace DesktopAgnostic.Config
       {
         throw new ConfigError.KEY_NOT_FOUND ("Could not find group and/or key in schema.");
       }
-      switch (option.option_type)
+      if (option.option_type == typeof (bool))
       {
-        case typeof (bool):
-          this.set_bool (group, key, value.get_boolean ());
-          break;
-        case typeof (float):
-          this.set_float (group, key, value.get_float ());
-          break;
-        case typeof (int):
-          this.set_int (group, key, value.get_int ());
-          break;
-        case typeof (string):
-          this.set_string (group, key, value.get_string ());
-          break;
-        default:
-          // special case because typeof (ValueArray) is not constant in C.
-          if (option.option_type == typeof (ValueArray))
-          {
-            this.set_list (group, key, (ValueArray)value.get_boxed ());
-          }
-          else
-          {
-            SchemaType st = this.schema.find_type (option.option_type);
-            if (st == null)
-            {
-              throw new ConfigError.INVALID_TYPE ("Invalid config value type.");
-            }
-            else
-            {
-              this.set_string (group, key, st.serialize (value));
-            }
-          }
-          break;
+        this.set_bool (group, key, value.get_boolean ());
+      }
+      else if (option.option_type == typeof (float))
+      {
+        this.set_float (group, key, value.get_float ());
+      }
+      else if (option.option_type == typeof (int))
+      {
+        this.set_int (group, key, value.get_int ());
+      }
+      else if (option.option_type == typeof (string))
+      {
+        this.set_string (group, key, value.get_string ());
+      }
+      else if (option.option_type == typeof (ValueArray))
+      {
+        this.set_list (group, key, (ValueArray)value.get_boxed ());
+      }
+      else
+      {
+        SchemaType st = this.schema.find_type (option.option_type);
+        if (st == null)
+        {
+          throw new ConfigError.INVALID_TYPE ("Invalid config value type.");
+        }
+        else
+        {
+          this.set_string (group, key, st.serialize (value));
+        }
       }
     }
     public abstract bool get_bool (string group, string key) throws Error;

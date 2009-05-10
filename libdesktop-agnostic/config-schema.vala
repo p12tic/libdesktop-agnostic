@@ -220,24 +220,30 @@ namespace DesktopAgnostic.Config
             else
             {
               Value cur_val, new_val;
+              Type cur_val_type;
+
               cur_val = this.metadata_options.get_data (key);
-              new_val = Value (cur_val.type ());
-              switch (cur_val.type ())
+              cur_val_type = cur_val.type ();
+              new_val = Value (cur_val_type);
+              if (cur_val_type == typeof (bool))
               {
-                case typeof (bool):
-                  new_val.set_boolean (this.data.get_boolean (group, key));
-                  break;
-                case typeof (int):
-                  new_val.set_int (this.data.get_integer (group, key));
-                  break;
-                case typeof (float):
-                  new_val.set_float ((float)this.data.get_double (group, key));
-                  break;
-                case typeof (string):
-                  new_val.set_string (this.data.get_string (group, key));
-                  break;
-                default:
-                  throw new SchemaError.INVALID_METADATA_TYPE ("The metadata option type can only be a simple type.");
+                new_val.set_boolean (this.data.get_boolean (group, key));
+              }
+              else if (cur_val_type == typeof (int))
+              {
+                new_val.set_int (this.data.get_integer (group, key));
+              }
+              else if (cur_val_type == typeof (float))
+              {
+                new_val.set_float ((float)this.data.get_double (group, key));
+              }
+              else if (cur_val_type == typeof (string))
+              {
+                new_val.set_string (this.data.get_string (group, key));
+              }
+              else
+              {
+                throw new SchemaError.INVALID_METADATA_TYPE ("The metadata option type can only be a simple type.");
               }
               this.metadata_options.set_data (key, new_val);
             }

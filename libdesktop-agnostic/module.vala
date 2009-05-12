@@ -27,7 +27,7 @@ namespace DesktopAgnostic
     NO_GMODULE,
     NO_CONFIG_FOUND
   }
-  public static Datalist<Module> modules;
+  private static Datalist<Module> modules;
   /**
    * Based on the PluginRegistrar class in
    * <http://live.gnome.org/Vala/TypeModules>.

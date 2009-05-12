@@ -2,7 +2,7 @@
 
 build:
 	dh $@ --before configure
-	./waf --nocache configure --prefix=/usr --enable-debug --config-backends=gconf --vfs-backends=gio,gnome-vfs,thunar-vfs
+	LINKFLAGS="${LDFLAGS} -Wl,--as-needed" ./waf --nocache configure --prefix=/usr --enable-debug --config-backends=gconf --vfs-backends=gio,gnome-vfs,thunar-vfs
 	./waf --nocache build
 	dh $@ --remaining
 

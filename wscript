@@ -51,6 +51,8 @@ def configure(conf):
     if len(Options.options.config_backends) == 0:
         conf.fatal('At least one configuration backend needs to be built.')
     conf.env['BACKENDS_CFG'] = Options.options.config_backends.split(',')
+    if len(Options.options.vfs_backends) == 0:
+        conf.fatal('At least one VFS backend needs to be built.')
     conf.env['BACKENDS_VFS'] = Options.options.vfs_backends.split(',')
 
     conf.env['DEBUG'] = Options.options.debug

@@ -103,6 +103,90 @@ namespace DesktopAgnostic.VFS.File
     {
       return new GnomeVFSMonitor (this);
     }
+    /**
+     * @return %TRUE if it's an error
+     */
+    private bool
+    handle_error (GnomeVFS.Result res) throws Error
+    {
+      if (res == GnomeVFS.Result.OK)
+      {
+        return false;
+      }
+      else
+      {
+        Error err = (Error)new Error (Quark.from_string ("Gnome.VFS"), 0,
+                                      GnomeVFS.result_to_string (res));
+        throw err;
+      }
+    }
+    public override bool
+    load_contents (out string contents, out size_t length) throws Error
+    {
+      GnomeVFS.FileInfo info;
+      GnomeVFS.Result res;
+      unowned GnomeVFS.Handle handle;
+      char[] buffer;
+
+      info = new GnomeVFS.FileInfo ();
+      res = GnomeVFS.get_file_info_uri (this._uri, info,
+                                        GnomeVFS.FileInfoOptions.DEFAULT);
+      if (this.handle_error (res))
+      {
+        return false;
+      }
+
+      res = GnomeVFS.open_uri (out handle, this._uri, GnomeVFS.OpenMode.READ);
+      if (this.handle_error (res))
+      {
+        return false;
+      }
+      buffer = new char[info.size];
+      res = GnomeVFS.read (handle, (void*)buffer, info.size, null);
+      if (this.handle_error (res))
+      {
+        return false;
+      }
+      contents = (string)buffer;
+      res = GnomeVFS.close (handle);
+      if (this.handle_error (res))
+      {
+        return false;
+      }
+      return true;
+    }
+    public override bool
+    replace_contents (string contents)
+    {
+      GnomeVFS.Result res;
+      unowned GnomeVFS.Handle handle;
+
+      if (this.exists)
+      {
+        res = GnomeVFS.open_uri (out handle, this._uri, GnomeVFS.OpenMode.WRITE);
+      }
+      else
+      {
+        res = GnomeVFS.create_uri (out handle, this._uri,
+                                   GnomeVFS.OpenMode.WRITE, true, 0644);
+      }
+      if (this.handle_error (res))
+      {
+        return false;
+      }
+      res = GnomeVFS.write (handle, (void*)contents,
+                            (GnomeVFS.FileSize)contents.len (), null);
+      if (this.handle_error (res))
+      {
+        return false;
+      }
+      res = GnomeVFS.close (handle);
+      if (this.handle_error (res))
+      {
+        return false;
+      }
+      return true;
+    }
   }
 }
 

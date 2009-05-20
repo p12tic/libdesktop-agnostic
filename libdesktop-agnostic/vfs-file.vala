@@ -102,6 +102,20 @@ namespace DesktopAgnostic.VFS.File
      * @return the monitor associated with the file
      */
     public abstract Monitor monitor ();
+
+    /**
+     * Loads the contents of the file to a string.
+     * @return %TRUE on success, %FALSE on failure.
+     */
+    public abstract bool load_contents (out string contents,
+                                        out size_t length) throws Error;
+
+    /**
+     * Saves a string to the specified file, replacing any content that may
+     * have been in it.
+     * @return %TRUE on success, %FALSE on failure.
+     */
+    public abstract bool replace_contents (string contents) throws Error;
   }
 }
 

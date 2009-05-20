@@ -22,6 +22,8 @@
 
 using DesktopAgnostic;
 
+const string CONTENT = "Desktop Agnostic Library";
+
 int main (string[] args)
 {
   try
@@ -29,12 +31,20 @@ int main (string[] args)
     VFS.Implementation vfs = vfs_get_default ();
     vfs.init ();
     weak string path = Environment.get_tmp_dir ();
+    VFS.File.Backend tmp = (VFS.File.Backend)Object.new (vfs.file_type,
+                                                         "path", path);
+    assert (tmp.exists);
+    assert (tmp.file_type == VFS.File.FileType.DIRECTORY);
+    message (tmp.uri);
+    message (tmp.path);
+    string file_path = Path.build_filename (path, "desktop-agnostic-test");
     VFS.File.Backend file = (VFS.File.Backend)Object.new (vfs.file_type,
-                                                          "path", path);
-    assert (file.exists);
-    assert (file.file_type == VFS.File.FileType.DIRECTORY);
-    message (file.uri);
-    message (file.path);
+                                                          "path", file_path);
+    file.replace_contents (CONTENT);
+    string contents;
+    size_t length;
+    file.load_contents (out contents, out length);
+    assert (contents == CONTENT);
     vfs.shutdown ();
   }
   catch (Error err)

@@ -125,6 +125,16 @@ namespace DesktopAgnostic.VFS.File
     {
       return new ThunarVFSMonitor (this);
     }
+    public override bool
+    load_contents (out string contents, out size_t length) throws Error
+    {
+      return FileUtils.get_contents (this.impl_path, out contents, out length);
+    }
+    public override bool
+    replace_contents (string contents)
+    {
+      return FileUtils.set_contents (this.impl_path, contents);
+    }
   }
 }
 

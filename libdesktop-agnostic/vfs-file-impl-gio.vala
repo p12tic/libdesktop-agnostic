@@ -102,6 +102,17 @@ namespace DesktopAgnostic.VFS.File
     {
       return new GIOMonitor (this);
     }
+    public override bool
+    load_contents (out string contents, out size_t length) throws Error
+    {
+      return this._file.load_contents (null, out contents, out length, null);
+    }
+    public override bool
+    replace_contents (string contents)
+    {
+      return this._file.replace_contents (contents, contents.len (), null,
+                                          false, 0, null, null);
+    }
   }
 }
 

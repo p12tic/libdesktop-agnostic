@@ -37,6 +37,7 @@ int main (string[] args)
     assert (tmp.file_type == VFS.File.FileType.DIRECTORY);
     message (tmp.uri);
     message (tmp.path);
+    tmp = null;
     string file_path = Path.build_filename (path, "desktop-agnostic-test");
     VFS.File.Backend file = (VFS.File.Backend)Object.new (vfs.file_type,
                                                           "path", file_path);
@@ -45,6 +46,7 @@ int main (string[] args)
     size_t length;
     file.load_contents (out contents, out length);
     assert (contents == CONTENT);
+    file = null;
     vfs.shutdown ();
   }
   catch (Error err)

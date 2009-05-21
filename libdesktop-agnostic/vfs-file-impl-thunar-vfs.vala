@@ -131,7 +131,7 @@ namespace DesktopAgnostic.VFS.File
       return FileUtils.get_contents (this.impl_path, out contents, out length);
     }
     public override bool
-    replace_contents (string contents)
+    replace_contents (string contents) throws Error
     {
       return FileUtils.set_contents (this.impl_path, contents);
     }

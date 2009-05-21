@@ -156,7 +156,7 @@ namespace DesktopAgnostic.VFS.File
       return true;
     }
     public override bool
-    replace_contents (string contents)
+    replace_contents (string contents) throws Error
     {
       GnomeVFS.Result res;
       unowned GnomeVFS.Handle handle;

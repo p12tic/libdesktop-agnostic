@@ -187,6 +187,21 @@ namespace DesktopAgnostic.VFS.File
       }
       return true;
     }
+    public override bool
+    launch () throws Error
+    {
+      GnomeVFS.FileInfo info;
+      unowned GnomeVFS.MimeApplication mime_app;
+      List<string> uris = new List<string> ();
+
+      info = new GnomeVFS.FileInfo ();
+      GnomeVFS.get_file_info_uri (this._uri, info,
+                                  GnomeVFS.FileInfoOptions.GET_MIME_TYPE);
+      mime_app = GnomeVFS.mime_get_default_application_for_uri (this._uri_str,
+                                                                info.mime_type);
+      uris.append (this._uri_str);
+      return mime_app.launch (uris) == GnomeVFS.Result.OK;
+    }
   }
 }
 

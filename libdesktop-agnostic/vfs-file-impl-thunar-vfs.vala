@@ -135,6 +135,20 @@ namespace DesktopAgnostic.VFS.File
     {
       return FileUtils.set_contents (this.impl_path, contents);
     }
+    public override bool
+    launch () throws Error
+    {
+      unowned ThunarVfs.MimeDatabase mime_db;
+      ThunarVfs.Info info;
+      unowned ThunarVfs.MimeApplication mime_app;
+      List<ThunarVfs.Path> paths = new List<ThunarVfs.Path> ();
+
+      mime_db = ThunarVfs.MimeDatabase.get_default ();
+      info = new ThunarVfs.Info.for_path (this._path);
+      mime_app = mime_db.get_default_application (info.mime_info);
+      paths.append (this._path);
+      return mime_app.exec (Gdk.Screen.get_default (), paths);
+    }
   }
 }
 

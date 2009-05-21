@@ -113,6 +113,16 @@ namespace DesktopAgnostic.VFS.File
       return this._file.replace_contents (contents, contents.len (), null,
                                           false, 0, null, null);
     }
+    public override bool
+    launch () throws Error
+    {
+      AppInfo app_info;
+      List<GLib.File> files = new List<GLib.File> ();
+
+      app_info = this._file.query_default_handler (null);
+      files.append (this._file);
+      return app_info.launch (files, null);
+    }
   }
 }
 

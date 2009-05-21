@@ -46,6 +46,7 @@ int main (string[] args)
     size_t length;
     file.load_contents (out contents, out length);
     assert (contents == CONTENT);
+    assert (file.launch ());
     file = null;
     vfs.shutdown ();
   }

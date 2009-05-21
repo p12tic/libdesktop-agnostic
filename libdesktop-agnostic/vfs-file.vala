@@ -116,6 +116,12 @@ namespace DesktopAgnostic.VFS.File
      * @return %TRUE on success, %FALSE on failure.
      */
     public abstract bool replace_contents (string contents) throws Error;
+
+    /**
+     * Launches the specified file with the default MIME application.
+     * @return %TRUE on successful launch, %FALSE on failure.
+     */
+    public abstract bool launch () throws Error;
   }
 }
 

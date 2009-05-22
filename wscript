@@ -54,6 +54,9 @@ def configure(conf):
     if len(Options.options.vfs_backends) == 0:
         conf.fatal('At least one VFS backend needs to be built.')
     conf.env['BACKENDS_VFS'] = Options.options.vfs_backends.split(',')
+    if len(Options.options.de_backends) == 0:
+        conf.fatal('At least one desktop entry backend needs to be built.')
+    conf.env['BACKENDS_DE'] = Options.options.de_backends.split(',')
 
     conf.env['DEBUG'] = Options.options.debug
 
@@ -84,6 +87,10 @@ def configure(conf):
     if 'gnome-vfs' in conf.env['BACKENDS_VFS']:
         conf.check_cfg(package='gnome-vfs-2.0', uselib_store='GNOME_VFS',
                        mandatory=True, args='--cflags --libs')
+    if 'gnome' in conf.env['BACKENDS_DE']:
+        conf.check_cfg(package='gnome-desktop-2.0',
+                       uselib_store='GNOME_DESKTOP', mandatory=True,
+                       args='--cflags --libs')
 
     conf.define('API_VERSION', str(API_VERSION))
     conf.define('VERSION', str(VERSION))

@@ -21,6 +21,12 @@ deps = {
             'uselib': 'GNOME_VFS',
             'packages': 'gnome-vfs-2.0'
         }
+    },
+    'de': {
+        'gnome': {
+            'uselib': 'GNOME_DESKTOP',
+            'packages': 'gnome-desktop-2.0'
+        }
     }
 }
 
@@ -48,6 +54,9 @@ def set_options(opt):
     opt.add_option('--vfs-backends', type='string',
                    help='Determines which VFS backend(s) will be built.',
                    dest='vfs_backends', default='')
+    opt.add_option('--desktop-entry-backends', type='string',
+                   help='Determines which desktop entry backend(s) will be built.',
+                   dest='de_backends', default='')
 
 def build(bld):
     lib = bld.new_task_gen('cc', 'shlib')
@@ -58,6 +67,7 @@ def build(bld):
         'config-schema.vala',
         'config-schema-option.vala',
         'config-schema-type.vala',
+        'desktop-entry.vala',
         'module.vala',
         'vfs.vala',
         'vfs-file.vala',
@@ -83,3 +93,5 @@ def build(bld):
                  'vfs-trash-impl', 'vfs-volume-impl']
     [task_module('vfs', ' '.join(vfs_types))(bld, name)
      for name in bld.env['BACKENDS_VFS']]
+    [task_module('de', 'desktop-entry-impl')(bld, name)
+     for name in bld.env['BACKENDS_DE']]

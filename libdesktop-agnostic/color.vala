@@ -168,7 +168,7 @@ namespace DesktopAgnostic
     public string
     to_string ()
     {
-      weak string gdk_str = this._color.to_string ();
+      string gdk_str = this._color.to_string ();
       return "%s%04x".printf (gdk_str, this.alpha);
     }
   }

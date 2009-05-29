@@ -141,7 +141,7 @@ namespace DesktopAgnostic.VFS.File
       {
         return false;
       }
-      buffer = new char[info.size];
+      buffer = new char[(int)info.size];
       res = GnomeVFS.read (handle, (void*)buffer, info.size, null);
       if (this.handle_error (res))
       {

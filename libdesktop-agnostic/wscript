@@ -78,6 +78,7 @@ def build(bld):
         ])
     lib.packages = 'gdk-2.0 gmodule-2.0 posix'
     lib.target = 'desktop-agnostic'
+    lib.gir = 'DesktopAgnostic-1.0'
     lib.uselib = 'GDK GMODULE'
     lib.packages_private = 'build posix-glob'
     lib.vapi_dirs = '../vapi'

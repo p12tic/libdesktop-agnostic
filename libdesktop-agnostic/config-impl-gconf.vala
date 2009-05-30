@@ -34,7 +34,7 @@ namespace DesktopAgnostic.Config
   {
     private string path;
     private Client client;
-    private Datalist<weak SList<weak NotifyData>> notify_funcs;
+    private Datalist<unowned SList<unowned NotifyData>> notify_funcs;
 
     public override string name
     {
@@ -49,7 +49,7 @@ namespace DesktopAgnostic.Config
       GLib.Value val;
       val = GLib.Value (typeof (string));
       val.set_string ("/apps");
-      weak HashTable<string,GLib.Value?> backend_metadata_keys = get_backend_metadata_keys ();
+      unowned HashTable<string,GLib.Value?> backend_metadata_keys = get_backend_metadata_keys ();
       backend_metadata_keys.insert ("base_path", val);
       val = GLib.Value (typeof (string));
       val.set_string ("${base_path}/instances");
@@ -60,7 +60,7 @@ namespace DesktopAgnostic.Config
     {
       string opt_prefix = this.name + ".";
       string base_path;
-      this.notify_funcs = Datalist<weak SList<weak NotifyData>> ();
+      this.notify_funcs = Datalist<unowned SList<unowned NotifyData>> ();
       base_path = this.schema.get_metadata_option (opt_prefix + "base_path").get_string ();
       if (this.instance_id == null)
       {
@@ -106,8 +106,8 @@ namespace DesktopAgnostic.Config
     private void
     parse_group_and_key (string full_key, out string group, out string key)
     {
-      weak string key_to_parse = full_key.offset (this.path.length + 1);
-      weak string last_slash = key_to_parse.rchr (key_to_parse.length, '/');
+      unowned string key_to_parse = full_key.offset (this.path.length + 1);
+      unowned string last_slash = key_to_parse.rchr (key_to_parse.length, '/');
       long offset = key_to_parse.pointer_to_offset (last_slash);
       group = key_to_parse.substring (0, offset);
       key = key_to_parse.offset (offset + 1);
@@ -231,7 +231,7 @@ namespace DesktopAgnostic.Config
     private ValueType
     get_gconf_list_valuetype (string key) throws GLib.Error
     {
-      weak GConf.Value value;
+      unowned GConf.Value value;
       value = this.client.get (key);
       return value.get_list_type ();
     }
@@ -239,12 +239,12 @@ namespace DesktopAgnostic.Config
     private GLib.ValueArray
     slist_to_valuearray (SList<GConf.Value> list, Type type)
     {
-      weak SList l;
+      unowned SList l;
       GLib.ValueArray arr = new GLib.ValueArray (list.length ());
       for (l = list; l != null; l = l.next)
       {
         GLib.Value val;
-        weak GConf.Value gc_val;
+        unowned GConf.Value gc_val;
         val = GLib.Value (type);
         gc_val = (GConf.Value)l.data;
         if (type == typeof (bool))
@@ -290,14 +290,14 @@ namespace DesktopAgnostic.Config
       else
       {
         uint i;
-        weak GLib.Value v = arr.values[0];
+        unowned GLib.Value v = arr.values[0];
         Type type = v.type ();
-        SList<weak GConf.Value> list = new SList<weak GConf.Value> ();
+        SList<unowned GConf.Value> list = new SList<unowned GConf.Value> ();
         for (i = 0; i < arr.n_values; i++)
         {
-          weak GLib.Value val;
+          unowned GLib.Value val;
           GConf.Value gc_val;
-          weak GConf.Value gc_val2;
+          unowned GConf.Value gc_val2;
           val = arr.values[i];
           gc_val = new GConf.Value (this.type_to_valuetype (type));
           if (type == typeof (bool))
@@ -334,9 +334,9 @@ namespace DesktopAgnostic.Config
       NotifyEntry cn_entry = NotifyEntry ();
       this.parse_group_and_key (full_key, out cn_entry.group, out cn_entry.key);
       cn_entry.value = this.gconfvalue_to_gvalue (entry.get_value ());
-      weak SList<weak NotifyData> notify_func_list =
+      unowned SList<unowned NotifyData> notify_func_list =
         this.notify_funcs.get_data (full_key);
-      foreach (weak NotifyData notify_func in notify_func_list)
+      foreach (unowned NotifyData notify_func in notify_func_list)
       {
         notify_func.callback (cn_entry);
       }
@@ -355,7 +355,7 @@ namespace DesktopAgnostic.Config
       NotifyData notify;
       string full_key;
       uint func_id;
-      weak SList<weak NotifyData> callbacks;
+      unowned SList<unowned NotifyData> callbacks;
 
       notify = new NotifyData ();
       notify.callback = callback;
@@ -383,12 +383,12 @@ namespace DesktopAgnostic.Config
     notify (string group, string key)
     {
       string full_key = this.generate_key (group, key);
-      weak SList<weak NotifyData> notifications = this.notify_funcs.get_data (full_key);
+      unowned SList<unowned NotifyData> notifications = this.notify_funcs.get_data (full_key);
       NotifyEntry entry = NotifyEntry ();
       entry.group = group;
       entry.key = key;
       entry.value = this.get_value (group, key);
-      foreach (weak NotifyData notify in notifications)
+      foreach (unowned NotifyData notify in notifications)
       {
         notify.callback (entry);
       }
@@ -398,8 +398,8 @@ namespace DesktopAgnostic.Config
     notify_remove (string group, string key, NotifyFunc callback)
     {
       string full_key = this.generate_key (group, key);
-      weak SList<weak NotifyData> notifications = this.notify_funcs.get_data (full_key);
-      foreach (weak NotifyData notify in notifications)
+      unowned SList<unowned NotifyData> notifications = this.notify_funcs.get_data (full_key);
+      foreach (unowned NotifyData notify in notifications)
       {
         if (notify.callback == callback)
         {

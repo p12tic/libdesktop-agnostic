@@ -67,8 +67,8 @@ namespace DesktopAgnostic.VFS
     files_from_uri_list (string uri_list) throws GLib.Error
     {
       SList<File.Backend> files = new SList<File.Backend> ();
-      weak List<GnomeVFS.URI> uris = GnomeVFS.URI.list_parse (uri_list);
-      foreach (weak GnomeVFS.URI uri in uris)
+      unowned List<GnomeVFS.URI> uris = GnomeVFS.URI.list_parse (uri_list);
+      foreach (unowned GnomeVFS.URI uri in uris)
       {
         string uri_str = uri.to_string (GnomeVFS.URIHideOptions.NONE);
         File.Backend file = File.new_for_uri (uri_str);

@@ -32,7 +32,7 @@ namespace DesktopAgnostic.VFS.File
         return this._cancelled;
       }
     }
-    private weak GnomeVFS.MonitorHandle handle;
+    private unowned GnomeVFS.MonitorHandle handle;
     private Backend _file;
     public GnomeVFSMonitor (GnomeVFSBackend file)
     {

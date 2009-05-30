@@ -61,7 +61,7 @@ namespace DesktopAgnostic.Config
     {
       _backend_metadata_keys = new HashTable<string,Value?> (str_hash, str_equal);
     }
-    public static weak HashTable<string,Value?>
+    public static unowned HashTable<string,Value?>
     get_backend_metadata_keys ()
     {
       return _backend_metadata_keys;

@@ -43,7 +43,7 @@ namespace DesktopAgnostic.VFS
         return this.glob.path_count;
       }
     }
-    public weak string[]? paths
+    public unowned string[]? paths
     {
       get
       {

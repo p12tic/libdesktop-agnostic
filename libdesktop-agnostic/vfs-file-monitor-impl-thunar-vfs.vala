@@ -24,7 +24,7 @@ namespace DesktopAgnostic.VFS.File
 {
   public class ThunarVFSMonitor : Object, Monitor
   {
-    private weak ThunarVfs.MonitorHandle handle;
+    private unowned ThunarVfs.MonitorHandle handle;
     private Backend file;
     private bool _cancelled;
     public bool cancelled
@@ -37,7 +37,7 @@ namespace DesktopAgnostic.VFS.File
     public ThunarVFSMonitor (ThunarVFSBackend file)
     {
       this.file = file;
-      weak ThunarVfs.Monitor mon = ThunarVfs.Monitor.get_default ();
+      unowned ThunarVfs.Monitor mon = ThunarVfs.Monitor.get_default ();
       if (file.file_type == FileType.DIRECTORY)
       {
         this.handle = mon.add_directory ((ThunarVfs.Path)file.implementation,
@@ -72,7 +72,7 @@ namespace DesktopAgnostic.VFS.File
     {
       ThunarVfs.MonitorEvent tvfs_event;
       ThunarVfs.Path path;
-      weak ThunarVfs.Monitor mon = ThunarVfs.Monitor.get_default ();
+      unowned ThunarVfs.Monitor mon = ThunarVfs.Monitor.get_default ();
       switch (event)
       {
         case MonitorEvent.CHANGED:

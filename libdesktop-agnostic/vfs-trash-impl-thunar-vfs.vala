@@ -33,7 +33,7 @@ namespace DesktopAgnostic.VFS.Trash
   }
   public class ThunarVFSImplementation : Backend, GLib.Object
   {
-    protected weak ThunarVfs.Path trash;
+    protected unowned ThunarVfs.Path trash;
     private Connection dbus;
     private dynamic DBus.Object xfce_trash;
     private uint _file_count;

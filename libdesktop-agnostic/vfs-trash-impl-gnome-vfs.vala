@@ -35,9 +35,9 @@ namespace DesktopAgnostic.VFS.Trash
         return this._file_count;
       }
     }
-    private weak Backend trash;
-    private weak MonitorHandle monitor;
-    private weak URI _uri;
+    private unowned Backend trash;
+    private unowned MonitorHandle monitor;
+    private unowned URI _uri;
     public URI uri
     {
       set
@@ -89,7 +89,7 @@ namespace DesktopAgnostic.VFS.Trash
     reset_file_count ()
     {
       message ("reset_file_count");
-      weak DirectoryHandle handle;
+      unowned DirectoryHandle handle;
       Result res;
       this._file_count = 0;
       // iterate through folder contents
@@ -116,7 +116,7 @@ namespace DesktopAgnostic.VFS.Trash
                     void** data,
                     bool recurse)
     {
-      weak URI item;
+      unowned URI item;
       item = ((URI)(*data)).resolve_relative (rel_path);
       if (info.type == GnomeVFS.FileType.DIRECTORY)
       {
@@ -171,7 +171,7 @@ namespace DesktopAgnostic.VFS.Trash
         uint total = 0;
         List<TrashVolume> values;
         values = this.trash_dirs.get_values ();
-        foreach (weak TrashVolume tv in values)
+        foreach (unowned TrashVolume tv in values)
         {
           total += tv.file_count;
         }
@@ -210,7 +210,7 @@ namespace DesktopAgnostic.VFS.Trash
     {
       List<TrashVolume> values;
       values = this.trash_dirs.get_values ();
-      foreach (weak TrashVolume tv in values)
+      foreach (unowned TrashVolume tv in values)
       {
         tv.empty ();
       }
@@ -220,10 +220,10 @@ namespace DesktopAgnostic.VFS.Trash
     search_for_trash_dirs ()
     {
       GnomeVFS.VolumeMonitor volume_monitor;
-      weak List<GnomeVFS.Volume> volumes;
+      unowned List<GnomeVFS.Volume> volumes;
       volume_monitor = get_volume_monitor ();
       volumes = volume_monitor.get_mounted_volumes ();
-      foreach (weak GnomeVFS.Volume volume in volumes)
+      foreach (unowned GnomeVFS.Volume volume in volumes)
       {
         this.check_volume_for_trash_dir (volume_monitor, volume);
       }

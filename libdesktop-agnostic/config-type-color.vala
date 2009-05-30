@@ -44,7 +44,7 @@ namespace DesktopAgnostic.Config
     public override string
     serialize (Value val)
     {
-      weak Color color = (Color)val.get_object ();
+      unowned Color color = (Color)val.get_object ();
       return color.to_string ();
     }
     public override Value
@@ -76,7 +76,7 @@ namespace DesktopAgnostic.Config
       {
         string[] list = schema.get_string_list (group, DEFAULT_KEY);
         array = new ValueArray (list.length);
-        foreach (weak string item in list)
+        foreach (unowned string item in list)
         {
           array.append (this.deserialize (item));
         }

@@ -74,7 +74,7 @@ namespace DesktopAgnostic.Config
       List<string> type_modules = new List<string> ();
       string[] paths = ModuleLoader.get_search_paths ();
       SList<string> search_paths = new SList<string> ();
-      foreach (weak string path in paths)
+      foreach (unowned string path in paths)
       {
         if (path != null)
         {
@@ -82,7 +82,7 @@ namespace DesktopAgnostic.Config
         }
       }
       search_paths.append (Environment.get_current_dir ());
-      foreach (weak string path in search_paths)
+      foreach (unowned string path in search_paths)
       {
         if (!FileUtils.test (path, FileTest.IS_DIR))
         {
@@ -105,7 +105,7 @@ namespace DesktopAgnostic.Config
             throw err;
           }
         }
-        foreach (weak string fm in found_modules.paths)
+        foreach (unowned string fm in found_modules.paths)
         {
           if (type_modules.find (fm) == null)
           {
@@ -144,7 +144,7 @@ namespace DesktopAgnostic.Config
     public Schema (Backend backend, string filename) throws Error
     {
       string basename = null;
-      weak HashTable<string,Value?> backend_metadata_keys;
+      unowned HashTable<string,Value?> backend_metadata_keys;
       if (!filename.has_suffix (".schema-ini"))
       {
         throw new SchemaError.PARSE ("Schema files MUST have the extension '.schema-ini'.");
@@ -158,14 +158,14 @@ namespace DesktopAgnostic.Config
       // populate the common metadata keys table
       this.valid_metadata_keys = new List<string> ();
       this.metadata_options = Datalist<Value?> ();
-      foreach (weak string key in common_metadata_keys.get_keys ())
+      foreach (unowned string key in common_metadata_keys.get_keys ())
       {
         this.valid_metadata_keys.append (key);
         this.metadata_options.set_data (key, common_metadata_keys.lookup (key));
       }
       // populate the backend-specific metadata keys table
       backend_metadata_keys = backend.get_backend_metadata_keys ();
-      foreach (weak string key in backend_metadata_keys.get_keys ())
+      foreach (unowned string key in backend_metadata_keys.get_keys ())
       {
         string option = backend.name + "." + key;
         this.valid_metadata_keys.append (option);
@@ -178,16 +178,16 @@ namespace DesktopAgnostic.Config
     parse () throws Error
     {
       this.data.load_from_file (this.filename, KeyFileFlags.KEEP_TRANSLATIONS);
-      foreach (weak string group in this.data.get_groups ())
+      foreach (unowned string group in this.data.get_groups ())
       {
         if (group.contains ("/"))
         {
           // split option group & key, add to groups/keys lists
-          weak string last_slash = group.rchr (group.length, '/');
+          unowned string last_slash = group.rchr (group.length, '/');
           long offset = group.pointer_to_offset (last_slash);
           string option_group = group.substring (0, offset);
-          weak string option_key = group.offset (offset + 1);
-          weak List<string>? list = this.keys.lookup (option_group);
+          unowned string option_key = group.offset (offset + 1);
+          unowned List<string>? list = this.keys.lookup (option_group);
           if (list == null)
           {
             List<string> key_list = new List<string> ();
@@ -211,7 +211,7 @@ namespace DesktopAgnostic.Config
         else if (group == DesktopAgnostic.Config.GROUP_DEFAULT)
         {
           // parse the schema metadata
-          foreach (weak string key in this.data.get_keys (group))
+          foreach (unowned string key in this.data.get_keys (group))
           {
             if (this.valid_metadata_keys.find (key) == null)
             {
@@ -260,7 +260,7 @@ namespace DesktopAgnostic.Config
      * Retrieves the configuration groups in the schema.
      * @return a list of zero or more groups
      */
-    public List<weak string>?
+    public List<unowned string>?
     get_groups ()
     {
       return this.keys.get_keys ();
@@ -270,7 +270,7 @@ namespace DesktopAgnostic.Config
      * @param group the group name to search for keys associated with it
      * @return a list of zero or more keys
      */
-    public weak List<weak string>?
+    public unowned List<unowned string>?
     get_keys (string group)
     {
       return this.keys.lookup (group);
@@ -284,7 +284,7 @@ namespace DesktopAgnostic.Config
     public bool
     exists (string group, string key)
     {
-      weak List<weak string> group_keys = this.keys.lookup (group);
+      unowned List<unowned string> group_keys = this.keys.lookup (group);
       return group_keys != null &&
              group_keys.find_custom (key, (CompareFunc)strcmp) != null;
     }
@@ -351,7 +351,7 @@ namespace DesktopAgnostic.Config
     /**
      * Looks for a registered SchemaType by its GType.
      */
-    public static weak SchemaType?
+    public static unowned SchemaType?
     find_type (Type type)
     {
       return type_registry.lookup (type);
@@ -359,7 +359,7 @@ namespace DesktopAgnostic.Config
     /**
      * Looks for a registered SchemaType by its declared name.
      */
-    public static weak SchemaType?
+    public static unowned SchemaType?
     find_type_by_name (string name)
     {
       return name_registry.lookup (name);

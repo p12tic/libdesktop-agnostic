@@ -201,7 +201,7 @@ namespace DesktopAgnostic.Config
       if (serialized.has_prefix ("list-"))
       {
         this._type = typeof (ValueArray);
-        weak string subtype = serialized.offset (5);
+        unowned string subtype = serialized.offset (5);
         this._list_type = this.parse_simple_type_from_string (subtype);
       }
       else
@@ -313,7 +313,7 @@ namespace DesktopAgnostic.Config
           {
             string[] list = schema.get_string_list (group, key);
             array = new ValueArray (list.length);
-            foreach (weak string item in list)
+            foreach (unowned string item in list)
             {
               Value val = Value (typeof (string));
               val.take_string (item);
@@ -331,7 +331,7 @@ namespace DesktopAgnostic.Config
             {
               string[] list = schema.get_string_list (group, key);
               array = new ValueArray (list.length);
-              foreach (weak string item in list)
+              foreach (unowned string item in list)
               {
                 array.append (st.deserialize (item));
               }

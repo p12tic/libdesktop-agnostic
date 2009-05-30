@@ -67,7 +67,7 @@ namespace DesktopAgnostic.VFS
     {
       SList<File.Backend> files = new SList<File.Backend> ();
       string[] uris = Uri.list_extract_uris (uri_list);
-      foreach (weak string uri in uris)
+      foreach (unowned string uri in uris)
       {
         File.Backend file = File.new_for_uri (uri);
         files.append ((owned)file);

@@ -59,7 +59,7 @@ namespace DesktopAgnostic.Config
     /**
      * Retrieves the singleton that manages all of the bindings.
      */
-    public static weak Bridge
+    public static unowned Bridge
     get_default ()
     {
       if (bridge == null)
@@ -69,10 +69,10 @@ namespace DesktopAgnostic.Config
       return bridge;
     }
 
-    private weak ParamSpec?
+    private unowned ParamSpec?
     get_property_spec (Object obj, string property_name)
     {
-      weak ObjectClass obj_cls = (ObjectClass)(obj.get_type ().class_peek ());
+      unowned ObjectClass obj_cls = (ObjectClass)(obj.get_type ().class_peek ());
       return obj_cls.find_property (property_name);
     }
 
@@ -85,7 +85,7 @@ namespace DesktopAgnostic.Config
     {
       Binding binding;
       string binding_key, full_key;
-      weak ParamSpec spec;
+      unowned ParamSpec spec;
 
       binding = new Binding ();
       binding.cfg = config;
@@ -132,10 +132,10 @@ namespace DesktopAgnostic.Config
         }
         binding.read_only = read_only;
         binding_key = group + "/" + key;
-        weak List<Binding> bindings_list = this.bindings.get_data (binding_key);
+        unowned List<Binding> bindings_list = this.bindings.get_data (binding_key);
         bindings_list.append ((owned)binding);
         full_key = binding_key + ":" + property_name;
-        weak List<string> key_list = this.bindings_by_obj.lookup (obj);
+        unowned List<string> key_list = this.bindings_by_obj.lookup (obj);
         if (key_list.find_custom (full_key, (CompareFunc)strcmp) == null)
         {
           key_list.append (full_key);
@@ -143,11 +143,11 @@ namespace DesktopAgnostic.Config
       }
       else
       {
-        weak ParamSpec[] properties;
+        unowned ParamSpec[] properties;
         string props_str;
         properties = ((ObjectClass)(obj.get_type ().class_peek ())).list_properties ();
         props_str = "";
-        foreach (weak ParamSpec property in properties)
+        foreach (unowned ParamSpec property in properties)
         {
           if (props_str != "")
           {
@@ -168,13 +168,13 @@ namespace DesktopAgnostic.Config
     remove (Backend config, string group, string key, Object obj,
             string property_name) throws Error
     {
-      weak List<Binding> bindings_list;
+      unowned List<Binding> bindings_list;
       string binding_key;
-      weak ParamSpec spec;
+      unowned ParamSpec spec;
 
       binding_key = group + "/" + key;
       bindings_list = this.bindings.get_data (binding_key);
-      foreach (weak Binding binding in bindings_list)
+      foreach (unowned Binding binding in bindings_list)
       {
         if (binding.obj == obj)
         {
@@ -220,13 +220,13 @@ namespace DesktopAgnostic.Config
     public void
     remove_all_for_object (Backend config, Object obj) throws Error
     {
-      weak List<string> key_list = this.bindings_by_obj.lookup (obj);
-      foreach (weak string full_key in key_list)
+      unowned List<string> key_list = this.bindings_by_obj.lookup (obj);
+      foreach (unowned string full_key in key_list)
       {
-        weak string property_name = full_key.rchr (-1, ':');
+        unowned string property_name = full_key.rchr (-1, ':');
         long property_offset = full_key.pointer_to_offset (property_name);
         property_name = property_name.offset (1);
-        weak string last_slash = full_key.rchr (property_offset, '/');
+        unowned string last_slash = full_key.rchr (property_offset, '/');
         long last_slash_offset = full_key.pointer_to_offset (last_slash) + 1;
         string key = full_key.substring (last_slash_offset, property_offset - last_slash_offset);
         string group = full_key.substring (0, last_slash_offset - 1);
@@ -238,12 +238,12 @@ namespace DesktopAgnostic.Config
     private void
     on_simple_value_changed (NotifyEntry entry)
     {
-      weak List<Binding> bindings_list;
+      unowned List<Binding> bindings_list;
       string key;
 
       key = entry.group + "/" + entry.key;
       bindings_list = this.bindings.get_data (key);
-      foreach (weak Binding binding in bindings_list)
+      foreach (unowned Binding binding in bindings_list)
       {
         if (!binding.read_only)
         {
@@ -260,12 +260,12 @@ namespace DesktopAgnostic.Config
     private void
     on_list_changed (NotifyEntry entry)
     {
-      weak List<Binding> bindings_list;
+      unowned List<Binding> bindings_list;
       string key;
 
       key = entry.group + "/" + entry.key;
       bindings_list = this.bindings.get_data (key);
-      foreach (weak Binding binding in bindings_list)
+      foreach (unowned Binding binding in bindings_list)
       {
         if (!binding.read_only)
         {
@@ -282,12 +282,12 @@ namespace DesktopAgnostic.Config
     private void
     on_serialized_object_changed (NotifyEntry entry)
     {
-      weak List<Binding> bindings_list;
+      unowned List<Binding> bindings_list;
       string key;
 
       key = entry.group + "/" + entry.key;
       bindings_list = this.bindings.get_data (key);
-      foreach (weak Binding binding in bindings_list)
+      foreach (unowned Binding binding in bindings_list)
       {
         ParamSpec spec = this.get_property_spec (binding.obj,
                                                  binding.property_name);

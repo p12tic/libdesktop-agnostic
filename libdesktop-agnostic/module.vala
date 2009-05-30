@@ -103,7 +103,7 @@ namespace DesktopAgnostic
       string path;
       bool found_module = false;
 
-      foreach (weak string prefix in this.paths)
+      foreach (unowned string prefix in this.paths)
       {
         if (prefix == null || !FileUtils.test (prefix, FileTest.IS_DIR))
         {

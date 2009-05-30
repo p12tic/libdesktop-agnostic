@@ -76,7 +76,7 @@ namespace DesktopAgnostic.Config
     notify_add (string group, string key, NotifyFunc callback)
     {
       string full_key = group + "/" + key;
-      weak List<NotifyData> funcs = this.notifiers.get_data (full_key);
+      unowned List<NotifyData> funcs = this.notifiers.get_data (full_key);
       funcs.append (new NotifyData (callback));
     }
 
@@ -88,8 +88,8 @@ namespace DesktopAgnostic.Config
       entry.group = group;
       entry.key = key;
       entry.value = this.get_value (group, key);
-      weak List<NotifyData> funcs = this.notifiers.get_data (full_key);
-      foreach (weak NotifyData data in funcs)
+      unowned List<NotifyData> funcs = this.notifiers.get_data (full_key);
+      foreach (unowned NotifyData data in funcs)
       {
         data.callback (entry);
       }

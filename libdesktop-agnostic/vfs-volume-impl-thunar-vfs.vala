@@ -174,8 +174,8 @@ namespace DesktopAgnostic.VFS.Volume
       this.manager = ThunarVfs.VolumeManager.get_default ();
       this._volumes = new HashTable<ThunarVfs.Volume,Backend> (direct_hash,
                                                                direct_equal);
-      weak List<ThunarVfs.Volume> vols = this.manager.get_volumes ();
-      foreach (weak ThunarVfs.Volume tvol in vols)
+      unowned List<ThunarVfs.Volume> vols = this.manager.get_volumes ();
+      foreach (unowned ThunarVfs.Volume tvol in vols)
       {
         this._volumes.insert (tvol, this.create_volume (tvol));
       }
@@ -215,7 +215,7 @@ namespace DesktopAgnostic.VFS.Volume
     on_volumes_added (ThunarVfs.VolumeManager manager, void* ptr)
     {
       unowned List<ThunarVfs.Volume> vols = (List<ThunarVfs.Volume>)ptr;
-      foreach (weak ThunarVfs.Volume tvol in vols)
+      foreach (unowned ThunarVfs.Volume tvol in vols)
       {
         this.check_volume (tvol);
       }
@@ -224,7 +224,7 @@ namespace DesktopAgnostic.VFS.Volume
     on_volumes_removed (ThunarVfs.VolumeManager manager, void* ptr)
     {
       unowned List<ThunarVfs.Volume> vols = (List<ThunarVfs.Volume>)ptr;
-      foreach (weak ThunarVfs.Volume tvol in vols)
+      foreach (unowned ThunarVfs.Volume tvol in vols)
       {
         Backend? vol = this._volumes.lookup (tvol);
         if (vol != null)

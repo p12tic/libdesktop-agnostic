@@ -116,7 +116,7 @@ namespace DesktopAgnostic
       if (spec.get_char () == '#')
       {
         long cd_len = 0;
-        weak string color_hex = spec.offset (1);
+        unowned string color_hex = spec.offset (1);
         // adapted from pango_color_parse (), licensed under the LGPL2.1+.
         cd_len = color_hex.size ();
         if (cd_len % 4 != 0 || cd_len < 4 || cd_len > 16)
@@ -126,7 +126,7 @@ namespace DesktopAgnostic
         long hex_len = cd_len / 4;
         long offset = hex_len * 3;
         string rgb_hex = color_hex.substring (0, offset);
-        weak string alpha_hex = color_hex.offset (offset);
+        unowned string alpha_hex = color_hex.offset (offset);
         if (alpha_hex.scanf ("%" + hex_len.to_string () + "hx", ref this.alpha) == 0)
         {
           throw new ColorParseError.INVALID_ALPHA ("Could not parse alpha section of input: %s",

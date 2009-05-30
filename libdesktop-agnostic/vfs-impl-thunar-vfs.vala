@@ -67,10 +67,10 @@ namespace DesktopAgnostic.VFS
     files_from_uri_list (string uri_list) throws GLib.Error
     {
       SList<File.Backend> files = new SList<File.Backend> ();
-      weak List<ThunarVfs.Path> paths = ThunarVfs.PathList.from_string (uri_list);
-      foreach (weak ThunarVfs.Path path in paths)
+      unowned List<ThunarVfs.Path> paths = ThunarVfs.PathList.from_string (uri_list);
+      foreach (unowned ThunarVfs.Path path in paths)
       {
-        weak string uri = path.dup_uri ();
+        unowned string uri = path.dup_uri ();
         File.Backend file = File.new_for_uri (uri);
         files.append ((owned)file);
       }

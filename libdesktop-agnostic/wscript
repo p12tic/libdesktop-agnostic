@@ -70,6 +70,7 @@ def build(bld):
         'desktop-entry.vala',
         'module.vala',
         'vfs.vala',
+        'vfs-bookmarks-gtk.vala',
         'vfs-file.vala',
         'vfs-file-monitor.vala',
         'vfs-glob.vala',

@@ -13,5 +13,6 @@ def build_test_program(bld, name):
 
 def build(bld):
     [build_test_program(bld, 'test-' + name)
-     for name in ['color', 'config-bridge', 'desktop-entry', 'vfs-file',
-                  'vfs-file-monitor', 'vfs-glob', 'vfs-trash', 'vfs-volume']]
+     for name in ['color', 'config-bridge', 'desktop-entry',
+                  'vfs-bookmarks-gtk', 'vfs-file', 'vfs-file-monitor',
+                  'vfs-glob', 'vfs-trash', 'vfs-volume']]

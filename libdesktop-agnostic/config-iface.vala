@@ -186,6 +186,36 @@ namespace DesktopAgnostic.Config
     public abstract ValueArray get_list (string group, string key) throws Error;
     public abstract void set_list (string group, string key, ValueArray value) throws Error;
   }
+
+  /**
+   * Retrieve the default config backend type.
+   * @return Config.Backend-based type on succes, Type.INVALID on failure
+   */
+  public Type
+  get_type () throws GLib.Error
+  {
+    return get_module_type ("cfg", "config");
+  }
+
+  /**
+   * Convenience method for instantiating a configuration backend.
+   * @return a Config.Backend object on success, %NULL on failure
+   */
+  public Backend?
+  @new (string schema_file) throws GLib.Error
+  {
+    Type type = get_type ();
+    if (type == Type.INVALID)
+    {
+      return null;
+    }
+    else
+    {
+      return (Config.Backend)Object.new (type,
+                                         "schema_filename", schema_file);
+    }
+  }
+
 }
 
 // vim: set et ts=2 sts=2 sw=2 ai :

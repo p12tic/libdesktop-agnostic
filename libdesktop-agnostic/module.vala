@@ -171,20 +171,6 @@ namespace DesktopAgnostic
       return Type.INVALID;
     }
   }
-  public Config.Backend?
-  config_get_default (string schema_file) throws GLib.Error
-  {
-    Type type = get_module_type ("cfg", "config");
-    if (type == Type.INVALID)
-    {
-      return null;
-    }
-    else
-    {
-      return (Config.Backend)Object.new (type,
-                                         "schema_filename", schema_file);
-    }
-  }
 
   private static VFS.Implementation vfs = null;
   

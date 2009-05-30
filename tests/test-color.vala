@@ -26,7 +26,7 @@ int main (string[] args)
 {
   try
   {
-    Config.Backend cfg = config_get_default ("test-color.schema-ini");
+    Config.Backend cfg = Config.new ("test-color.schema-ini");
     try
     {
       Color green = new Color.from_string ("green");

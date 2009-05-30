@@ -34,7 +34,7 @@ public class TestTrash
   {
     try
     {
-      VFS.Implementation vfs = vfs_get_default ();
+      VFS.Implementation vfs = VFS.get_default ();
       vfs.init ();
       VFS.Trash.Backend t = (VFS.Trash.Backend)Object.new (vfs.trash_type);
       t.file_count_changed += on_file_count_changed;

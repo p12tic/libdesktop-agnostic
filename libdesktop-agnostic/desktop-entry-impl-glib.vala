@@ -94,7 +94,7 @@ namespace DesktopAgnostic.DesktopEntry
         }
         else
         {
-          unowned VFS.Implementation vfs = vfs_get_default ();
+          unowned VFS.Implementation vfs = VFS.get_default ();
           this._file = (VFS.File.Backend)Object.new (vfs.file_type,
                                                      "path", value);
           this._keyfile.load_from_file (value, KeyFileFlags.KEEP_TRANSLATIONS);
@@ -127,7 +127,7 @@ namespace DesktopAgnostic.DesktopEntry
           string data;
           size_t data_len;
 
-          unowned VFS.Implementation vfs = vfs_get_default ();
+          unowned VFS.Implementation vfs = VFS.get_default ();
           this._file = (VFS.File.Backend)Object.new (vfs.file_type,
                                                      "uri", value);
           this._file.load_contents (out data, out data_len);
@@ -294,7 +294,7 @@ namespace DesktopAgnostic.DesktopEntry
           if (this._keyfile.has_key (GROUP, "URL"))
           {
             string uri = this._keyfile.get_string (GROUP, "URL");
-            VFS.Implementation vfs = vfs_get_default ();
+            VFS.Implementation vfs = VFS.get_default ();
             VFS.File.Backend file = (VFS.File.Backend)Object.new (vfs.file_type,
                                                                   "uri", uri);
             return file.exists;
@@ -577,7 +577,7 @@ namespace DesktopAgnostic.DesktopEntry
             throw new DesktopEntry.Error.NOT_LAUNCHABLE ("Cannot pass documents to a 'Link' desktop entry.");
           }
           string uri = this._keyfile.get_string (GROUP, "URL");
-          VFS.Implementation vfs = vfs_get_default ();
+          VFS.Implementation vfs = VFS.get_default ();
           VFS.File.Backend file = (VFS.File.Backend)Object.new (vfs.file_type,
                                                                 "uri", uri);
           file.launch ();

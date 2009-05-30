@@ -29,7 +29,7 @@ public class TestVolume
   {
     try
     {
-      VFS.Implementation vfs = vfs_get_default ();
+      VFS.Implementation vfs = VFS.get_default ();
       vfs.init ();
       VFS.Volume.Monitor vm = vfs.volume_monitor_get_default ();
       foreach (weak VFS.Volume.Backend vol in vm.volumes)

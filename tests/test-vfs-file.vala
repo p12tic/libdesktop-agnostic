@@ -28,7 +28,7 @@ int main (string[] args)
 {
   try
   {
-    VFS.Implementation vfs = vfs_get_default ();
+    VFS.Implementation vfs = VFS.get_default ();
     vfs.init ();
     weak string path = Environment.get_tmp_dir ();
     VFS.File.Backend tmp = (VFS.File.Backend)Object.new (vfs.file_type,

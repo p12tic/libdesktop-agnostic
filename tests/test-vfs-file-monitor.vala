@@ -75,7 +75,7 @@ class TestFileMonitor
       stderr.printf ("Usage: %s [FILE | DIRECTORY FILE] \n", args[0]);
       return 1;
     }
-    vfs = vfs_get_default ();
+    vfs = VFS.get_default ();
     vfs.init ();
     weak string path = args[1];
     file = (VFS.File.Backend)Object.new (vfs.file_type, "path", path);

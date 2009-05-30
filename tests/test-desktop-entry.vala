@@ -5,7 +5,7 @@ int main (string[] args)
 {
   try
   {
-    VFS.Implementation vfs = vfs_get_default ();
+    VFS.Implementation vfs = VFS.get_default ();
     vfs.init ();
     if (args.length > 1)
     {

@@ -171,26 +171,6 @@ namespace DesktopAgnostic
       return Type.INVALID;
     }
   }
-
-  private static VFS.Implementation vfs = null;
-  
-  public weak VFS.Implementation?
-  vfs_get_default () throws GLib.Error
-  {
-    if (vfs == null)
-    {
-      Type type = get_module_type ("vfs", "vfs");
-      if (type == Type.INVALID)
-      {
-        return null;
-      }
-      else
-      {
-        vfs = (VFS.Implementation)Object.new (type);
-      }
-    }
-    return vfs;
-  }
 }
 
 // vim: set et ts=2 sts=2 sw=2 ai :

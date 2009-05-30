@@ -38,6 +38,26 @@ namespace DesktopAgnostic.VFS
     public abstract unowned Volume.Monitor volume_monitor_get_default ();
     public abstract void shutdown ();
   }
+
+  private static Implementation vfs = null;
+  
+  public unowned VFS.Implementation?
+  get_default () throws GLib.Error
+  {
+    if (vfs == null)
+    {
+      Type type = get_module_type ("vfs", "vfs");
+      if (type == Type.INVALID)
+      {
+        return null;
+      }
+      else
+      {
+        vfs = (VFS.Implementation)Object.new (type);
+      }
+    }
+    return vfs;
+  }
 }
 
 // vim: set et ts=2 sts=2 sw=2 ai :

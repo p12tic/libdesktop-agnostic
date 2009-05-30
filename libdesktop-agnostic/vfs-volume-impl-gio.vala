@@ -52,7 +52,7 @@ namespace DesktopAgnostic.VFS.Volume
           if (mount != null)
           {
             GLib.File file = mount.get_root ();
-            this._uri = (File.Backend)Object.new (vfs_get_default ().file_type,
+            this._uri = (File.Backend)Object.new (VFS.get_default ().file_type,
                                                   "uri", file.get_uri ());
           }
         }

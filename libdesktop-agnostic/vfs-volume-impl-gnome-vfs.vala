@@ -55,7 +55,7 @@ namespace DesktopAgnostic.VFS.Volume
         if (this._uri == null)
         {
           string activation_uri = this.drive.get_activation_uri ();
-          this._uri = (File.Backend)Object.new (vfs_get_default ().file_type,
+          this._uri = (File.Backend)Object.new (VFS.get_default ().file_type,
                                                 "uri", activation_uri);
         }
         return this._uri;

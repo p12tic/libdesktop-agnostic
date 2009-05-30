@@ -47,7 +47,7 @@ namespace DesktopAgnostic.DesktopEntry
       {
         if (this.item == null)
         {
-          unowned VFS.Implementation vfs = vfs_get_default ();
+          unowned VFS.Implementation vfs = VFS.get_default ();
           this._file = (VFS.File.Backend)Object.new (vfs.file_type,
                                                      "path", value);
           this.item =
@@ -78,7 +78,7 @@ namespace DesktopAgnostic.DesktopEntry
       {
         if (this.item == null)
         {
-          unowned VFS.Implementation vfs = vfs_get_default ();
+          unowned VFS.Implementation vfs = VFS.get_default ();
           this._file = (VFS.File.Backend)Object.new (vfs.file_type,
                                                      "uri", value);
           this.item =

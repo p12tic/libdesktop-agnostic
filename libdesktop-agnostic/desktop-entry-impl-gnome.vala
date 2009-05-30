@@ -30,56 +30,36 @@ namespace DesktopAgnostic.DesktopEntry
     private DesktopItem item = null;
 
     private VFS.File.Backend _file = null;
-    public string? filename
-    {
-      owned get
-      {
-        if (this._file == null)
-        {
-          return null;
-        }
-        else
-        {
-          return this._file.path;
-        }
-      }
-      set
-      {
-        if (this.item == null)
-        {
-          this._file = VFS.File.new_for_path (value);
-          this.item =
-            new DesktopItem.from_file (value,
-                                       DesktopItemLoadFlags.ONLY_IF_EXISTS);
-        }
-        else
-        {
-          warning ("The desktop entry has already been initialized.");
-        }
-      }
-    }
-
-    public string? uri
+    public VFS.File.Backend? file
     {
       get
       {
-        if (this._file == null)
-        {
-          return null;
-        }
-        else
-        {
-          return this._file.uri;
-        }
+        return this._file;
       }
       set
       {
         if (this.item == null)
         {
-          this._file = VFS.File.new_for_uri (value);
-          this.item =
-            new DesktopItem.from_uri (value,
-                                      DesktopItemLoadFlags.ONLY_IF_EXISTS);
+          if (value == null)
+          {
+            this.item = new DesktopItem ();
+          }
+          else
+          {
+            DesktopItemLoadFlags flags = DesktopItemLoadFlags.ONLY_IF_EXISTS;
+            string? path;
+
+            this._file = value;
+            path = value.path;
+            if (path == null)
+            {
+              this.item = new DesktopItem.from_uri (value.uri, flags);
+            }
+            else
+            {
+              this.item = new DesktopItem.from_file (path, flags);
+            }
+          }
         }
         else
         {

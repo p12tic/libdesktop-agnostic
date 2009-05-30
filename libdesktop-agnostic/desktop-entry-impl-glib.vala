@@ -29,6 +29,43 @@ namespace DesktopAgnostic.DesktopEntry
   {
     private KeyFile _keyfile = null;
     private bool loaded = false;
+    private VFS.File.Backend _file = null;
+
+    public VFS.File.Backend? file
+    {
+      get
+      {
+        return this._file;
+      }
+      set
+      {
+        if (this.loaded)
+        {
+          warning ("The desktop entry has already been initialized.");
+        }
+        else
+        {
+          string? path;
+          
+          this._file = value;
+          path = value.path;
+          if (path == null)
+          {
+            string data;
+            size_t data_len;
+
+            this._file.load_contents (out data, out data_len);
+            this._keyfile.load_from_data (data, data_len,
+                                          KeyFileFlags.KEEP_TRANSLATIONS);
+          }
+          else
+          {
+            this._keyfile.load_from_file (path, KeyFileFlags.KEEP_TRANSLATIONS);
+          }
+          this.loaded = true;
+        }
+      }
+    }
 
     public KeyFile keyfile
     {
@@ -66,68 +103,6 @@ namespace DesktopAgnostic.DesktopEntry
         else
         {
           this._keyfile.load_from_data (value, value.len (),
-                                        KeyFileFlags.KEEP_TRANSLATIONS);
-          this.loaded = true;
-        }
-      }
-    }
-
-    private VFS.File.Backend _file = null;
-    public string? filename
-    {
-      owned get
-      {
-        if (this._file == null)
-        {
-          return null;
-        }
-        else
-        {
-          return this._file.path;
-        }
-      }
-      set
-      {
-        if (this.loaded)
-        {
-          warning ("The desktop entry has already been initialized.");
-        }
-        else
-        {
-          this._file = VFS.File.new_for_path (value);
-          this._keyfile.load_from_file (value, KeyFileFlags.KEEP_TRANSLATIONS);
-          this.loaded = true;
-        }
-      }
-    }
-
-    public string? uri
-    {
-      get
-      {
-        if (this._file == null)
-        {
-          return null;
-        }
-        else
-        {
-          return this._file.uri;
-        }
-      }
-      set
-      {
-        if (this.loaded)
-        {
-          warning ("The desktop entry has already been initialized.");
-        }
-        else
-        {
-          string data;
-          size_t data_len;
-
-          this._file = VFS.File.new_for_uri (value);
-          this._file.load_contents (out data, out data_len);
-          this._keyfile.load_from_data (data, data_len,
                                         KeyFileFlags.KEEP_TRANSLATIONS);
           this.loaded = true;
         }

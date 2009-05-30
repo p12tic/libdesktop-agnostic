@@ -76,24 +76,23 @@ namespace DesktopAgnostic.DesktopEntry
   {
     // construction
     /**
-     * The filename of the desktop entry. Cannot be constructed in conjunction
-     * with any of uri, keyfile, or data.
+     * The file object which points to the desktop entry file. Cannot be
+     * constructed in conjunction with either keyfile or data.
      * Note: these are really construct-only, but construct-only properties
      * don't work with GModules.
      */
-    public abstract string? filename { owned get; set; }
+    public abstract VFS.File.Backend? file { get; set; }
     /**
-     * The URI of the desktop entry. Cannot be constructed with any of filename,
-     * keyfile, or data.
+     * The URI of the desktop entry. Cannot be constructed with either file
+     * or data.
      * Note: these are really construct-only, but construct-only properties
      * don't work with GModules.
      */
-    public abstract string? uri { owned get; set; }
     public abstract KeyFile keyfile { get; set; }
     /**
      * The raw data that is formatted according to the desktop entry
-     * specification. Cannot be constructed in conjunction with any of filename,
-     * uri, or keyfile.
+     * specification. Cannot be constructed in conjunction with either file or
+     * keyfile.
      * Note: these are really construct-only, but construct-only properties
      * don't work with GModules.
      */
@@ -149,10 +148,10 @@ namespace DesktopAgnostic.DesktopEntry
   }
 
   /**
-   * Convenience method for loading a desktop entry via a local filename.
+   * Convenience method for loading a desktop entry via a VFS.File.Backend.
    */
   public Backend?
-  new_for_filename (string filename) throws GLib.Error
+  new_for_file (VFS.File.Backend file) throws GLib.Error
   {
     GLib.Type type = get_type ();
     if (type == GLib.Type.INVALID)
@@ -161,24 +160,7 @@ namespace DesktopAgnostic.DesktopEntry
     }
     else
     {
-      return (Backend)Object.new (type, "filename", filename);
-    }
-  }
-
-  /**
-   * Convenience method for loading a desktop entry via a URI.
-   */
-  public Backend?
-  new_for_uri (string uri) throws GLib.Error
-  {
-    GLib.Type type = get_type ();
-    if (type == GLib.Type.INVALID)
-    {
-      return null;
-    }
-    else
-    {
-      return (Backend)Object.new (type, "uri", uri);
+      return (Backend)Object.new (type, "file", file);
     }
   }
 

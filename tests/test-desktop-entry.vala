@@ -40,7 +40,8 @@ int main (string[] args)
           continue;
         }
 
-        Backend entry = new_for_filename (arg);
+        VFS.File.Backend file = VFS.File.new_for_path (arg);
+        Backend entry = new_for_file (file);
         message ("Entry: %s", entry.name);
         if (entry.exists ())
         {

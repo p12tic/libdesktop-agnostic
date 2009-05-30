@@ -65,20 +65,29 @@ def configure(conf):
     conf.check_cfg(package='gmodule-2.0', uselib_store='GMODULE',
                    atleast_version='2.6.0', mandatory=True,
                    args='--cflags --libs')
+    conf.check_cfg(package='glib-2.0', uselib_store='GLIB',
+                   atleast_version='2.10.0', mandatory=True,
+                   args='--cflags --libs')
     conf.check_cfg(package='gobject-2.0', uselib_store='GOBJECT',
-                   mandatory=True, args='--cflags --libs')
+                   atleast_version='2.12.0', mandatory=True,
+                   args='--cflags --libs')
     # Needed for the Color class
-    conf.check_cfg(package='gdk-2.0', uselib_store='GDK', mandatory=True,
+    conf.check_cfg(package='gdk-2.0', uselib_store='GDK',
+                   atleast_version='2.12.0', mandatory=True,
                    args='--cflags --libs')
     conf.check_cfg(package='vala-1.0', uselib_store='VALA',
                    atleast_version='0.7.3', mandatory=True,
                    args='--cflags --libs')
     if 'gconf' in conf.env['BACKENDS_CFG']:
+        conf.check_cfg(package='glib-2.0', uselib_store='GREGEX',
+                       atleast_version='2.14.0', mandatory=True,
+                       args='--cflags --libs')
         conf.check_cfg(package='gconf-2.0', uselib_store='GCONF',
                        mandatory=True, args='--cflags --libs')
     if 'gio' in conf.env['BACKENDS_VFS']:
         conf.check_cfg(package='gio-2.0', uselib_store='GIO',
-                       mandatory=True, args='--cflags --libs')
+                       atleast_version='2.18.0', mandatory=True,
+                       args='--cflags --libs')
     if 'thunar-vfs' in conf.env['BACKENDS_VFS']:
         conf.check_cfg(package='thunar-vfs-1', uselib_store='THUNAR_VFS',
                        mandatory=True, args='--cflags --libs')
@@ -86,7 +95,8 @@ def configure(conf):
                        mandatory=True, args='--cflags --libs')
     if 'gnome-vfs' in conf.env['BACKENDS_VFS']:
         conf.check_cfg(package='gnome-vfs-2.0', uselib_store='GNOME_VFS',
-                       mandatory=True, args='--cflags --libs')
+                       atleast_version='2.6.0', mandatory=True,
+                       args='--cflags --libs')
     if 'gnome' in conf.env['BACKENDS_DE']:
         conf.check_cfg(package='gnome-desktop-2.0',
                        uselib_store='GNOME_DESKTOP', mandatory=True,

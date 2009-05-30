@@ -32,8 +32,7 @@ namespace DesktopAgnostic.VFS.Trash
 
     construct
     {
-      this.trash = (File.Backend)Object.new (typeof (File.GIOBackend),
-                                             "uri", "trash://");
+      this.trash = File.new_for_uri ("trash://");
       if (this.trash == null)
       {
         critical ("trash is NULL!!!!");

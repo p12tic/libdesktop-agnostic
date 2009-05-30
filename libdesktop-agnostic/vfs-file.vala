@@ -123,6 +123,34 @@ namespace DesktopAgnostic.VFS.File
      */
     public abstract bool launch () throws Error;
   }
+
+  public Backend?
+  new_for_path (string path) throws Error
+  {
+    unowned Implementation? vfs = get_default ();
+    if (vfs == null)
+    {
+      return null;
+    }
+    else
+    {
+      return (Backend)Object.new (vfs.file_type, "path", path);
+    }
+  }
+
+  public Backend?
+  new_for_uri (string uri) throws Error
+  {
+    unowned Implementation? vfs = get_default ();
+    if (vfs == null)
+    {
+      return null;
+    }
+    else
+    {
+      return (Backend)Object.new (vfs.file_type, "uri", uri);
+    }
+  }
 }
 
 // vim: set et ts=2 sts=2 sw=2 ai :

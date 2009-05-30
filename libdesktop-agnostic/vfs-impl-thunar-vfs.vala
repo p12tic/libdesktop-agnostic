@@ -71,8 +71,7 @@ namespace DesktopAgnostic.VFS
       foreach (weak ThunarVfs.Path path in paths)
       {
         weak string uri = path.dup_uri ();
-        File.Backend file = (File.Backend)Object.new (this.file_type,
-                                                      "uri", uri);
+        File.Backend file = File.new_for_uri (uri);
         files.append ((owned)file);
       }
       return files;

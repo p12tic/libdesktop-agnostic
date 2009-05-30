@@ -61,8 +61,7 @@ class TestFileMonitor
   private static bool do_emit ()
   {
     string filename = Path.build_filename (file.path, "test-vfs-file.txt");
-    VFS.File.Backend other = (VFS.File.Backend)Object.new (vfs.file_type,
-                                                           "path", filename);
+    VFS.File.Backend other = VFS.File.new_for_path (filename);
     monitor.emit (other, VFS.File.MonitorEvent.CREATED);
     return false;
   }
@@ -78,7 +77,7 @@ class TestFileMonitor
     vfs = VFS.get_default ();
     vfs.init ();
     weak string path = args[1];
-    file = (VFS.File.Backend)Object.new (vfs.file_type, "path", path);
+    file = VFS.File.new_for_path (path);
     monitor = file.monitor ();
     monitor.changed += on_change;
     MainLoop mainloop = new MainLoop (null, false);

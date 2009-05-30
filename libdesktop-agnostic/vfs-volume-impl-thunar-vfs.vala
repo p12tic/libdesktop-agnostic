@@ -49,8 +49,7 @@ namespace DesktopAgnostic.VFS.Volume
         if (this._uri == null)
         {
           ThunarVfs.Path path = this.vol.get_mount_point ();
-          this._uri = (File.Backend)Object.new (typeof (File.ThunarVFSBackend),
-                                                "uri", path.dup_uri ());
+          this._uri = File.new_for_uri (path.dup_uri ());
         }
         return this._uri;
       }

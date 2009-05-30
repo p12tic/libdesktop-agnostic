@@ -31,16 +31,14 @@ int main (string[] args)
     VFS.Implementation vfs = VFS.get_default ();
     vfs.init ();
     weak string path = Environment.get_tmp_dir ();
-    VFS.File.Backend tmp = (VFS.File.Backend)Object.new (vfs.file_type,
-                                                         "path", path);
+    VFS.File.Backend tmp = VFS.File.new_for_path (path);
     assert (tmp.exists);
     assert (tmp.file_type == VFS.File.FileType.DIRECTORY);
     message (tmp.uri);
     message (tmp.path);
     tmp = null;
     string file_path = Path.build_filename (path, "desktop-agnostic-test");
-    VFS.File.Backend file = (VFS.File.Backend)Object.new (vfs.file_type,
-                                                          "path", file_path);
+    VFS.File.Backend file = VFS.File.new_for_path (file_path);
     file.replace_contents (CONTENT);
     string contents;
     size_t length;

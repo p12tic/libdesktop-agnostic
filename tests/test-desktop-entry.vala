@@ -39,8 +39,7 @@ int main (string[] args)
       entry.name = "hosts file";
       entry.entry_type = DesktopEntry.Type.LINK;
       entry.set_string ("URL", "file:///etc/hosts");
-      file = (VFS.File.Backend)Object.new (vfs.file_type,
-                                           "path", "/tmp/desktop-agnostic-test.desktop");
+      file = VFS.File.new_for_path ("/tmp/desktop-agnostic-test.desktop");
       entry.save (file);
       entry = null;
     }

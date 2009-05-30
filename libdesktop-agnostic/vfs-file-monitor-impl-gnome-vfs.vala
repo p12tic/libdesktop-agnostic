@@ -57,8 +57,7 @@ namespace DesktopAgnostic.VFS.File
       Backend info_file = null;
       if (info_uri != null)
       {
-        info_file = (Backend)Object.new (typeof (GnomeVFSBackend),
-                                         "uri", info_uri);
+        info_file = File.new_for_uri (info_uri);
       }
       MonitorEvent da_event;
       switch (event)

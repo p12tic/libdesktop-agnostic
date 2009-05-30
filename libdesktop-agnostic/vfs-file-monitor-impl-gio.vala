@@ -53,8 +53,7 @@ namespace DesktopAgnostic.VFS.File
       Backend other_file = null;
       if (other != null)
       {
-        other_file = (Backend)Object.new (typeof (GIOBackend),
-                                          "uri", other.get_uri ());
+        other_file = File.new_for_uri (other.get_uri ());
       }
       MonitorEvent da_event;
       switch (event_type)

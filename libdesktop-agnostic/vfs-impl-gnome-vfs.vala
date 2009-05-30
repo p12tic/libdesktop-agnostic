@@ -71,8 +71,7 @@ namespace DesktopAgnostic.VFS
       foreach (weak GnomeVFS.URI uri in uris)
       {
         string uri_str = uri.to_string (GnomeVFS.URIHideOptions.NONE);
-        File.Backend file = (File.Backend)Object.new (this.file_type,
-                                                      "uri", uri_str);
+        File.Backend file = File.new_for_uri (uri_str);
         files.append ((owned)file);
       }
       return files;

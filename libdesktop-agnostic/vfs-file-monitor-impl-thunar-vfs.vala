@@ -52,7 +52,7 @@ namespace DesktopAgnostic.VFS.File
     }
     private void monitor_callback (ThunarVfs.Monitor monitor, ThunarVfs.MonitorHandle handle, ThunarVfs.MonitorEvent event, ThunarVfs.Path handle_path, ThunarVfs.Path event_path)
     {
-      Backend event_file = (Backend)Object.new (typeof (ThunarVFSBackend), "uri", event_path.dup_uri ());
+      Backend event_file = File.new_for_uri (event_path.dup_uri ());
       MonitorEvent da_event = MonitorEvent.UNKNOWN;
       switch (event)
       {

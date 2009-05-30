@@ -69,8 +69,7 @@ namespace DesktopAgnostic.VFS
       string[] uris = Uri.list_extract_uris (uri_list);
       foreach (weak string uri in uris)
       {
-        File.Backend file = (File.Backend)Object.new (this.file_type,
-                                                      "uri", uri);
+        File.Backend file = File.new_for_uri (uri);
         files.append ((owned)file);
       }
       return files;

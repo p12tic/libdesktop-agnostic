@@ -125,18 +125,10 @@ namespace DesktopAgnostic.DesktopEntry
     public abstract void save (VFS.File.Backend? new_file) throws GLib.Error;
   }
 
-  public GLib.Type?
+  public GLib.Type
   get_type () throws GLib.Error
   {
-    GLib.Type type = get_module_type ("de", "desktop-entry");
-    if (type == GLib.Type.INVALID)
-    {
-      return null;
-    }
-    else
-    {
-      return type;
-    }
+    return get_module_type ("de", "desktop-entry");
   }
 
   /**
@@ -145,7 +137,15 @@ namespace DesktopAgnostic.DesktopEntry
   public Backend?
   @new () throws GLib.Error
   {
-    return (Backend)Object.new (get_type ());
+    GLib.Type type = get_type ();
+    if (type == GLib.Type.INVALID)
+    {
+      return null;
+    }
+    else
+    {
+      return (Backend)Object.new (type);
+    }
   }
 
   /**
@@ -154,8 +154,15 @@ namespace DesktopAgnostic.DesktopEntry
   public Backend?
   new_for_filename (string filename) throws GLib.Error
   {
-    return (Backend)Object.new (get_type (),
-                                "filename", filename);
+    GLib.Type type = get_type ();
+    if (type == GLib.Type.INVALID)
+    {
+      return null;
+    }
+    else
+    {
+      return (Backend)Object.new (type, "filename", filename);
+    }
   }
 
   /**
@@ -164,8 +171,15 @@ namespace DesktopAgnostic.DesktopEntry
   public Backend?
   new_for_uri (string uri) throws GLib.Error
   {
-    return (Backend)Object.new (get_type (),
-                                "uri", uri);
+    GLib.Type type = get_type ();
+    if (type == GLib.Type.INVALID)
+    {
+      return null;
+    }
+    else
+    {
+      return (Backend)Object.new (type, "uri", uri);
+    }
   }
 
   /**
@@ -174,8 +188,15 @@ namespace DesktopAgnostic.DesktopEntry
   public Backend?
   new_for_keyfile (KeyFile keyfile) throws GLib.Error
   {
-    return (Backend)Object.new (get_type (),
-                                "keyfile", keyfile);
+    GLib.Type type = get_type ();
+    if (type == GLib.Type.INVALID)
+    {
+      return null;
+    }
+    else
+    {
+      return (Backend)Object.new (type, "keyfile", keyfile);
+    }
   }
 
   /**
@@ -184,8 +205,15 @@ namespace DesktopAgnostic.DesktopEntry
   public Backend?
   new_for_data (string data) throws GLib.Error
   {
-    return (Backend)Object.new (get_type (),
-                                "data", data);
+    GLib.Type type = get_type ();
+    if (type == GLib.Type.INVALID)
+    {
+      return null;
+    }
+    else
+    {
+      return (Backend)Object.new (type, "data", data);
+    }
   }
 }
 

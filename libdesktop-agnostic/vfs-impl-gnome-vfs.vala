@@ -56,7 +56,7 @@ namespace DesktopAgnostic.VFS
     {
       get
       {
-        return Type.INVALID;
+        return typeof (Volume.GnomeVFSBackend);
       }
     }
     public void init ()

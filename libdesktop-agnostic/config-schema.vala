@@ -175,7 +175,7 @@ namespace DesktopAgnostic.Config
       this.parse ();
     }
     private void
-    parse () throws Error
+    parse () throws GLib.Error
     {
       this.data.load_from_file (this.filename, KeyFileFlags.KEEP_TRANSLATIONS);
       foreach (unowned string group in this.data.get_groups ())

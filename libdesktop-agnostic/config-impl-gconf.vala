@@ -20,8 +20,6 @@
  * Author : Mark Lee <libdesktop-agnostic@lazymalevolence.com>
  */
 
-using GConf;
-
 namespace DesktopAgnostic.Config
 {
   [Compact]
@@ -33,7 +31,7 @@ namespace DesktopAgnostic.Config
   public class GConfBackend : Backend
   {
     private string path;
-    private Client client;
+    private GConf.Client client;
     private Datalist<unowned SList<unowned NotifyData>> notify_funcs;
 
     public override string name
@@ -114,24 +112,24 @@ namespace DesktopAgnostic.Config
     }
 
     private Type
-    valuetype_to_type (ValueType vt, bool list_is_type)
+    valuetype_to_type (GConf.ValueType vt, bool list_is_type)
     {
       Type type;
       switch (vt)
       {
-        case ValueType.BOOL:
+        case GConf.ValueType.BOOL:
           type = typeof (bool);
           break;
-        case ValueType.FLOAT:
+        case GConf.ValueType.FLOAT:
           type = typeof (float);
           break;
-        case ValueType.INT:
+        case GConf.ValueType.INT:
           type = typeof (int);
           break;
-        case ValueType.STRING:
+        case GConf.ValueType.STRING:
           type = typeof (string);
           break;
-        case ValueType.LIST:
+        case GConf.ValueType.LIST:
           if (list_is_type)
           {
             type = typeof (ValueArray);
@@ -148,43 +146,43 @@ namespace DesktopAgnostic.Config
       return type;
     }
 
-    private ValueType
+    private GConf.ValueType
     type_to_valuetype (Type type)
     {
-      ValueType vt;
+      GConf.ValueType vt;
       if (type == typeof (bool))
       {
-        vt = ValueType.BOOL;
+        vt = GConf.ValueType.BOOL;
       }
       else if (type == typeof (float))
       {
-        vt = ValueType.FLOAT;
+        vt = GConf.ValueType.FLOAT;
       }
       else if (type == typeof (int))
       {
-        vt = ValueType.INT;
+        vt = GConf.ValueType.INT;
       }
       else if (type == typeof (string))
       {
-        vt = ValueType.STRING;
+        vt = GConf.ValueType.STRING;
       }
       else if (type == typeof (ValueArray))
       {
-        vt = ValueType.LIST;
+        vt = GConf.ValueType.LIST;
       }
       else if (this.schema.find_type (type) != null)
       {
-        vt = ValueType.STRING;
+        vt = GConf.ValueType.STRING;
       }
       else
       {
-        vt = ValueType.INVALID;
+        vt = GConf.ValueType.INVALID;
       }
       return vt;
     }
 
     private GLib.Value
-    gconfvalue_to_gvalue (GConf.Value gc_val)
+    gconfvalue_to_gvalue (GConf.Value gc_val) throws Error
     {
       Type type;
       GLib.Value value;
@@ -218,7 +216,7 @@ namespace DesktopAgnostic.Config
         SchemaType st = this.schema.find_type (type);
         if (st == null)
         {
-          throw new ConfigError.INVALID_TYPE ("Invalid config value type.");
+          throw new Error.INVALID_TYPE ("Invalid config value type.");
         }
         else
         {
@@ -228,7 +226,7 @@ namespace DesktopAgnostic.Config
       return value;
     }
 
-    private ValueType
+    private GConf.ValueType
     get_gconf_list_valuetype (string key) throws GLib.Error
     {
       unowned GConf.Value value;
@@ -237,7 +235,7 @@ namespace DesktopAgnostic.Config
     }
 
     private GLib.ValueArray
-    slist_to_valuearray (SList<GConf.Value> list, Type type)
+    slist_to_valuearray (SList<GConf.Value> list, Type type) throws Error
     {
       unowned SList l;
       GLib.ValueArray arr = new GLib.ValueArray (list.length ());
@@ -268,7 +266,7 @@ namespace DesktopAgnostic.Config
           SchemaType st = this.schema.find_type (type);
           if (st == null)
           {
-            throw new ConfigError.INVALID_TYPE ("Invalid config value type.");
+            throw new Error.INVALID_TYPE ("Invalid config value type.");
           }
           else
           {
@@ -318,7 +316,7 @@ namespace DesktopAgnostic.Config
           }
           else
           {
-            throw new ConfigError.INVALID_TYPE ("Invalid config value type.");
+            throw new Error.INVALID_TYPE ("Invalid config value type.");
           }
           gc_val2 = gc_val;
           list.append (gc_val);
@@ -328,7 +326,7 @@ namespace DesktopAgnostic.Config
     }
 
     private void
-    notify_proxy (Client client, uint cnxn_id, Entry entry)
+    notify_proxy (GConf.Client client, uint cnxn_id, GConf.Entry entry)
     {
       string full_key = entry.get_key ();
       NotifyEntry cn_entry = NotifyEntry ();
@@ -362,7 +360,7 @@ namespace DesktopAgnostic.Config
       full_key = this.generate_key (group, key);
       try
       {
-        func_id = this.client.notify_add (full_key, (ClientNotifyFunc)this.notify_proxy);
+        func_id = this.client.notify_add (full_key, (GConf.ClientNotifyFunc)this.notify_proxy);
         if (func_id == 0)
         {
           warning ("Something went wrong when we tried to add a notification callback.");
@@ -483,7 +481,7 @@ namespace DesktopAgnostic.Config
     {
       string full_key;
       full_key = this.generate_key (group, key);
-      ValueType vt = this.get_gconf_list_valuetype (full_key);
+      GConf.ValueType vt = this.get_gconf_list_valuetype (full_key);
       return this.slist_to_valuearray (this.client.get_list (full_key, vt),
                                        this.valuetype_to_type (vt, false));
     }

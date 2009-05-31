@@ -96,24 +96,24 @@ namespace DesktopAgnostic.Config
     }
 
     public override void
-    notify_remove (string group, string key, NotifyFunc callback) throws Error
+    notify_remove (string group, string key, NotifyFunc callback) throws GLib.Error
     {
     }
 
     public override void
-    remove () throws Error
+    remove () throws GLib.Error
     {
       this.reset ();
     }
 
     public override Value
-    get_value (string group, string key) throws Error
+    get_value (string group, string key) throws GLib.Error
     {
       string full_key = group + "/" + key;
       Value? result = this.values.get_data (full_key);
       if (result == null)
       {
-        throw new ConfigError.KEY_NOT_FOUND ("Could not find key specified.");
+        throw new Error.KEY_NOT_FOUND ("Could not find key specified.");
       }
       else
       {
@@ -122,13 +122,13 @@ namespace DesktopAgnostic.Config
     }
 
     public override bool
-    get_bool (string group, string key) throws Error
+    get_bool (string group, string key) throws GLib.Error
     {
       return this.get_value (group, key).get_boolean ();
     }
 
     public override void
-    set_bool (string group, string key, bool value) throws Error
+    set_bool (string group, string key, bool value) throws GLib.Error
     {
       string full_key = group + "/" + key;
       Value val = this.get_value (group, key);
@@ -144,7 +144,7 @@ namespace DesktopAgnostic.Config
     }
 
     public override void
-    set_float (string group, string key, float value) throws Error
+    set_float (string group, string key, float value) throws GLib.Error
     {
       string full_key = group + "/" + key;
       Value val = this.get_value (group, key);
@@ -154,13 +154,13 @@ namespace DesktopAgnostic.Config
     }
 
     public override int
-    get_int (string group, string key) throws Error
+    get_int (string group, string key) throws GLib.Error
     {
       return this.get_value (group, key).get_int ();
     }
 
     public override void
-    set_int (string group, string key, int value) throws Error
+    set_int (string group, string key, int value) throws GLib.Error
     {
       string full_key = group + "/" + key;
       Value val = this.get_value (group, key);
@@ -170,13 +170,13 @@ namespace DesktopAgnostic.Config
     }
 
     public override string
-    get_string (string group, string key) throws Error
+    get_string (string group, string key) throws GLib.Error
     {
       return this.get_value (group, key).get_string ();
     }
 
     public override void
-    set_string (string group, string key, string value) throws Error
+    set_string (string group, string key, string value) throws GLib.Error
     {
       string full_key = group + "/" + key;
       Value val = this.get_value (group, key);
@@ -186,13 +186,13 @@ namespace DesktopAgnostic.Config
     }
 
     public override ValueArray
-    get_list (string group, string key) throws Error
+    get_list (string group, string key) throws GLib.Error
     {
       return (ValueArray)this.get_value (group, key).dup_boxed ();
     }
 
     public override void
-    set_list (string group, string key, ValueArray value) throws Error
+    set_list (string group, string key, ValueArray value) throws GLib.Error
     {
       string full_key = group + "/" + key;
       Value val = this.get_value (group, key);

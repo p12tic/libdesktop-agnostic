@@ -174,7 +174,7 @@ namespace DesktopAgnostic.Config
      * any value could not be parsed correctly
      */
     public
-    SchemaOption (ref KeyFile schema, string group, string key) throws Error
+    SchemaOption (ref KeyFile schema, string group, string key) throws GLib.Error
     {
       string full_key = group + "/" + key;
       this.parse_type (schema.get_value (full_key, "type"));
@@ -246,7 +246,7 @@ namespace DesktopAgnostic.Config
       return type;
     }
     private void
-    parse_default_value (KeyFile schema, string group) throws Error
+    parse_default_value (KeyFile schema, string group) throws GLib.Error
     {
       string key = "default";
       this._default_value = Value (this._type);

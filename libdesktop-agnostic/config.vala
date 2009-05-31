@@ -27,7 +27,7 @@ namespace DesktopAgnostic.Config
   /**
    * Errors which occur when setting/retrieving configuration options.
    */
-  public errordomain ConfigError
+  public errordomain Error
   {
     INVALID_TYPE,
     KEY_NOT_FOUND
@@ -97,12 +97,12 @@ namespace DesktopAgnostic.Config
      * Resets the configuration to the default values.
      * @throws Error if something wrong happened during the reset
      */
-    public abstract void reset () throws Error;
+    public abstract void reset () throws GLib.Error;
     /**
      * Removes all of the configuration.
      * @throws Error if the config removal could not be completed.
      */
-    public abstract void remove () throws Error;
+    public abstract void remove () throws GLib.Error;
     /**
      * Adds a notification callback to the specified key.
      * @param group the group the key is associated with
@@ -124,8 +124,8 @@ namespace DesktopAgnostic.Config
      * @throws Error if the callback is not associated with the key, among
      * other things
      */
-    public abstract void notify_remove (string group, string key, NotifyFunc callback) throws Error;
-    public abstract Value get_value (string group, string key) throws Error;
+    public abstract void notify_remove (string group, string key, NotifyFunc callback) throws GLib.Error;
+    public abstract Value get_value (string group, string key) throws GLib.Error;
     /**
      * Sets the configuration option to the specified value.
      * @param group the group the key is associated with
@@ -135,12 +135,12 @@ namespace DesktopAgnostic.Config
      * supported, or something bad happened while trying to set the value
      */
     public void
-    set_value (string group, string key, Value value) throws Error
+    set_value (string group, string key, Value value) throws GLib.Error
     {
       SchemaOption option = this._schema.get_option (group, key);
       if (option == null)
       {
-        throw new ConfigError.KEY_NOT_FOUND ("Could not find group and/or key in schema.");
+        throw new Error.KEY_NOT_FOUND ("Could not find group and/or key in schema.");
       }
       if (option.option_type == typeof (bool))
       {
@@ -167,7 +167,7 @@ namespace DesktopAgnostic.Config
         SchemaType st = this.schema.find_type (option.option_type);
         if (st == null)
         {
-          throw new ConfigError.INVALID_TYPE ("Invalid config value type.");
+          throw new Error.INVALID_TYPE ("Invalid config value type.");
         }
         else
         {
@@ -175,16 +175,16 @@ namespace DesktopAgnostic.Config
         }
       }
     }
-    public abstract bool get_bool (string group, string key) throws Error;
-    public abstract void set_bool (string group, string key, bool value) throws Error;
-    public abstract float get_float (string group, string key) throws Error;
-    public abstract void set_float (string group, string key, float value) throws Error;
-    public abstract int get_int (string group, string key) throws Error;
-    public abstract void set_int (string group, string key, int value) throws Error;
-    public abstract string get_string (string group, string key) throws Error;
-    public abstract void set_string (string group, string key, string value) throws Error;
-    public abstract ValueArray get_list (string group, string key) throws Error;
-    public abstract void set_list (string group, string key, ValueArray value) throws Error;
+    public abstract bool get_bool (string group, string key) throws GLib.Error;
+    public abstract void set_bool (string group, string key, bool value) throws GLib.Error;
+    public abstract float get_float (string group, string key) throws GLib.Error;
+    public abstract void set_float (string group, string key, float value) throws GLib.Error;
+    public abstract int get_int (string group, string key) throws GLib.Error;
+    public abstract void set_int (string group, string key, int value) throws GLib.Error;
+    public abstract string get_string (string group, string key) throws GLib.Error;
+    public abstract void set_string (string group, string key, string value) throws GLib.Error;
+    public abstract ValueArray get_list (string group, string key) throws GLib.Error;
+    public abstract void set_list (string group, string key, ValueArray value) throws GLib.Error;
   }
 
   /**

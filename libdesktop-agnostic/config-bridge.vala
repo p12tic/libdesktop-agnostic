@@ -115,7 +115,7 @@ namespace DesktopAgnostic.Config
           SchemaType st = Schema.find_type (spec.value_type);
           if (st == null)
           {
-            throw new ConfigError.INVALID_TYPE ("Invalid property type to bind.");
+            throw new Error.INVALID_TYPE ("Invalid property type to bind.");
           }
           else
           {
@@ -198,7 +198,7 @@ namespace DesktopAgnostic.Config
             SchemaType st = Schema.find_type (spec.value_type);
             if (st == null)
             {
-              throw new ConfigError.INVALID_TYPE ("Invalid property type to remove a binding from.");
+              throw new Error.INVALID_TYPE ("Invalid property type to remove a binding from.");
             }
             else
             {

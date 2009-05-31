@@ -62,7 +62,7 @@ def build(bld):
     lib = bld.new_task_gen('cc', 'shlib')
     lib.source = ' '.join([
         'color.vala',
-        'config-iface.vala',
+        'config.vala',
         'config-bridge.vala',
         'config-schema.vala',
         'config-schema-option.vala',

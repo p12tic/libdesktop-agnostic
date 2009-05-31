@@ -14,7 +14,8 @@ Build-Depends: debhelper (>= 7),
                libgconf2-dev,
                libthunar-vfs-1-dev,
                libdbus-glib-1-dev,
-               libgnomevfs2-dev
+               libgnomevfs2-dev,
+               libgnome-desktop-dev,
 Standards-Version: 3.8.0
 Homepage: https://launchpad.net/libdesktop-agnostic
 
@@ -24,7 +25,7 @@ Depends: 	${shlibs:Depends},
 		${misc:Depends}, 
 		libglib2.0-0, 
 		libgtk2.0-0
-Suggests: libdesktop-agnostic-vfs, libdesktop-agnostic-cfg
+Suggests: libdesktop-agnostic-vfs, libdesktop-agnostic-cfg, libdesktop-agnostic-de
 Description: A desktop-agnostic library for GLib-based projects.
  This library provides an extensible configuration API, a unified virtual file
  system API, and a desktop item editor (all with pluggable backends) for
@@ -93,6 +94,35 @@ Description: A desktop-agnostic library for GLib-based projects.
  there are desktop-specific modules.
  .
  This package contains the GConf module.
+
+Package: libdesktop-agnostic-de-gnome
+Architecture: any
+Depends: 	${shlibs:Depends}, 
+		${misc:Depends}, 
+		libdesktop-agnostic0 (= ${binary:Version}), 
+		libgnome-desktop-2-11
+Provides: libdesktop-agnostic-de
+Description: A desktop-agnostic library for GLib-based projects.
+ This library provides an extensible configuration API, a unified virtual file
+ system API, and a desktop item editor (all with pluggable backends) for
+ GLib-based projects. It is not tied to any one desktop environment, although
+ there are desktop-specific modules.
+ .
+ This package contains the GNOME Desktop-based desktop entry module.
+
+Package: libdesktop-agnostic-de-glib
+Architecture: any
+Depends: 	${shlibs:Depends}, 
+		${misc:Depends}, 
+		libdesktop-agnostic0 (= ${binary:Version}), 
+Provides: libdesktop-agnostic-de
+Description: A desktop-agnostic library for GLib-based projects.
+ This library provides an extensible configuration API, a unified virtual file
+ system API, and a desktop item editor (all with pluggable backends) for
+ GLib-based projects. It is not tied to any one desktop environment, although
+ there are desktop-specific modules.
+ .
+ This package contains the GLib-based desktop entry module.
 
 Package: libdesktop-agnostic0-dbg
 Section: debug

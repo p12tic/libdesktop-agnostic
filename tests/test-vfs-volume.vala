@@ -41,7 +41,7 @@ public class TestVolume
     }
     catch (GLib.Error err)
     {
-      critical (err.message);
+      critical ("Error: %s", err.message);
     }
     return 0;
   }

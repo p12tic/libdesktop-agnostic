@@ -309,7 +309,7 @@ namespace DesktopAgnostic.Config
           }
           catch (SchemaError err)
           {
-            critical (err.message);
+            critical ("Schema error: %s", err.message);
           }
         }
       }
@@ -326,7 +326,7 @@ namespace DesktopAgnostic.Config
       }
       catch (Error err)
       {
-        critical (err.message);
+        critical ("Configuration error: %s", err.message);
       }
     }
   }

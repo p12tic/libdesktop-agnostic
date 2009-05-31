@@ -35,14 +35,14 @@ int main (string[] args)
     }
     catch (ColorParseError err)
     {
-      critical (err.message);
+      critical ("Color parse error: %s", err.message);
     }
     Color clr = (Color)cfg.get_value (Config.GROUP_DEFAULT, "color").get_object ();
     message ("cfg color = %s", clr.to_string ());
   }
   catch (Error err)
   {
-    critical (err.message);
+    critical ("Error: %s", err.message);
     return 1;
   }
   return 0;

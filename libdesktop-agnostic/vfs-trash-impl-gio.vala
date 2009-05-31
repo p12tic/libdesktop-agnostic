@@ -106,7 +106,7 @@ namespace DesktopAgnostic.VFS.Trash
       }
       catch (Error e)
       {
-        warning (e.message);
+        warning ("Trash error: %s", e.message);
       }
       if (files == null)
       {
@@ -126,7 +126,7 @@ namespace DesktopAgnostic.VFS.Trash
         }
         catch (Error e)
         {
-          warning (e.message);
+          warning ("Trash error: %s", e.message);
         }
       }
     }

@@ -44,7 +44,7 @@ public class TestTrash
     }
     catch (GLib.Error err)
     {
-      critical (err.message);
+      critical ("Error: %s", err.message);
     }
     return 0;
   }

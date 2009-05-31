@@ -53,7 +53,7 @@ int main (string[] args)
   }
   catch (Error err)
   {
-    critical (err.message);
+    critical ("Error: %s", err.message);
     return 1;
   }
   return 0;

@@ -34,8 +34,8 @@ int main (string[] args)
     VFS.File.Backend tmp = VFS.File.new_for_path (path);
     assert (tmp.exists);
     assert (tmp.file_type == VFS.File.FileType.DIRECTORY);
-    message (tmp.uri);
-    message (tmp.path);
+    message ("URI: %s", tmp.uri);
+    message ("Path: %s", tmp.path);
     tmp = null;
     string file_path = Path.build_filename (path, "desktop-agnostic-test");
     VFS.File.Backend file = VFS.File.new_for_path (file_path);
@@ -50,7 +50,7 @@ int main (string[] args)
   }
   catch (Error err)
   {
-    critical (err.message);
+    critical ("Error: %s", err.message);
   }
   return 0;
 }

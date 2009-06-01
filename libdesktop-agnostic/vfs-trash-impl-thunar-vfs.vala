@@ -23,6 +23,16 @@
 using DBus;
 using ThunarVfs;
 
+[DBus (name = "org.xfce.Trash")]
+public interface Xfce.Trash : DBus.Object
+{
+  public abstract void DisplayTrash (string display);
+  public abstract void EmptyTrash (string display) throws DBus.Error;
+  public abstract void MoveToTrash (string[] uris, string display);
+  public abstract bool QueryTrash ();
+  public signal void TrashChanged (bool full);
+}
+
 namespace DesktopAgnostic.VFS.Trash
 {
   private enum TrashState
@@ -35,7 +45,7 @@ namespace DesktopAgnostic.VFS.Trash
   {
     protected unowned ThunarVfs.Path trash;
     private Connection dbus;
-    private dynamic DBus.Object xfce_trash;
+    private Xfce.Trash xfce_trash;
     private uint _file_count;
     private Job job;
 
@@ -44,9 +54,9 @@ namespace DesktopAgnostic.VFS.Trash
       Monitor monitor;
       this.trash = ThunarVfs.Path.get_for_trash ();
       this.dbus = Bus.get (BusType.SESSION);
-      this.xfce_trash = this.dbus.get_object ("org.xfce.Thunar",
-                                              "/org/xfce/FileManager",
-                                              "org.xfce.Trash");
+      this.xfce_trash =
+        (Xfce.Trash)this.dbus.get_object ("org.xfce.Thunar",
+                                          "/org/xfce/FileManager");
       this.xfce_trash.TrashChanged += this.on_trash_changed;
       this._file_count = 0;
       this.update_file_count (TrashState.UNKNOWN);
@@ -112,7 +122,7 @@ namespace DesktopAgnostic.VFS.Trash
     send_to_trash (File.Backend file) throws GLib.Error
     {
       string[] uris = new string[] { file.uri };
-      this.xfce_trash.MoveToTrash(uris, "");
+      this.xfce_trash.MoveToTrash (uris, "");
     }
 
     public void empty ()

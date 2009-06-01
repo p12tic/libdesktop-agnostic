@@ -38,7 +38,7 @@ namespace DesktopAgnostic.Config
     private Datalist<List<NotifyData>> notifiers;
     public override string name
     {
-      get
+      owned get
       {
         return "Memory";
       }

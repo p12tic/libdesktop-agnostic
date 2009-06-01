@@ -68,7 +68,7 @@ namespace DesktopAgnostic.VFS.Volume
           GLib.Icon icon = this.vol.get_icon ();
           if (icon is GLib.ThemedIcon)
           {
-            unowned string[] icon_names = ((GLib.ThemedIcon)icon).names;
+            unowned string[] icon_names = (string[])(((GLib.ThemedIcon)icon).names);
             if (icon_names.length > 0)
             {
               this._icon = icon_names[0];

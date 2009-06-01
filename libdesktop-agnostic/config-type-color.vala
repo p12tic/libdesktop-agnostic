@@ -29,7 +29,7 @@ namespace DesktopAgnostic.Config
     const string DEFAULT_KEY = "default";
     public override string name
     {
-      get
+      owned get
       {
         return "color";
       }
@@ -42,7 +42,7 @@ namespace DesktopAgnostic.Config
       }
     }
     public override string
-    serialize (Value val)
+    serialize (Value val) throws SchemaError
     {
       unowned Color color = (Color)val.get_object ();
       return color.to_string ();

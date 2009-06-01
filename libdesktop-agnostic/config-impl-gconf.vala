@@ -36,7 +36,7 @@ namespace DesktopAgnostic.Config
 
     public override string name
     {
-      get
+      owned get
       {
         return "GConf";
       }
@@ -393,7 +393,8 @@ namespace DesktopAgnostic.Config
     }
 
     public override void
-    notify_remove (string group, string key, NotifyFunc callback)
+    notify_remove (string group, string key,
+                   NotifyFunc callback) throws GLib.Error
     {
       string full_key = this.generate_key (group, key);
       unowned SList<unowned NotifyData> notifications = this.notify_funcs.get_data (full_key);

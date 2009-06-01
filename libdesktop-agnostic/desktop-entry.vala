@@ -102,8 +102,8 @@ namespace DesktopAgnostic.DesktopEntry
      * The type of desktop entry, corresponding to the "Type" key.
      */
     public abstract DesktopEntry.Type entry_type { get; set; }
-    public abstract string name { get; set; }
-    public abstract string icon { get; set; }
+    public abstract string name { owned get; set; }
+    public abstract string icon { owned get; set; }
     public abstract bool get_boolean (string key);
     public abstract void set_boolean (string key, bool value);
     public abstract string get_string (string key);

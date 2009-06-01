@@ -180,7 +180,7 @@ namespace DesktopAgnostic.VFS.Trash
     }
 
     public void
-    send_to_trash (File.Backend uri)
+    send_to_trash (File.Backend uri) throws GLib.Error
     {
       URI g_uri, trash_uri;
       Result res;

@@ -33,7 +33,7 @@ namespace DesktopAgnostic.Config
      * The name of the schema type, used in the "type" and "list type" schema
      * options for for configuration keys.
      */
-    public abstract string name { get; }
+    public abstract string name { owned get; }
     /**
      * The GType associated with the schema type.
      */

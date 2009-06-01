@@ -157,7 +157,7 @@ namespace DesktopAgnostic.DesktopEntry
 
     public string name
     {
-      get
+      owned get
       {
         return this.item.get_string (DESKTOP_ITEM_NAME);
       }
@@ -169,7 +169,7 @@ namespace DesktopAgnostic.DesktopEntry
 
     public string icon
     {
-      get
+      owned get
       {
         return this.item.get_icon (Gtk.IconTheme.get_default ());
       }

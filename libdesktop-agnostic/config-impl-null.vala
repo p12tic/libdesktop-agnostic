@@ -26,7 +26,7 @@ namespace DesktopAgnostic.Config
   {
     public override string name
     {
-      get
+      owned get
       {
         return "null";
       }

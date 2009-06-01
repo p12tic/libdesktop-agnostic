@@ -35,7 +35,7 @@ namespace DesktopAgnostic.VFS.File
     private string _uri_str;
     protected override string impl_uri
     {
-      get
+      owned get
       {
         return this._uri_str;
       }

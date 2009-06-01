@@ -121,7 +121,7 @@ namespace DesktopAgnostic.Config
               }
               catch (SchemaError err)
               {
-                warning (err.message);
+                warning ("Schema error: %s", err.message);
               }
             }
             else

@@ -30,7 +30,7 @@ int main (string[] args)
   {
     VFS.Implementation vfs = VFS.get_default ();
     vfs.init ();
-    weak string path = Environment.get_tmp_dir ();
+    unowned string path = Environment.get_tmp_dir ();
     VFS.File.Backend tmp = VFS.File.new_for_path (path);
     assert (tmp.exists);
     assert (tmp.file_type == VFS.File.FileType.DIRECTORY);

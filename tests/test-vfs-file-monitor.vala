@@ -83,7 +83,7 @@ class TestFileMonitor
     }
     vfs = VFS.get_default ();
     vfs.init ();
-    weak string path = args[1];
+    unowned string path = args[1];
     file = VFS.File.new_for_path (path);
     monitor = file.monitor ();
     monitor.changed += on_change;

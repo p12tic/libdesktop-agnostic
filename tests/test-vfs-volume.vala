@@ -32,7 +32,7 @@ public class TestVolume
       VFS.Implementation vfs = VFS.get_default ();
       vfs.init ();
       VFS.Volume.Monitor vm = vfs.volume_monitor_get_default ();
-      foreach (weak VFS.Volume.Backend vol in vm.volumes)
+      foreach (unowned VFS.Volume.Backend vol in vm.volumes)
       {
         message ("Volume[%s] (Mounted=%s): %s", vol.name,
                  vol.is_mounted ().to_string(), vol.uri.uri);

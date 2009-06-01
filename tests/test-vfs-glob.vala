@@ -30,7 +30,7 @@ int main (string[] args)
   }
   Glob g = null;
   bool first_arg = false;
-  foreach (weak string arg in args)
+  foreach (unowned string arg in args)
   {
     // don't try to match the program arg
     if (!first_arg)
@@ -48,7 +48,7 @@ int main (string[] args)
       {
         g.append (arg);
       }
-      foreach (weak string path in g.paths)
+      foreach (unowned string path in g.paths)
       {
         stdout.printf ("%s\n", path);
       }

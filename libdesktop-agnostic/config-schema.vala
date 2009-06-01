@@ -43,22 +43,7 @@ namespace DesktopAgnostic.Config
    */
   public class Schema : Object
   {
-    private string filename;
-    private string _app_name;
-    public string app_name
-    {
-      get
-      {
-        return this._app_name;
-      }
-      construct
-      {
-        this._app_name = value;
-      }
-    }
-    private Datalist<SchemaOption> options;
-    private KeyFile data;
-    private HashTable<string,List<string>> keys;
+    // static code
     private static HashTable<Type,SchemaType> type_registry = 
       new HashTable<Type,SchemaType> ((HashFunc)type_hash,
                                       (EqualFunc)type_equal);
@@ -66,14 +51,16 @@ namespace DesktopAgnostic.Config
       new HashTable<string,SchemaType> (str_hash, str_equal);
     private static HashTable<string,Value?> common_metadata_keys =
       new HashTable<string,Value?> (str_hash, str_equal);
-    private List<string> valid_metadata_keys;
-    private Datalist<Value?> metadata_options;
     static construct
     {
-      // Load the type modules
-      List<string> type_modules = new List<string> ();
-      string[] paths = ModuleLoader.get_search_paths ();
-      SList<string> search_paths = new SList<string> ();
+      // Loads the type modules via the module search paths + cwd.
+      List<string> type_modules;
+      string[] paths;
+      SList<string> search_paths;
+
+      type_modules = new List<string> ();
+      paths = ModuleLoader.get_search_paths ();
+      search_paths = new SList<string> ();
       foreach (unowned string path in paths)
       {
         if (path != null)
@@ -82,54 +69,54 @@ namespace DesktopAgnostic.Config
         }
       }
       search_paths.append (Environment.get_current_dir ());
+
       foreach (unowned string path in search_paths)
       {
         if (!FileUtils.test (path, FileTest.IS_DIR))
         {
           continue;
         }
-        Glob found_modules;
-        string module = Path.build_filename (path, "libda-cfg-type-*");
-        unowned string[] modules_paths;
+        string module_glob = Path.build_filename (path, "libda-cfg-type-*");
         try
         {
-          found_modules = Glob.execute (module);
+          Glob found_modules;
+          unowned string[] modules_paths;
+
+          found_modules = Glob.execute (module_glob);
           modules_paths = found_modules.get_paths ();
+          foreach (unowned string module in modules_paths)
+          {
+            if (type_modules.find (module) == null)
+            {
+              ModuleLoader loader =
+                new ModuleLoader (Path.get_basename (module));
+              if (loader.load_from_path (module))
+              {
+                try
+                {
+                  Type type = loader.module_type;
+                  Object obj = Object.new (type);
+
+                  register_type ((SchemaType)((owned)obj));
+                  type_modules.append (module);
+                }
+                catch (SchemaError err)
+                {
+                  warning ("Schema error: %s", err.message);
+                }
+              }
+              else
+              {
+                warning ("Could not load the config type module: %s", module);
+              }
+            }
+          }
         }
         catch (GlobError err)
         {
-          if (err is GlobError.NOMATCH)
-          {
-            continue;
-          }
-          else
+          if (!(err is GlobError.NOMATCH))
           {
             throw err;
-          }
-        }
-        foreach (unowned string fm in modules_paths)
-        {
-          if (type_modules.find (fm) == null)
-          {
-            ModuleLoader loader = new ModuleLoader (Path.get_basename (fm));
-            if (loader.load_from_path (fm))
-            {
-              try
-              {
-                Type type = loader.module_type;
-                Object obj = Object.new (type);
-                register_type ((SchemaType)((owned)obj));
-                type_modules.append (fm);
-              }
-              catch (SchemaError err)
-              {
-                warning ("Schema error: %s", err.message);
-              }
-            }
-            else
-            {
-              warning ("Could not load the config type module: %s", fm);
-            }
           }
         }
       }
@@ -138,25 +125,49 @@ namespace DesktopAgnostic.Config
       val.set_boolean (true);
       common_metadata_keys.insert ("single_instance", val);
     }
+    // properties
+    private string _filename;
+    public string filename
+    {
+      /**
+       * Sets the schema's file name and app name (assuming the file name
+       * is valid).
+       */
+      construct
+      {
+        string? basename = null;
+
+        if (!value.has_suffix (".schema-ini"))
+        {
+          throw new SchemaError.PARSE ("Schema files MUST have the extension '.schema-ini'.");
+        }
+        if (!FileUtils.test (value, FileTest.EXISTS))
+        {
+          throw new SchemaError.PARSE ("The file '%s' could not be found.",
+                                       value);
+        }
+        this._filename = value;
+        basename = Path.get_basename (value);
+        this.app_name = basename.substring (0, basename.length - 11);
+      }
+    }
+    [Description (nick = "Application name", blurb = "The name of the application associated with the schema")]
+    public string app_name { get; private set; }
+    private Datalist<SchemaOption> options;
+    private HashTable<string,List<string>> keys;
+    private List<string> valid_metadata_keys;
+    private Datalist<Value?> metadata_options;
     /**
      * Creates a new Schema object.
      * @param backend the configuration backend associated with the schema
      * @param filename the name of the schema file to parse
      */
-    public Schema (Backend backend, string filename) throws Error
+    public Schema (Backend backend, string filename) throws GLib.Error
     {
-      string basename = null;
-      unowned HashTable<string,Value?> backend_metadata_keys;
-      if (!filename.has_suffix (".schema-ini"))
-      {
-        throw new SchemaError.PARSE ("Schema files MUST have the extension '.schema-ini'.");
-      }
       this.filename = filename;
-      basename = Path.get_basename (filename);
-      this.app_name = basename.substring (0, basename.length - 11);
+      unowned HashTable<string,Value?> backend_metadata_keys;
       this.options = Datalist<SchemaOption> ();
       this.keys = new HashTable<string,List<string>> (str_hash, str_equal);
-      this.data = new KeyFile ();
       // populate the common metadata keys table
       this.valid_metadata_keys = new List<string> ();
       this.metadata_options = Datalist<Value?> ();
@@ -176,85 +187,96 @@ namespace DesktopAgnostic.Config
       }
       this.parse ();
     }
+    /**
+     * Parses the schema file for configuration options and metadata.
+     */
     private void
     parse () throws GLib.Error
     {
-      this.data.load_from_file (this.filename, KeyFileFlags.KEEP_TRANSLATIONS);
-      foreach (unowned string group in this.data.get_groups ())
+      if (this._filename == null)
       {
-        if (group.contains ("/"))
+        throw new SchemaError.PARSE ("A (valid) schema file was not given.");
+      }
+      else
+      {
+        KeyFile data = new KeyFile ();
+        data.load_from_file (this._filename, KeyFileFlags.KEEP_TRANSLATIONS);
+        foreach (unowned string group in data.get_groups ())
         {
-          // split option group & key, add to groups/keys lists
-          unowned string last_slash = group.rchr (group.length, '/');
-          long offset = group.pointer_to_offset (last_slash);
-          string option_group = group.substring (0, offset);
-          unowned string option_key = group.offset (offset + 1);
-          unowned List<string>? list = this.keys.lookup (option_group);
-          if (list == null)
+          if (group.contains ("/"))
           {
-            List<string> key_list = new List<string> ();
-            key_list.append (option_key);
-            this.keys.insert (option_group, (owned)key_list);
-          }
-          else if (!this.exists (option_group, option_key))
-          {
-            list.append (option_key);
-          }
-          else
-          {
-            throw new SchemaError.PARSE ("Duplicate key found in '%s': %s",
-                                         option_group, option_key);
-          }
-          // create a new schema option and add to options list
-          SchemaOption option = new SchemaOption (ref this.data, option_group,
-                                                  option_key);
-          this.options.set_data (group, option);
-        }
-        else if (group == DesktopAgnostic.Config.GROUP_DEFAULT)
-        {
-          // parse the schema metadata
-          foreach (unowned string key in this.data.get_keys (group))
-          {
-            if (this.valid_metadata_keys.find (key) == null)
+            // split option group & key, add to groups/keys lists
+            unowned string last_slash = group.rchr (group.length, '/');
+            long offset = group.pointer_to_offset (last_slash);
+            string option_group = group.substring (0, offset);
+            unowned string option_key = group.offset (offset + 1);
+            unowned List<string>? list = this.keys.lookup (option_group);
+            if (list == null)
             {
-              throw new SchemaError.INVALID_METADATA_OPTION ("The option '%s' is not a registered metadata option.", key);
+              List<string> key_list = new List<string> ();
+              key_list.append (option_key);
+              this.keys.insert (option_group, (owned)key_list);
+            }
+            else if (!this.exists (option_group, option_key))
+            {
+              list.append (option_key);
             }
             else
             {
-              Value cur_val, new_val;
-              Type cur_val_type;
-
-              cur_val = this.metadata_options.get_data (key);
-              cur_val_type = cur_val.type ();
-              new_val = Value (cur_val_type);
-              if (cur_val_type == typeof (bool))
+              throw new SchemaError.PARSE ("Duplicate key found in '%s': %s",
+                                           option_group, option_key);
+            }
+            // create a new schema option and add to options list
+            SchemaOption option = new SchemaOption (ref data, option_group,
+                                                    option_key);
+            this.options.set_data (group, option);
+          }
+          else if (group == DesktopAgnostic.Config.GROUP_DEFAULT)
+          {
+            // parse the schema metadata
+            foreach (unowned string key in data.get_keys (group))
+            {
+              if (this.valid_metadata_keys.find (key) == null)
               {
-                new_val.set_boolean (this.data.get_boolean (group, key));
-              }
-              else if (cur_val_type == typeof (int))
-              {
-                new_val.set_int (this.data.get_integer (group, key));
-              }
-              else if (cur_val_type == typeof (float))
-              {
-                new_val.set_float ((float)this.data.get_double (group, key));
-              }
-              else if (cur_val_type == typeof (string))
-              {
-                new_val.set_string (this.data.get_string (group, key));
+                throw new SchemaError.INVALID_METADATA_OPTION ("The option '%s' is not a registered metadata option.", key);
               }
               else
               {
-                throw new SchemaError.INVALID_METADATA_TYPE ("The metadata option type can only be a simple type.");
+                Value cur_val, new_val;
+                Type cur_val_type;
+
+                cur_val = this.metadata_options.get_data (key);
+                cur_val_type = cur_val.type ();
+                new_val = Value (cur_val_type);
+                if (cur_val_type == typeof (bool))
+                {
+                  new_val.set_boolean (data.get_boolean (group, key));
+                }
+                else if (cur_val_type == typeof (int))
+                {
+                  new_val.set_int (data.get_integer (group, key));
+                }
+                else if (cur_val_type == typeof (float))
+                {
+                  new_val.set_float ((float)data.get_double (group, key));
+                }
+                else if (cur_val_type == typeof (string))
+                {
+                  new_val.set_string (data.get_string (group, key));
+                }
+                else
+                {
+                  throw new SchemaError.INVALID_METADATA_TYPE ("The metadata option type can only be a simple type.");
+                }
+                this.metadata_options.set_data (key, new_val);
               }
-              this.metadata_options.set_data (key, new_val);
             }
           }
-        }
-        else
-        {
-          throw new SchemaError.PARSE ("Invalid section in schema ('%s'): %s",
-                                       this.filename, group);
+          else
+          {
+            throw new SchemaError.PARSE ("Invalid section in schema ('%s'): %s",
+                                         this._filename, group);
+          }
         }
       }
     }
@@ -318,11 +340,17 @@ namespace DesktopAgnostic.Config
         return this.metadata_options.get_data (name);
       }
     }
+    /**
+     * Used by HashTable to hash GTypes.
+     */
     private static uint
     type_hash (void* key)
     {
       return (uint)key;
     }
+    /**
+     * Used by HashTable to determine if GTypes are equal.
+     */
     private static bool
     type_equal (void* a, void* b)
     {

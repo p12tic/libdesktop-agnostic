@@ -60,9 +60,16 @@ class TestFileMonitor
 
   private static bool do_emit ()
   {
-    string filename = Path.build_filename (file.path, "test-vfs-file.txt");
-    VFS.File.Backend other = VFS.File.new_for_path (filename);
-    monitor.emit (other, VFS.File.MonitorEvent.CREATED);
+    try
+    {
+      string filename = Path.build_filename (file.path, "test-vfs-file.txt");
+      VFS.File.Backend other = VFS.File.new_for_path (filename);
+      monitor.emit (other, VFS.File.MonitorEvent.CREATED);
+    }
+    catch (Error err)
+    {
+      critical ("Error: %s", err.message);
+    }
     return false;
   }
 

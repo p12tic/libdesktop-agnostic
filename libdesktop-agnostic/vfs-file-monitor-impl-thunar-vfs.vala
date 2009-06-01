@@ -52,21 +52,28 @@ namespace DesktopAgnostic.VFS.File
     }
     private void monitor_callback (ThunarVfs.Monitor monitor, ThunarVfs.MonitorHandle handle, ThunarVfs.MonitorEvent event, ThunarVfs.Path handle_path, ThunarVfs.Path event_path)
     {
-      Backend event_file = File.new_for_uri (event_path.dup_uri ());
-      MonitorEvent da_event = MonitorEvent.UNKNOWN;
-      switch (event)
+      try
       {
-        case ThunarVfs.MonitorEvent.CHANGED:
-          da_event = MonitorEvent.CHANGED;
-          break;
-        case ThunarVfs.MonitorEvent.CREATED:
-          da_event = MonitorEvent.CREATED;
-          break;
-        case ThunarVfs.MonitorEvent.DELETED:
-          da_event = MonitorEvent.DELETED;
-          break;
+        Backend event_file = File.new_for_uri (event_path.dup_uri ());
+        MonitorEvent da_event = MonitorEvent.UNKNOWN;
+        switch (event)
+        {
+          case ThunarVfs.MonitorEvent.CHANGED:
+            da_event = MonitorEvent.CHANGED;
+            break;
+          case ThunarVfs.MonitorEvent.CREATED:
+            da_event = MonitorEvent.CREATED;
+            break;
+          case ThunarVfs.MonitorEvent.DELETED:
+            da_event = MonitorEvent.DELETED;
+            break;
+        }
+        this.changed (this.file, event_file, da_event);
       }
-      this.changed (this.file, event_file, da_event);
+      catch (Error err)
+      {
+        critical ("Error: %s", err.message);
+      }
     }
     public void emit (Backend? other, MonitorEvent event)
     {

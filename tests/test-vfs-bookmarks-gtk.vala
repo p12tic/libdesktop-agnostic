@@ -55,8 +55,16 @@ main (string[] args)
   }
   else
   {
-    VFS.File.Backend file = VFS.File.new_for_path (args[1]);
-    parser = new GtkParser (file);
+    try
+    {
+      VFS.File.Backend file = VFS.File.new_for_path (args[1]);
+      parser = new GtkParser (file);
+    }
+    catch (GLib.Error err)
+    {
+      critical ("Error: %s", err.message);
+      return 1;
+    }
   }
   print_bookmarks (parser);
   parser.changed.connect (print_bookmarks);

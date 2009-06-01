@@ -36,20 +36,6 @@ namespace DesktopAgnostic.VFS
   public class Glob : Object
   {
     private glob_t glob;
-    public size_t length
-    {
-      get
-      {
-        return this.glob.path_count;
-      }
-    }
-    public unowned string[]? paths
-    {
-      get
-      {
-        return this.glob.paths;
-      }
-    }
     public size_t offset
     {
       get
@@ -115,6 +101,11 @@ namespace DesktopAgnostic.VFS
     append (string pattern) throws GlobError
     {
       this.run_glob (pattern, this._flags | glob_t.APPEND);
+    }
+    public unowned string[]?
+    get_paths ()
+    {
+      return this.glob.paths;
     }
     private void
     run_glob (string pattern, int flags) throws GlobError

@@ -48,7 +48,7 @@ int main (string[] args)
       {
         g.append (arg);
       }
-      foreach (unowned string path in g.paths)
+      foreach (unowned string path in g.get_paths ())
       {
         stdout.printf ("%s\n", path);
       }

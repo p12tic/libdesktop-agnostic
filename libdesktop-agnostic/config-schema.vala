@@ -90,9 +90,11 @@ namespace DesktopAgnostic.Config
         }
         Glob found_modules;
         string module = Path.build_filename (path, "libda-cfg-type-*");
+        unowned string[] modules_paths;
         try
         {
           found_modules = Glob.execute (module);
+          modules_paths = found_modules.get_paths ();
         }
         catch (GlobError err)
         {
@@ -105,7 +107,7 @@ namespace DesktopAgnostic.Config
             throw err;
           }
         }
-        foreach (unowned string fm in found_modules.paths)
+        foreach (unowned string fm in modules_paths)
         {
           if (type_modules.find (fm) == null)
           {

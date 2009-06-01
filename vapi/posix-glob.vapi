@@ -26,9 +26,7 @@ namespace POSIX
   public struct glob_t
   {
     // properties
-    [CCode (cname = "gl_pathc")]
-    public size_t path_count;
-    [CCode (cname = "gl_pathv")]
+    [CCode (cname = "gl_pathv", array_length_cname = "gl_pathc")]
     public string[]? paths;
     [CCode (cname = "gl_offs")]
     public size_t offset;

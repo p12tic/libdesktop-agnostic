@@ -62,6 +62,8 @@ def configure(conf):
 
     conf.check_tool('compiler_cc misc vala')
 
+    MIN_VALA_VERSION = '0.7.3'
+
     conf.check_cfg(package='gmodule-2.0', uselib_store='GMODULE',
                    atleast_version='2.6.0', mandatory=True,
                    args='--cflags --libs')
@@ -74,9 +76,6 @@ def configure(conf):
     # Needed for the Color class
     conf.check_cfg(package='gdk-2.0', uselib_store='GDK',
                    atleast_version='2.12.0', mandatory=True,
-                   args='--cflags --libs')
-    conf.check_cfg(package='vala-1.0', uselib_store='VALA',
-                   atleast_version='0.7.3', mandatory=True,
                    args='--cflags --libs')
     if 'gconf' in conf.env['BACKENDS_CFG']:
         conf.check_cfg(package='glib-2.0', uselib_store='GREGEX',
@@ -94,13 +93,19 @@ def configure(conf):
         conf.check_cfg(package='dbus-glib-1', uselib_store='DBUS_GLIB',
                        mandatory=True, args='--cflags --libs')
     if 'gnome-vfs' in conf.env['BACKENDS_VFS']:
+        MIN_VALA_VERSION = '0.7.4'
         conf.check_cfg(package='gnome-vfs-2.0', uselib_store='GNOME_VFS',
                        atleast_version='2.6.0', mandatory=True,
                        args='--cflags --libs')
     if 'gnome' in conf.env['BACKENDS_DE']:
+        MIN_VALA_VERSION = '0.7.4'
         conf.check_cfg(package='gnome-desktop-2.0',
                        uselib_store='GNOME_DESKTOP', mandatory=True,
                        args='--cflags --libs')
+    # make sure we have the proper Vala version
+    conf.check_cfg(package='vala-1.0', uselib_store='VALA',
+                   atleast_version=MIN_VALA_VERSION, mandatory=True,
+                   args='--cflags --libs')
 
     conf.define('API_VERSION', str(API_VERSION))
     conf.define('VERSION', str(VERSION))

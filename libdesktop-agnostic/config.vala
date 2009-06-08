@@ -187,6 +187,8 @@ namespace DesktopAgnostic.Config
     public abstract void set_list (string group, string key, ValueArray value) throws GLib.Error;
   }
 
+  private static Type? module_type = null;
+
   /**
    * Retrieve the default config backend type.
    * @return Config.Backend-based type on succes, Type.INVALID on failure
@@ -194,7 +196,11 @@ namespace DesktopAgnostic.Config
   public Type
   get_type () throws GLib.Error
   {
-    return get_module_type ("cfg", "config");
+    if (module_type == null)
+    {
+      module_type = get_module_type ("cfg", "config");
+    }
+    return module_type;
   }
 
   /**

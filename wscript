@@ -84,6 +84,7 @@ def configure(conf):
         conf.check_cfg(package='gconf-2.0', uselib_store='GCONF',
                        mandatory=True, args='--cflags --libs')
     if 'gio' in conf.env['BACKENDS_VFS']:
+        MIN_VALA_VERSION = '0.7.4'
         conf.check_cfg(package='gio-2.0', uselib_store='GIO',
                        atleast_version='2.18.0', mandatory=True,
                        args='--cflags --libs')

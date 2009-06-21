@@ -39,7 +39,7 @@ namespace DesktopAgnostic.VFS.File
       GLib.File impl = (GLib.File)file.implementation;
       if (file.file_type == FileType.DIRECTORY)
       {
-        this.monitor = FileMonitor.directory (impl, FileMonitorFlags.NONE, null);
+        this.monitor = impl.monitor_directory (FileMonitorFlags.NONE, null);
       }
       else
       {

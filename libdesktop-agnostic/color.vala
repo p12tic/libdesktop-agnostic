@@ -171,6 +171,69 @@ namespace DesktopAgnostic
       string gdk_str = this._color.to_string ();
       return "%s%04x".printf (gdk_str, this.alpha);
     }
+    /**
+     * Returns the color values as floats, where 0.0 < value <= 1.0.
+     */
+    public void
+    get_cairo_color (out float red = null, out float green = null,
+                     out float blue = null, out float alpha = null)
+    {
+      if (&red != null)
+      {
+        red = gdk_value_to_cairo ((ushort)this.red);
+      }
+      if (&green != null)
+      {
+        green = gdk_value_to_cairo ((ushort)this.green);
+      }
+      if (&blue != null)
+      {
+        blue = gdk_value_to_cairo ((ushort)this.blue);
+      }
+      if (&alpha != null)
+      {
+        alpha = gdk_value_to_cairo (this.alpha);
+      }
+    }
+    /**
+     * Sets the color with values as floats, where 0.0 < value <= 1.0.
+     */
+    public void
+    set_cairo_color (float red, float green, float blue, float alpha)
+    {
+      if (red > 0.0f && red <= 1.0f)
+      {
+        this.red = cairo_value_to_gdk (red);
+      }
+      if (green > 0.0f && green <= 1.0f)
+      {
+        this.green = cairo_value_to_gdk (green);
+      }
+      if (blue > 0.0f && blue <= 1.0f)
+      {
+        this.blue = cairo_value_to_gdk (blue);
+      }
+      if (alpha > 0.0f && alpha <= 1.0f)
+      {
+        this.alpha = cairo_value_to_gdk (alpha);
+      }
+    }
+    /**
+     * Converts a single RGBA value for cairo to its GDK/Pango equivalent.
+     */
+    public static ushort
+    cairo_value_to_gdk (float value)
+    {
+      return (ushort)(Math.lround (value * 65536) - 1);
+    }
+    /**
+     * Converts a single RGBA value for GDK/Pango to its cairo equivalent.
+     */
+    public static float
+    gdk_value_to_cairo (ushort value)
+    {
+      return (float)((value + 1) / 65536);
+    }
   }
 }
 

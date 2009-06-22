@@ -55,7 +55,7 @@ namespace DesktopAgnostic.Config
    */
   public abstract class Backend : Object
   {
-    public abstract string name { get; }
+    public abstract string name { owned get; }
     private static HashTable<string,Value?> _backend_metadata_keys;
     static construct
     {

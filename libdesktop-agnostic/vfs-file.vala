@@ -46,12 +46,12 @@ namespace DesktopAgnostic.VFS.File
      * Implementation detail. Implementing classes override this to allow the
      * uri property to return the correct value.
      */
-    protected abstract string impl_uri { get; }
+    protected abstract string impl_uri { owned get; }
     /**
      * The URI that the object represents.
      */
     public string uri {
-      get
+      owned get
       {
         return this.impl_uri;
       }

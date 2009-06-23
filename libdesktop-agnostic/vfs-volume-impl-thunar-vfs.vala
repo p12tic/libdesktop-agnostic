@@ -56,7 +56,7 @@ namespace DesktopAgnostic.VFS.Volume
     }
     public string? icon
     {
-      get
+      owned get
       {
         return this.vol.lookup_icon_name (Gtk.IconTheme.get_default ());
       }

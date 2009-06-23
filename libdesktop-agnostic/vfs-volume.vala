@@ -44,7 +44,7 @@ namespace DesktopAgnostic.VFS.Volume
      * Either an icon name usable with gtk.IconTheme, or an absolute path to
      * an image (either of which are associated with the volume).
      */
-    public abstract string? icon { get; }
+    public abstract string? icon { owned get; }
     /**
      * Tells whether the volume is mounted.
      */

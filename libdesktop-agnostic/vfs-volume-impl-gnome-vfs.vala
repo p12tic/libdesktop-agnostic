@@ -62,7 +62,7 @@ namespace DesktopAgnostic.VFS.Volume
     }
     public string? icon
     {
-      get
+      owned get
       {
         return this.drive.get_icon ();
       }

@@ -124,10 +124,16 @@ namespace DesktopAgnostic.DesktopEntry
     public abstract void save (VFS.File.Backend? new_file) throws GLib.Error;
   }
 
+  private static GLib.Type? module_type = null;
+
   public GLib.Type
   get_type () throws GLib.Error
   {
-    return get_module_type ("de", "desktop-entry");
+    if (module_type == null)
+    {
+      module_type = get_module_type ("de", "desktop-entry");
+    }
+    return module_type;
   }
 
   /**

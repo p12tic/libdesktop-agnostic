@@ -172,11 +172,11 @@ namespace DesktopAgnostic
       return "%s%04x".printf (gdk_str, this.alpha);
     }
     /**
-     * Returns the color values as floats, where 0.0 < value <= 1.0.
+     * Returns the color values as doubles, where 0.0 < value <= 1.0.
      */
     public void
-    get_cairo_color (out float red = null, out float green = null,
-                     out float blue = null, out float alpha = null)
+    get_cairo_color (out double red = null, out double green = null,
+                     out double blue = null, out double alpha = null)
     {
       if (&red != null)
       {
@@ -196,10 +196,10 @@ namespace DesktopAgnostic
       }
     }
     /**
-     * Sets the color with values as floats, where 0.0 < value <= 1.0.
+     * Sets the color with values as doubles, where 0.0 < value <= 1.0.
      */
     public void
-    set_cairo_color (float red, float green, float blue, float alpha)
+    set_cairo_color (double red, double green, double blue, double alpha)
     {
       if (red > 0.0f && red <= 1.0f)
       {
@@ -222,17 +222,17 @@ namespace DesktopAgnostic
      * Converts a single RGBA value for cairo to its GDK/Pango equivalent.
      */
     public static ushort
-    cairo_value_to_gdk (float value)
+    cairo_value_to_gdk (double value)
     {
       return (ushort)(Math.lround (value * 65536) - 1);
     }
     /**
      * Converts a single RGBA value for GDK/Pango to its cairo equivalent.
      */
-    public static float
+    public static double
     gdk_value_to_cairo (ushort value)
     {
-      return (float)((value + 1) / 65536);
+      return (value + 1) / 65536.0;
     }
   }
 }

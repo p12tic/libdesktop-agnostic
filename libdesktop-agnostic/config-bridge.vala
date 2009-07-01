@@ -324,7 +324,7 @@ namespace DesktopAgnostic.Config
         obj.get_property (spec.name, ref val);
         binding.cfg.set_value (binding.group, binding.key, val);
       }
-      catch (Error err)
+      catch (GLib.Error err)
       {
         critical ("Configuration error: %s", err.message);
       }

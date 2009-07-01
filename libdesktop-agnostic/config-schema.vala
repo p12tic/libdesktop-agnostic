@@ -116,7 +116,7 @@ namespace DesktopAgnostic.Config
         {
           if (!(err is GlobError.NOMATCH))
           {
-            throw err;
+            warning ("Glob-related error: %s", err.message);
           }
         }
       }

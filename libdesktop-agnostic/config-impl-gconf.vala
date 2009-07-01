@@ -1,4 +1,4 @@
-/* 
+/*
  * GConf implementation of the configuration interface.
  *
  * Copyright (C) 2008, 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>
@@ -208,7 +208,7 @@ namespace DesktopAgnostic.Config
       {
         Type list_type;
         list_type = this.valuetype_to_type (gc_val.get_list_type (), false);
-        value.set_boxed (this.slist_to_valuearray (gc_val.get_list (), 
+        value.set_boxed (this.slist_to_valuearray (gc_val.get_list (),
                                                    list_type));
       }
       else

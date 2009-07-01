@@ -1,4 +1,4 @@
-/* 
+/*
  * Desktop Agnostic Library: Test for the file (monitor) implementations.
  *
  * Copyright (C) 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>

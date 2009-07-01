@@ -52,7 +52,7 @@ namespace DesktopAgnostic.VFS.Trash
     }
 
     private void
-    on_trash_changed (File.Monitor monitor, 
+    on_trash_changed (File.Monitor monitor,
                       File.Backend file,
                       File.Backend? other_file,
                       File.MonitorEvent event_type)

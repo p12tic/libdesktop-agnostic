@@ -1,4 +1,4 @@
-/* 
+/*
  * Desktop Agnostic Library: File implementation (with Thunar VFS).
  *
  * Copyright (C) 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>

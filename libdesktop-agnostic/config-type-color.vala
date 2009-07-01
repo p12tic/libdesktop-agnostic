@@ -1,4 +1,4 @@
-/* 
+/*
  * Registers DesktopAgnostic.Color as a valid configuration type.
  *
  * Copyright (C) 2008, 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>

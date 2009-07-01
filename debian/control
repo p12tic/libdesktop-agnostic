@@ -21,9 +21,9 @@ Homepage: https://launchpad.net/libdesktop-agnostic
 
 Package: libdesktop-agnostic0
 Architecture: any
-Depends: 	${shlibs:Depends}, 
-		${misc:Depends}, 
-		libglib2.0-0, 
+Depends: 	${shlibs:Depends},
+		${misc:Depends},
+		libglib2.0-0,
 		libgtk2.0-0
 Suggests: libdesktop-agnostic-vfs, libdesktop-agnostic-cfg, libdesktop-agnostic-de
 Description: A desktop-agnostic library for GLib-based projects.
@@ -36,9 +36,9 @@ Description: A desktop-agnostic library for GLib-based projects.
 
 Package: libdesktop-agnostic-vfs-gnome
 Architecture: any
-Depends: 	${shlibs:Depends}, 
-		${misc:Depends}, 
-		libdesktop-agnostic0 (= ${binary:Version}), 
+Depends: 	${shlibs:Depends},
+		${misc:Depends},
+		libdesktop-agnostic0 (= ${binary:Version}),
 		libgnomevfs2-0
 Provides: libdesktop-agnostic-vfs
 Description: A desktop-agnostic library for GLib-based projects.
@@ -51,10 +51,10 @@ Description: A desktop-agnostic library for GLib-based projects.
 
 Package: libdesktop-agnostic-vfs-thunar
 Architecture: any
-Depends: 	${shlibs:Depends}, 
-		${misc:Depends}, 
-		libdesktop-agnostic0 (= ${binary:Version}), 
-		libthunar-vfs-1-2, 
+Depends: 	${shlibs:Depends},
+		${misc:Depends},
+		libdesktop-agnostic0 (= ${binary:Version}),
+		libthunar-vfs-1-2,
 		libdbus-glib-1-2
 Provides: libdesktop-agnostic-vfs
 Description: A desktop-agnostic library for GLib-based projects.
@@ -67,9 +67,9 @@ Description: A desktop-agnostic library for GLib-based projects.
 
 Package: libdesktop-agnostic-vfs-gio
 Architecture: any
-Depends: 	${shlibs:Depends}, 
-		${misc:Depends}, 
-		libdesktop-agnostic0 (= ${binary:Version}), 
+Depends: 	${shlibs:Depends},
+		${misc:Depends},
+		libdesktop-agnostic0 (= ${binary:Version}),
 		libglib2.0-0 (>= 2.16.0)
 Provides: libdesktop-agnostic-vfs
 Description: A desktop-agnostic library for GLib-based projects.
@@ -82,9 +82,9 @@ Description: A desktop-agnostic library for GLib-based projects.
 
 Package: libdesktop-agnostic-cfg-gconf
 Architecture: any
-Depends: 	${shlibs:Depends}, 
-		${misc:Depends}, 
-		libdesktop-agnostic0 (= ${binary:Version}), 
+Depends: 	${shlibs:Depends},
+		${misc:Depends},
+		libdesktop-agnostic0 (= ${binary:Version}),
 		libgconf2-4
 Provides: libdesktop-agnostic-cfg
 Description: A desktop-agnostic library for GLib-based projects.
@@ -97,9 +97,9 @@ Description: A desktop-agnostic library for GLib-based projects.
 
 Package: libdesktop-agnostic-de-gnome
 Architecture: any
-Depends: 	${shlibs:Depends}, 
-		${misc:Depends}, 
-		libdesktop-agnostic0 (= ${binary:Version}), 
+Depends: 	${shlibs:Depends},
+		${misc:Depends},
+		libdesktop-agnostic0 (= ${binary:Version}),
 		libgnome-desktop-2-11
 Provides: libdesktop-agnostic-de
 Description: A desktop-agnostic library for GLib-based projects.
@@ -112,9 +112,9 @@ Description: A desktop-agnostic library for GLib-based projects.
 
 Package: libdesktop-agnostic-de-glib
 Architecture: any
-Depends: 	${shlibs:Depends}, 
-		${misc:Depends}, 
-		libdesktop-agnostic0 (= ${binary:Version}), 
+Depends: 	${shlibs:Depends},
+		${misc:Depends},
+		libdesktop-agnostic0 (= ${binary:Version}),
 Provides: libdesktop-agnostic-de
 Description: A desktop-agnostic library for GLib-based projects.
  This library provides an extensible configuration API, a unified virtual file
@@ -127,8 +127,8 @@ Description: A desktop-agnostic library for GLib-based projects.
 Package: libdesktop-agnostic0-dbg
 Section: debug
 Architecture: any
-Depends: 	${shlibs:Depends}, 
-		${misc:Depends}, 
+Depends: 	${shlibs:Depends},
+		${misc:Depends},
 		libdesktop-agnostic0 (= ${binary:Version})
 Description: A desktop-agnostic library for GLib-based projects.
  This library provides an extensible configuration API, a unified virtual file
@@ -140,10 +140,10 @@ Description: A desktop-agnostic library for GLib-based projects.
 
 Package: libdesktop-agnostic-dev
 Architecture: any
-Depends: 	${shlibs:Depends}, 
-		${misc:Depends}, 
-		libdesktop-agnostic0 (= ${binary:Version}), 
-		libglib2.0-dev, 
+Depends: 	${shlibs:Depends},
+		${misc:Depends},
+		libdesktop-agnostic0 (= ${binary:Version}),
+		libglib2.0-dev,
 		libgtk2.0-dev
 Description: A desktop-agnostic library for GLib-based projects.
  This library provides an extensible configuration API, a unified virtual file
@@ -155,9 +155,9 @@ Description: A desktop-agnostic library for GLib-based projects.
 
 Package: vala-libdesktop-agnostic
 Architecture: all
-Depends: 	${shlibs:Depends}, 
-		${misc:Depends}, 
-		libdesktop-agnostic0 (>= ${source:Version}), 
+Depends: 	${shlibs:Depends},
+		${misc:Depends},
+		libdesktop-agnostic0 (>= ${source:Version}),
 		valac (>= 0.5.8)
 Description: A desktop-agnostic library for GLib-based projects.
  This library provides an extensible configuration API, a unified virtual file

@@ -1,4 +1,4 @@
-/* 
+/*
  * Desktop Agnostic Library: VFS implementation interface.
  *
  * Copyright (C) 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>
@@ -40,7 +40,7 @@ namespace DesktopAgnostic.VFS
   }
 
   private static Implementation vfs = null;
-  
+
   public unowned VFS.Implementation?
   get_default () throws GLib.Error
   {

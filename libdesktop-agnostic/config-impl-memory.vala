@@ -1,4 +1,4 @@
-/* 
+/*
  * An in-memory implemenation of the Config interface.
  *
  * Copyright (C) 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>

@@ -1,4 +1,4 @@
-/* 
+/*
  * Desktop Agnostic Library: Configuration Schema.
  *
  * Copyright (C) 2008, 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>
@@ -44,7 +44,7 @@ namespace DesktopAgnostic.Config
   public class Schema : Object
   {
     // static code
-    private static HashTable<Type,SchemaType> type_registry = 
+    private static HashTable<Type,SchemaType> type_registry =
       new HashTable<Type,SchemaType> ((HashFunc)type_hash,
                                       (EqualFunc)type_equal);
     private static HashTable<string,SchemaType> name_registry =

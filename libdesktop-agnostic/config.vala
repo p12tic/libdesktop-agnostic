@@ -1,4 +1,4 @@
-/* 
+/*
  * Interface for the configuration implementations.
  *
  * Copyright (C) 2008, 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>

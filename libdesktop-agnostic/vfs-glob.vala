@@ -1,4 +1,4 @@
-/* 
+/*
  * Desktop Agnostic Library: glob() wrapper.
  *
  * Copyright (C) 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>

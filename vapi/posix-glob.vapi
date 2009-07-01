@@ -1,4 +1,4 @@
-/* 
+/*
  * Vala binding for POSIX glob() (with GNU extensions).
  *
  * Copyright (C) 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>

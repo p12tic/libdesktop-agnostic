@@ -1,4 +1,4 @@
-/* 
+/*
  * Desktop Agnostic Library: Test for the desktop entry implementations.
  *
  * Copyright (C) 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>

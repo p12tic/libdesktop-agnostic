@@ -1,4 +1,4 @@
-/* 
+/*
  * Desktop Agnostic Library: File interface (similar to GFile).
  *
  * Copyright (C) 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>

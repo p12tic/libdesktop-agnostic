@@ -1,4 +1,4 @@
-/* 
+/*
  * Desktop Agnostic Library: VFS implementation (with GIO).
  *
  * Copyright (C) 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>

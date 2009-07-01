@@ -46,7 +46,7 @@ namespace DesktopAgnostic.DesktopEntry
         else
         {
           string? path;
-          
+
           this._file = value;
           path = value.path;
           if (path == null)

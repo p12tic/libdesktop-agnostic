@@ -1,4 +1,4 @@
-/* 
+/*
  * A NULL implemenation of the Config interface. Used only for testing.
  *
  * Copyright (C) 2008, 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>

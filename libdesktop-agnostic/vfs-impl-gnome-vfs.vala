@@ -1,4 +1,4 @@
-/* 
+/*
  * Desktop Agnostic Library: VFS implementation (with GNOME VFS).
  *
  * Copyright (C) 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>

@@ -1,4 +1,4 @@
-/* 
+/*
  * Tests the Color class, plus its interaction with the Config interface.
  *
  * Copyright (C) 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>

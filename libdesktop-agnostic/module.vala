@@ -1,4 +1,4 @@
-/* 
+/*
  * Init function for the library.
  *
  * Copyright (C) 2008, 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>

@@ -1,4 +1,4 @@
-/* 
+/*
  * Extension to Gdk.Color which has support for an alpha channel.
  *
  * Copyright (C) 2008, 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>

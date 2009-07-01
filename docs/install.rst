@@ -77,3 +77,8 @@ Packaging Notes
 ---------------
 
 Packagers should package binary modules separately.
+
+A configuration file (``desktop-agnostic.ini``) is installed in
+``$SYSCONFDIR/xdg/libdesktop-agnostic``. ``$SYSCONFDIR`` is usually ``/etc``.
+The default modules are the first modules listed in the respective backend
+flags passed to ``./waf configure``.

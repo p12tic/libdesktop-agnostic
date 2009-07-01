@@ -2,6 +2,7 @@
 namespace Build {
 	public const string GETTEXT_PACKAGE;
 	public const string LIBDIR;
+	public const string SYSCONFDIR;
 	public const string VERSION;
 }
 

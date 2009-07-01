@@ -1,0 +1,5 @@
+[DEFAULT]
+
+config = @CONFIG_BACKEND@
+vfs = @VFS_BACKEND@
+desktop-entry = @DESKTOP_ENTRY_BACKEND@

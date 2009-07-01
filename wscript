@@ -113,6 +113,7 @@ def configure(conf):
     conf.define('GETTEXT_PACKAGE', APPNAME + '-1.0')
     conf.define('PACKAGE', APPNAME)
     conf.define('LIBDIR', conf.env['LIBDIR'])
+    conf.define('SYSCONFDIR', conf.env['SYSCONFDIR'])
 
     if conf.env['DEBUG']:
         conf.env.append_value('VALAFLAGS', '-g')

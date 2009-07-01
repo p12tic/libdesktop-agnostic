@@ -147,16 +147,23 @@ namespace DesktopAgnostic
     }
     if (module_config == null)
     {
+      bool loaded_config = false;
+      string system_path;
+      string user_path;
+
       module_config = new KeyFile ();
-      if (!module_config.load_from_file (Path.build_filename (Environment.get_user_config_dir (),
-                                                              cfg_file),
-                                         KeyFileFlags.NONE))
+      // load the system file first
+      system_path = Path.build_filename (Build.SYSCONFDIR, "xdg",
+                                         "libdesktop-agnostic", cfg_file);
+      loaded_config = module_config.load_from_file (system_path,
+                                                    KeyFileFlags.NONE);
+      user_path = Path.build_filename (Environment.get_user_config_dir (),
+                                       cfg_file);
+      loaded_config |= module_config.load_from_file (user_path,
+                                                     KeyFileFlags.NONE);
+      if (!loaded_config)
       {
-        if (!module_config.load_from_data_dirs (cfg_file, null,
-                                                KeyFileFlags.NONE))
-        {
-          throw new ModuleError.NO_CONFIG_FOUND ("Could not find any libdesktop-agnostic configuration files.");
-        }
+        throw new ModuleError.NO_CONFIG_FOUND ("Could not find any libdesktop-agnostic configuration files.");
       }
     }
     string library = "libda-%s-%s".printf (prefix,

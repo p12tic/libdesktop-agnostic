@@ -16,3 +16,14 @@ def build(bld):
         }
     pc.fun = misc.subst_func
     pc.install_path = '${LIBDIR}/pkgconfig'
+
+    ini = bld.new_task_gen('subst')
+    ini.source = 'desktop-agnostic.ini.in'
+    ini.target = 'desktop-agnostic.ini'
+    ini.dict = {
+        'CONFIG_BACKEND': bld.env['BACKENDS_CFG'][0],
+        'VFS_BACKEND': bld.env['BACKENDS_VFS'][0],
+        'DESKTOP_ENTRY_BACKEND': bld.env['BACKENDS_DE'][0]
+    }
+    ini.fun = misc.subst_func
+    ini.install_path = '${SYSCONFDIR}/xdg/libdesktop-agnostic'

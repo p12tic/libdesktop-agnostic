@@ -35,7 +35,15 @@ print_bookmarks (GtkParser parser)
     message ("Bookmarks:");
     foreach (unowned Bookmark b in parser.bookmarks)
     {
-      message ("* %s (%s)", b.file.uri, b.alias);
+      string? path = b.file.path;
+      if (path == null)
+      {
+        message ("* %s (%s)", b.file.uri, b.alias);
+      }
+      else
+      {
+        message ("* %s (%s)", path, b.alias);
+      }
     }
   }
 }

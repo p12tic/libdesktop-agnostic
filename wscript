@@ -62,7 +62,7 @@ def configure(conf):
 
     conf.check_tool('compiler_cc misc vala')
 
-    MIN_VALA_VERSION = '0.7.3'
+    MIN_VALA_VERSION = '0.7.4'
 
     conf.check_cfg(package='gmodule-2.0', uselib_store='GMODULE',
                    atleast_version='2.6.0', mandatory=True,
@@ -84,7 +84,6 @@ def configure(conf):
         conf.check_cfg(package='gconf-2.0', uselib_store='GCONF',
                        mandatory=True, args='--cflags --libs')
     if 'gio' in conf.env['BACKENDS_VFS']:
-        MIN_VALA_VERSION = '0.7.4'
         conf.check_cfg(package='gio-2.0', uselib_store='GIO',
                        atleast_version='2.18.0', mandatory=True,
                        args='--cflags --libs')
@@ -94,12 +93,10 @@ def configure(conf):
         conf.check_cfg(package='dbus-glib-1', uselib_store='DBUS_GLIB',
                        mandatory=True, args='--cflags --libs')
     if 'gnome-vfs' in conf.env['BACKENDS_VFS']:
-        MIN_VALA_VERSION = '0.7.4'
         conf.check_cfg(package='gnome-vfs-2.0', uselib_store='GNOME_VFS',
                        atleast_version='2.6.0', mandatory=True,
                        args='--cflags --libs')
     if 'gnome' in conf.env['BACKENDS_DE']:
-        MIN_VALA_VERSION = '0.7.4'
         conf.check_cfg(package='gnome-desktop-2.0',
                        uselib_store='GNOME_DESKTOP', mandatory=True,
                        args='--cflags --libs')

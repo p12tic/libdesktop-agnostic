@@ -1,0 +1,41 @@
+[numeric/boolean]
+type = boolean
+default = true
+description = Test boolean key
+
+[numeric/integer]
+type = integer
+default = 3
+description = Test integer key
+
+[numeric/float]
+type = float
+default = 3.14
+description = Test float key
+
+[misc/string]
+type = string
+default = Foo bar
+description = Test string key
+
+[list/boolean]
+type = list-boolean
+default = true;false;
+description = Test boolean list key
+
+[list/integer]
+type = list-integer
+default = 1;2;3;
+description = Test integer list key
+
+[list/float]
+type = list-float
+default = 1.618;2.718;3.141;
+description = Test float list key
+
+[list/string]
+type = list-string
+default = foo;bar;
+description = Test string list key
+
+; vim: set ft=dosini :

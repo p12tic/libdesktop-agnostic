@@ -98,6 +98,19 @@ namespace DesktopAgnostic.Config
     public override void
     notify_remove (string group, string key, NotifyFunc callback) throws GLib.Error
     {
+      string full_key = "%s/%s".printf (group, key);
+      unowned List<NotifyData>? funcs = this.notifiers.get_data (full_key);
+      if (funcs != null)
+      {
+        foreach (unowned NotifyData data in funcs)
+        {
+          if (data.callback == callback)
+          {
+            funcs.remove (data);
+            break;
+          }
+        }
+      }
     }
 
     public override void

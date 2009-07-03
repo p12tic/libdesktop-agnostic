@@ -132,7 +132,7 @@ namespace DesktopAgnostic.Config
     public override Value
     get_value (string group, string key) throws GLib.Error
     {
-      string full_key = group + "/" + key;
+      string full_key = "%s/%s".printf (group, key);
       Value? result = this.values.get_data (full_key);
       if (result == null)
       {
@@ -153,7 +153,7 @@ namespace DesktopAgnostic.Config
     public override void
     set_bool (string group, string key, bool value) throws GLib.Error
     {
-      string full_key = group + "/" + key;
+      string full_key = "%s/%s".printf (group, key);
       Value val = this.get_value (group, key);
       val.set_boolean (value);
       this.values.set_data (full_key, val);
@@ -169,7 +169,7 @@ namespace DesktopAgnostic.Config
     public override void
     set_float (string group, string key, float value) throws GLib.Error
     {
-      string full_key = group + "/" + key;
+      string full_key = "%s/%s".printf (group, key);
       Value val = this.get_value (group, key);
       val.set_float (value);
       this.values.set_data (full_key, val);
@@ -185,7 +185,7 @@ namespace DesktopAgnostic.Config
     public override void
     set_int (string group, string key, int value) throws GLib.Error
     {
-      string full_key = group + "/" + key;
+      string full_key = "%s/%s".printf (group, key);
       Value val = this.get_value (group, key);
       val.set_int (value);
       this.values.set_data (full_key, val);
@@ -201,7 +201,7 @@ namespace DesktopAgnostic.Config
     public override void
     set_string (string group, string key, string value) throws GLib.Error
     {
-      string full_key = group + "/" + key;
+      string full_key = "%s/%s".printf (group, key);
       Value val = this.get_value (group, key);
       val.set_string (value);
       this.values.set_data (full_key, val);
@@ -217,7 +217,7 @@ namespace DesktopAgnostic.Config
     public override void
     set_list (string group, string key, ValueArray value) throws GLib.Error
     {
-      string full_key = group + "/" + key;
+      string full_key = "%s/%s".printf (group, key);
       Value val = this.get_value (group, key);
       val.set_boxed (value);
       this.values.set_data (full_key, val);

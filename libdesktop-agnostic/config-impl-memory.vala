@@ -75,15 +75,25 @@ namespace DesktopAgnostic.Config
     public override void
     notify_add (string group, string key, NotifyFunc callback)
     {
-      string full_key = group + "/" + key;
-      unowned List<NotifyData> funcs = this.notifiers.get_data (full_key);
-      funcs.append (new NotifyData (callback));
+      string full_key = "%s/%s".printf (group, key);
+      unowned List<NotifyData>? funcs = this.notifiers.get_data (full_key);
+      NotifyData data = new NotifyData (callback);
+      if (funcs == null)
+      {
+        List<NotifyData> new_funcs = new List<NotifyData> ();
+        new_funcs.append ((owned)data);
+        this.notifiers.set_data (full_key, (owned)new_funcs);
+      }
+      else
+      {
+        funcs.append ((owned)data);
+      }
     }
 
     public override void
     notify (string group, string key)
     {
-      string full_key = group + "/" + key;
+      string full_key = "%s/%s".printf (group, key);
       NotifyEntry entry = NotifyEntry ();
       entry.group = group;
       entry.key = key;

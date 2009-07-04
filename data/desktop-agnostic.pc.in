@@ -9,4 +9,4 @@ Description: GLib-based desktop-agnostic library
 Version: @VERSION@
 Libs: -L${libdir} -ldesktop-agnostic
 Cflags: -I${includedir}/libdesktop-agnostic-@API_VERSION@
-Requires: glib-2.0 gmodule-2.0
+Requires: glib-2.0 gmodule-2.0 gdk-2.0

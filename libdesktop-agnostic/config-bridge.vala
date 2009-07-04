@@ -119,8 +119,7 @@ namespace DesktopAgnostic.Config
           }
           else
           {
-            Value val = st.deserialize (config.get_string (group, key));
-            obj.set_property (binding.property_name, val);
+            obj.set_property (binding.property_name, config.get_value (group, key));
             config.notify_add (group, key, this.on_serialized_object_changed);
           }
         }
@@ -294,22 +293,14 @@ namespace DesktopAgnostic.Config
         SchemaType? st = Schema.find_type (spec.value_type);
         if (st != null)
         {
-          try
+          if (!binding.read_only)
           {
-            Value val = st.deserialize (entry.value.get_string ());
-            if (!binding.read_only)
-            {
-              SignalHandler.block (binding.obj, binding.notify_id);
-            }
-            binding.obj.set_property (binding.property_name, val);
-            if (!binding.read_only)
-            {
-              SignalHandler.unblock (binding.obj, binding.notify_id);
-            }
+            SignalHandler.block (binding.obj, binding.notify_id);
           }
-          catch (SchemaError err)
+          binding.obj.set_property (binding.property_name, entry.value);
+          if (!binding.read_only)
           {
-            critical ("Schema error: %s", err.message);
+            SignalHandler.unblock (binding.obj, binding.notify_id);
           }
         }
       }

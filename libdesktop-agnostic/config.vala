@@ -29,6 +29,7 @@ namespace DesktopAgnostic.Config
    */
   public errordomain Error
   {
+    NO_SCHEMA,
     INVALID_TYPE,
     KEY_NOT_FOUND
   }
@@ -56,29 +57,29 @@ namespace DesktopAgnostic.Config
   public abstract class Backend : Object
   {
     public abstract string name { owned get; }
+
     private static HashTable<string,Value?> _backend_metadata_keys;
-    static construct
-    {
-      _backend_metadata_keys = new HashTable<string,Value?> (str_hash, str_equal);
-    }
     public static unowned HashTable<string,Value?>
     get_backend_metadata_keys ()
     {
+      if (_backend_metadata_keys == null)
+      {
+        _backend_metadata_keys =
+          new HashTable<string,Value?> (str_hash, str_equal);
+      }
       return _backend_metadata_keys;
     }
-    private Schema _schema;
-    public Schema schema
+
+    private Schema? _schema = null;
+    public Schema? schema
     {
       get
       {
         return this._schema;
       }
-    }
-    public string schema_filename
-    {
       construct
       {
-        this._schema = new Schema (this, value);
+        this._schema = value;
       }
     }
     private string? _instance_id;
@@ -134,7 +135,7 @@ namespace DesktopAgnostic.Config
      * @throws Error if the group/key does not exist, the value type is not
      * supported, or something bad happened while trying to set the value
      */
-    public void
+    public virtual void
     set_value (string group, string key, Value value) throws GLib.Error
     {
       SchemaOption option = this._schema.get_option (group, key);
@@ -208,7 +209,7 @@ namespace DesktopAgnostic.Config
    * @return a Config.Backend object on success, %NULL on failure
    */
   public Backend?
-  @new (string schema_file) throws GLib.Error
+  @new (Schema schema) throws GLib.Error
   {
     Type type = get_type ();
     if (type == Type.INVALID)
@@ -218,7 +219,29 @@ namespace DesktopAgnostic.Config
     else
     {
       return (Config.Backend)Object.new (type,
-                                         "schema_filename", schema_file);
+                                         "schema", schema);
+    }
+  }
+
+  /**
+   * Convenience method for instantiating a configuration backend with an
+   * instance ID.
+   * @return a Config.Backend object on success, %NULL on failure
+   */
+  public Backend?
+  @new_for_instance (string instance_id,
+                     Schema schema) throws GLib.Error
+  {
+    Type type = get_type ();
+    if (type == Type.INVALID)
+    {
+      return null;
+    }
+    else
+    {
+      return (Config.Backend)Object.new (type,
+                                         "schema", schema,
+                                         "instance_id", instance_id);
     }
   }
 

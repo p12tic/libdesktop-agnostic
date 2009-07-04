@@ -64,6 +64,7 @@ def build(bld):
         'color.vala',
         'config.vala',
         'config-bridge.vala',
+        'config-client.vala',
         'config-schema.vala',
         'config-schema-option.vala',
         'config-schema-type.vala',

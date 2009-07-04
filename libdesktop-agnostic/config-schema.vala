@@ -159,10 +159,9 @@ namespace DesktopAgnostic.Config
     private Datalist<Value?> metadata_options;
     /**
      * Creates a new Schema object.
-     * @param backend the configuration backend associated with the schema
      * @param filename the name of the schema file to parse
      */
-    public Schema (Backend backend, string filename) throws GLib.Error
+    public Schema (string filename) throws GLib.Error
     {
       this.filename = filename;
       unowned HashTable<string,Value?> backend_metadata_keys;
@@ -177,12 +176,11 @@ namespace DesktopAgnostic.Config
         this.metadata_options.set_data (key, common_metadata_keys.lookup (key));
       }
       // populate the backend-specific metadata keys table
-      backend_metadata_keys = backend.get_backend_metadata_keys ();
+      backend_metadata_keys = Backend.get_backend_metadata_keys ();
       foreach (unowned string key in backend_metadata_keys.get_keys ())
       {
-        string option = backend.name + "." + key;
-        this.valid_metadata_keys.append (option);
-        this.metadata_options.set_data (option,
+        this.valid_metadata_keys.append (key);
+        this.metadata_options.set_data (key,
                                         backend_metadata_keys.lookup (key));
       }
       this.parse ();
@@ -236,7 +234,7 @@ namespace DesktopAgnostic.Config
             // parse the schema metadata
             foreach (unowned string key in data.get_keys (group))
             {
-              if (this.valid_metadata_keys.find (key) == null)
+              if (this.valid_metadata_keys.find_custom (key, (CompareFunc)strcmp) == null)
               {
                 throw new SchemaError.INVALID_METADATA_OPTION ("The option '%s' is not a registered metadata option.", key);
               }
@@ -331,7 +329,7 @@ namespace DesktopAgnostic.Config
     public Value?
     get_metadata_option (string name) throws SchemaError
     {
-      if (this.valid_metadata_keys.find (name) == null)
+      if (this.valid_metadata_keys.find_custom (name, (CompareFunc)strcmp) == null)
       {
         throw new SchemaError.INVALID_METADATA_OPTION ("The option '%s' is not a registered metadata option.", name);
       }

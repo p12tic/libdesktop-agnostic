@@ -20,8 +20,11 @@
  * Author : Mark Lee <libdesktop-agnostic@lazymalevolence.com>
  */
 
+using DesktopAgnostic.Config;
+
 namespace DesktopAgnostic.Config
 {
+  private const string BACKEND_NAME = "GConf";
   [Compact]
   private class NotifyData
   {
@@ -30,75 +33,154 @@ namespace DesktopAgnostic.Config
   }
   public class GConfBackend : Backend
   {
+    private string schema_path;
     private string path;
-    private GConf.Client client;
+    private unowned GConf.Client client;
     private Datalist<unowned SList<unowned NotifyData>> notify_funcs;
 
     public override string name
     {
       owned get
       {
-        return "GConf";
+        return BACKEND_NAME;
       }
-    }
-
-    static construct
-    {
-      GLib.Value val;
-      val = GLib.Value (typeof (string));
-      val.set_string ("/apps");
-      unowned HashTable<string,GLib.Value?> backend_metadata_keys = get_backend_metadata_keys ();
-      backend_metadata_keys.insert ("base_path", val);
-      val = GLib.Value (typeof (string));
-      val.set_string ("${base_path}/instances");
-      backend_metadata_keys.insert ("base_instance_path", val);
     }
 
     construct
     {
+      this.client = GConf.Client.get_default ();
+    }
+
+    public override void
+    constructed ()
+    {
       string opt_prefix = this.name + ".";
       string base_path;
+      Schema schema = this.schema;
+
       this.notify_funcs = Datalist<unowned SList<unowned NotifyData>> ();
-      base_path = this.schema.get_metadata_option (opt_prefix + "base_path").get_string ();
+      base_path = schema.get_metadata_option (opt_prefix +
+                                              "base_path").get_string ();
+      this.schema_path = "/schemas%s/%s".printf (base_path, schema.app_name);
       if (this.instance_id == null)
       {
-        this.path = base_path + "/" + this.schema.app_name;
+        this.path = "%s/%s".printf (base_path, schema.app_name);
       }
       else
       {
-        string option = this.schema.get_metadata_option (opt_prefix +
-                                                         "base_instance_path").get_string ();
-        option = option.replace ("${base_path}", base_path);
-        this.path = option + "/" + this.schema.app_name +
-                    "/" + this.instance_id;
+        string option = schema.get_metadata_option (opt_prefix +
+                                                    "base_instance_path").get_string ();
+        this.path = "%s/%s/%s".printf (option.replace ("${base_path}", base_path),
+                                       schema.app_name, this.instance_id);
+        // associate instance with schema
+        try
+        {
+          this.associate_schemas_in_dir (this.schema_path, this.path);
+        }
+        catch (GLib.Error err)
+        {
+          critical ("Error associating instance with schema: %s", err.message);
+        }
+      }
+    }
+
+    /**
+     * Ported from #panel_applet_associate_schemas_in_dir ().
+     */
+    private void
+    associate_schemas_in_dir (string schema_dir,
+                              string pref_dir) throws GLib.Error
+    {
+      unowned SList<GConf.Entry> entries;
+      unowned SList<string> subdirs;
+
+      entries = this.client.all_entries (schema_dir);
+
+      foreach (GConf.Entry entry in entries)
+      {
+        string schema_key;
+        string key;
+        GConf.Entry? pref_entry;
+        string pref_schema_key;
+
+        schema_key = entry.get_key ();
+        key = "%s/%s".printf (pref_dir, Path.get_basename (schema_key));
+
+        /* Associating a schema is potentially expensive, so let's try
+         * to avoid this by doing it only when needed. So we check if
+         * the key is already correctly associated.
+         */
+        pref_entry = this.client.get_entry (key, null, true);
+
+        if (pref_entry == null)
+        {
+          pref_schema_key = null;
+        }
+        else
+        {
+          pref_schema_key = pref_entry.get_schema_name ();
+        }
+        if (schema_key != pref_schema_key)
+        {
+          this.client.engine.associate_schema (key, schema_key);
+
+          if (pref_entry == null ||
+              pref_entry.get_value () == null ||
+              pref_entry.get_is_default ())
+          {
+            /* unset the key: gconf_client_get_entry()
+             * brought an invalid entry in the client
+             * cache, and we want to fix this
+             */
+            this.client.unset (key);
+          }
+        }
+      }
+
+      subdirs = this.client.all_dirs (schema_dir);
+
+      foreach (unowned string dir in subdirs)
+      {
+        string base_key;
+        string schema_subdir;
+        string pref_subdir;
+
+        base_key = Path.get_basename (dir);
+        schema_subdir = "%s/%s".printf (schema_dir, base_key);
+        pref_subdir = "%s/%s".printf (pref_dir, base_key);
+
+        this.associate_schemas_in_dir (schema_subdir, pref_subdir);
       }
     }
 
     private string
-    generate_key (string group, string key)
+    generate_key (string group, string? key)
     {
+      string full_key;
       if (key == null)
       {
         if (group == GROUP_DEFAULT)
         {
-          return this.path;
+          full_key = this.path;
         }
         else
         {
-          return this.path + "/" + group;
+          full_key = "%s/%s".printf (this.path, group);
         }
       }
       else
       {
         if (group == GROUP_DEFAULT)
         {
-          return this.path + "/" + key;
+          full_key = "%s/%s".printf (this.path, key);
         }
         else
         {
-          return this.path + "/" + group + "/" + key;
+          full_key = "%s/%s/%s".printf (this.path, group, key);
         }
       }
+
+      return full_key;
     }
 
     private void
@@ -207,9 +289,10 @@ namespace DesktopAgnostic.Config
       else if (type == typeof (ValueArray))
       {
         Type list_type;
+        ValueArray array;
         list_type = this.valuetype_to_type (gc_val.get_list_type (), false);
-        value.set_boxed (this.slist_to_valuearray (gc_val.get_list (),
-                                                   list_type));
+        array = this.slist_to_valuearray (gc_val.get_list (), list_type);
+        value.set_boxed ((owned)array);
       }
       else
       {
@@ -235,31 +318,28 @@ namespace DesktopAgnostic.Config
     }
 
     private GLib.ValueArray
-    slist_to_valuearray (SList<GConf.Value> list, Type type) throws Error
+    slist_to_valuearray (SList<unowned GConf.Value> list, Type type) throws Error
     {
-      unowned SList l;
       GLib.ValueArray arr = new GLib.ValueArray (list.length ());
-      for (l = list; l != null; l = l.next)
+      foreach (unowned GConf.Value gc_val in list)
       {
         GLib.Value val;
-        unowned GConf.Value gc_val;
-        val = GLib.Value (type);
-        gc_val = (GConf.Value)l.data;
+
         if (type == typeof (bool))
         {
-          val.set_boolean (gc_val.get_bool ());
+          val = gc_val.get_bool ();
         }
         else if (type == typeof (float))
         {
-          val.set_float ((float)gc_val.get_float ());
+          val = (float)gc_val.get_float ();
         }
         else if (type == typeof (int))
         {
-          val.set_int (gc_val.get_int ());
+          val = gc_val.get_int ();
         }
         else if (type == typeof (string))
         {
-          val.set_string (gc_val.get_string ());
+          val = gc_val.get_string ();
         }
         else
         {
@@ -418,8 +498,24 @@ namespace DesktopAgnostic.Config
     get_value (string group, string key) throws GLib.Error
     {
       string full_key;
+      unowned GConf.Value? gc_val;
+      GLib.Value val;
+      Type option_type;
+      unowned SchemaType? st;
+
       full_key = this.generate_key (group, key);
-      return this.gconfvalue_to_gvalue (this.client.get (full_key));
+      gc_val = this.client.get_entry (full_key, null, true).get_value ();
+      val = this.gconfvalue_to_gvalue (gc_val);
+      if (val.holds (typeof (string)))
+      {
+        option_type = this.schema.get_option (group, key).option_type;
+        st = Schema.find_type (option_type);
+        if (st != null)
+        {
+          val = st.deserialize ((string)val);
+        }
+      }
+      return val;
     }
     public override bool
     get_bool (string group, string key) throws GLib.Error
@@ -481,9 +577,13 @@ namespace DesktopAgnostic.Config
     get_list (string group, string key) throws GLib.Error
     {
       string full_key;
+      GConf.ValueType vt;
+      unowned SList list;
+
       full_key = this.generate_key (group, key);
-      GConf.ValueType vt = this.get_gconf_list_valuetype (full_key);
-      return this.slist_to_valuearray (this.client.get_list (full_key, vt),
+      vt = this.get_gconf_list_valuetype (full_key);
+      list = this.client.get (full_key).get_list ();
+      return this.slist_to_valuearray (list,
                                        this.valuetype_to_type (vt, false));
     }
     public override void
@@ -498,12 +598,22 @@ namespace DesktopAgnostic.Config
                             list);
     }
   }
-  [ModuleInit]
-  public Type
-  register_plugin ()
-  {
-    return typeof (GConfBackend);
-  }
+}
+
+[ModuleInit]
+public Type
+register_plugin ()
+{
+  GLib.Value val;
+  unowned HashTable<string,GLib.Value?> backend_metadata_keys;
+
+  val = "/apps";
+  backend_metadata_keys = Backend.get_backend_metadata_keys ();
+  backend_metadata_keys.insert ("%s.base_path".printf (BACKEND_NAME), val);
+  val = "${base_path}/instances";
+  backend_metadata_keys.insert ("%s.base_instance_path".printf (BACKEND_NAME),
+                                val);
+  return typeof (GConfBackend);
 }
 
 // vim: set et ts=2 sts=2 sw=2 ai :

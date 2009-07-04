@@ -46,27 +46,36 @@ namespace DesktopAgnostic.Config
 
     construct
     {
-      try
+      if (this.schema != null)
       {
-        this.reset ();
+        try
+        {
+          this.reset ();
+        }
+        catch (GLib.Error err)
+        {
+          critical ("Error: %s", err.message);
+        }
+        this.notifiers = Datalist<List<NotifyData>> ();
       }
-      catch (Error err)
-      {
-        critical (err.message);
-      }
-      this.notifiers = Datalist<List<NotifyData>> ();
     }
 
     public override void
     reset () throws Error
     {
-      this.values = Datalist<Value?> ();
-      foreach (string group in this.schema.get_groups ())
+      Schema? schema = this.schema;
+      if (schema == null)
       {
-        foreach (string key in this.schema.get_keys (group))
+        throw new Error.NO_SCHEMA ("The schema was not loaded.");
+      }
+
+      this.values = Datalist<Value?> ();
+      foreach (string group in schema.get_groups ())
+      {
+        foreach (string key in schema.get_keys (group))
         {
-          string full_key = group + "/" + key;
-          SchemaOption option = this.schema.get_option (group, key);
+          string full_key = "%s/%s".printf (group, key);
+          SchemaOption option = schema.get_option (group, key);
           this.values.set_data (full_key, option.default_value);
         }
       }
@@ -142,6 +151,14 @@ namespace DesktopAgnostic.Config
       {
         return result;
       }
+    }
+
+    public override void
+    set_value (string group, string key, Value value) throws GLib.Error
+    {
+      string full_key = "%s/%s".printf (group, key);
+      this.values.set_data (full_key, value);
+      this.notify (group, key);
     }
 
     public override bool

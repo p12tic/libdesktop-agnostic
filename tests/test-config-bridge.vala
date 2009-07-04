@@ -39,7 +39,8 @@ int main (string[] args)
 {
   try
   {
-    Config.Backend cfg = Config.new ("test-config-bridge.schema-ini");
+    Config.Schema schema = new Config.Schema ("test-config-bridge.schema-ini");
+    Config.Backend cfg = Config.new (schema);
     Config.Bridge bridge = Config.Bridge.get_default ();
     Test t = new Test ();
     bridge.bind (cfg, "group", "string", t, "str", false);

@@ -26,7 +26,8 @@ int main (string[] args)
 {
   try
   {
-    Config.Backend cfg = Config.new ("test-color.schema-ini");
+    Config.Schema schema = new Config.Schema ("test-color.schema-ini");
+    Config.Backend cfg = Config.new (schema);
     try
     {
       Color green = new Color.from_string ("green");

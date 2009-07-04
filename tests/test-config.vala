@@ -36,7 +36,8 @@ class TestCase
 
   public TestCase ()
   {
-    this.cfg = Config.new ("test-config.schema-ini");
+    Config.Schema schema = new Config.Schema ("test-config.schema-ini");
+    this.cfg = Config.new ((owned)schema);
     this.notify_counter = 0;
   }
 

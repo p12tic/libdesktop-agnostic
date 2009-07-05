@@ -157,7 +157,8 @@ namespace DesktopAgnostic.Config
     set_value (string group, string key, Value value) throws GLib.Error
     {
       string full_key = "%s/%s".printf (group, key);
-      this.values.set_data (full_key, value);
+      unowned Value val = value;
+      this.values.set_data (full_key, val);
       this.notify (group, key);
     }
 

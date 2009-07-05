@@ -219,17 +219,42 @@ namespace DesktopAgnostic.Config
         this.instance.set_list (group, key, value);
       }
     }
+    /**
+     * Retrieves the value of the configuration key. If the client has an
+     * instance ID and the key cannot be found in the instance config, it
+     * falls back to retrieving the value from the global config.
+     */
     public Value
     get_value (string group, string key) throws GLib.Error
     {
-      if (this.instance == null)
+      Value? temp_val = null;
+      Value val;
+
+      try
       {
-        return this.global.get_value (group, key);
+        if (this.instance != null)
+        {
+          temp_val = this.instance.get_value (group, key);
+        }
+      }
+      catch (GLib.Error err)
+      {
+        if (!(err is Config.Error.KEY_NOT_FOUND))
+        {
+          throw err;
+        }
+      }
+
+      if (temp_val == null)
+      {
+        val = this.global.get_value (group, key);
       }
       else
       {
-        return this.instance.get_value (group, key);
+        val = temp_val;
       }
+
+      return val;
     }
     public void
     set_value (string group, string key, Value value) throws GLib.Error

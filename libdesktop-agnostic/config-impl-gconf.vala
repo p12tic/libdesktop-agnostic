@@ -505,14 +505,21 @@ namespace DesktopAgnostic.Config
 
       full_key = this.generate_key (group, key);
       gc_val = this.client.get_entry (full_key, null, true).get_value ();
-      val = this.gconfvalue_to_gvalue (gc_val);
-      if (val.holds (typeof (string)))
+      if (gc_val == null)
       {
-        option_type = this.schema.get_option (group, key).option_type;
-        st = Schema.find_type (option_type);
-        if (st != null)
+        throw new Error.KEY_NOT_FOUND ("Could not find key specified.");
+      }
+      else
+      {
+        val = this.gconfvalue_to_gvalue (gc_val);
+        if (val.holds (typeof (string)))
         {
-          val = st.deserialize ((string)val);
+          option_type = this.schema.get_option (group, key).option_type;
+          st = Schema.find_type (option_type);
+          if (st != null)
+          {
+            val = st.deserialize ((string)val);
+          }
         }
       }
       return val;

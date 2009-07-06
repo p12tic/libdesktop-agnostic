@@ -341,8 +341,8 @@ namespace DesktopAgnostic.Config
         }
         else
         {
-          throw new SchemaError.INVALID_TYPE ("Invalid option type: %s.",
-                                              this._type.name ());
+          throw new SchemaError.INVALID_TYPE ("Invalid option type for %s: %s.",
+                                              group, this._type.name ());
         }
       }
     }

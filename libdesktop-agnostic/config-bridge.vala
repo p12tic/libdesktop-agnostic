@@ -235,20 +235,20 @@ namespace DesktopAgnostic.Config
     }
 
     private void
-    on_simple_value_changed (NotifyEntry entry)
+    on_simple_value_changed (string group, string key, Value value)
     {
       unowned List<Binding> bindings_list;
-      string key;
+      string full_key;
 
-      key = entry.group + "/" + entry.key;
-      bindings_list = this.bindings.get_data (key);
+      full_key = "%s/%s".printf (group, key);
+      bindings_list = this.bindings.get_data (full_key);
       foreach (unowned Binding binding in bindings_list)
       {
         if (!binding.read_only)
         {
           SignalHandler.block (binding.obj, binding.notify_id);
         }
-        binding.obj.set_property (binding.property_name, entry.value);
+        binding.obj.set_property (binding.property_name, value);
         if (!binding.read_only)
         {
           SignalHandler.unblock (binding.obj, binding.notify_id);
@@ -257,20 +257,20 @@ namespace DesktopAgnostic.Config
     }
 
     private void
-    on_list_changed (NotifyEntry entry)
+    on_list_changed (string group, string key, Value value)
     {
       unowned List<Binding> bindings_list;
-      string key;
+      string full_key;
 
-      key = entry.group + "/" + entry.key;
-      bindings_list = this.bindings.get_data (key);
+      full_key = "%s/%s".printf (group, key);
+      bindings_list = this.bindings.get_data (full_key);
       foreach (unowned Binding binding in bindings_list)
       {
         if (!binding.read_only)
         {
           SignalHandler.block (binding.obj, binding.notify_id);
         }
-        binding.obj.set (binding.property_name, entry.value.get_boxed ());
+        binding.obj.set (binding.property_name, value.get_boxed ());
         if (!binding.read_only)
         {
           SignalHandler.unblock (binding.obj, binding.notify_id);
@@ -279,13 +279,13 @@ namespace DesktopAgnostic.Config
     }
 
     private void
-    on_serialized_object_changed (NotifyEntry entry)
+    on_serialized_object_changed (string group, string key, Value value)
     {
       unowned List<Binding> bindings_list;
-      string key;
+      string full_key;
 
-      key = entry.group + "/" + entry.key;
-      bindings_list = this.bindings.get_data (key);
+      full_key = "%s/%s".printf (group, key);
+      bindings_list = this.bindings.get_data (full_key);
       foreach (unowned Binding binding in bindings_list)
       {
         ParamSpec spec = this.get_property_spec (binding.obj,
@@ -297,7 +297,7 @@ namespace DesktopAgnostic.Config
           {
             SignalHandler.block (binding.obj, binding.notify_id);
           }
-          binding.obj.set_property (binding.property_name, entry.value);
+          binding.obj.set_property (binding.property_name, value);
           if (!binding.read_only)
           {
             SignalHandler.unblock (binding.obj, binding.notify_id);

@@ -39,17 +39,11 @@ namespace DesktopAgnostic.Config
    * "top level" of the schema.
    */
   public const string GROUP_DEFAULT = "DEFAULT";
-  public struct NotifyEntry
-  {
-    public string group;
-    public string key;
-    public Value value;
-  }
   /**
    * The callback prototype used for notifications when configuration values
    * change.
    */
-  public delegate void NotifyFunc (NotifyEntry entry);
+  public delegate void NotifyFunc (string group, string key, Value value);
   /**
    * The abstract base class that defines what a configuration backend should
    * look like.

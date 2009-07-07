@@ -42,15 +42,15 @@ class TestCase
   }
 
   void
-  on_string_changed (Config.NotifyEntry entry)
+  on_string_changed (string group, string key, Value value)
   {
     this.notify_counter++;
   }
 
   void
-  on_string_changed2 (Config.NotifyEntry entry)
+  on_string_changed2 (string group, string key, Value value)
   {
-    if (((string)entry.value).contains ("quux"))
+    if (((string)value).contains ("quux"))
     {
       this.notify_counter += 3;
     }

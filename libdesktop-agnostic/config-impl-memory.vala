@@ -103,14 +103,11 @@ namespace DesktopAgnostic.Config
     notify (string group, string key)
     {
       string full_key = "%s/%s".printf (group, key);
-      NotifyEntry entry = NotifyEntry ();
-      entry.group = group;
-      entry.key = key;
-      entry.value = this.get_value (group, key);
+      Value value = this.get_value (group, key);
       unowned List<NotifyData> funcs = this.notifiers.get_data (full_key);
       foreach (unowned NotifyData data in funcs)
       {
-        data.callback (entry);
+        data.callback (group, key, value);
       }
     }
 

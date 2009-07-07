@@ -409,14 +409,17 @@ namespace DesktopAgnostic.Config
     notify_proxy (GConf.Client client, uint cnxn_id, GConf.Entry entry)
     {
       string full_key = entry.get_key ();
-      NotifyEntry cn_entry = NotifyEntry ();
-      this.parse_group_and_key (full_key, out cn_entry.group, out cn_entry.key);
-      cn_entry.value = this.gconfvalue_to_gvalue (entry.get_value ());
+      string group;
+      string key;
+      Value value;
+
+      this.parse_group_and_key (full_key, out group, out key);
+      value = this.gconfvalue_to_gvalue (entry.get_value ());
       unowned SList<unowned NotifyData> notify_func_list =
         this.notify_funcs.get_data (full_key);
       foreach (unowned NotifyData notify_func in notify_func_list)
       {
-        notify_func.callback (cn_entry);
+        notify_func.callback (group, key, value);
       }
     }
 
@@ -461,14 +464,14 @@ namespace DesktopAgnostic.Config
     notify (string group, string key)
     {
       string full_key = this.generate_key (group, key);
-      unowned SList<unowned NotifyData> notifications = this.notify_funcs.get_data (full_key);
-      NotifyEntry entry = NotifyEntry ();
-      entry.group = group;
-      entry.key = key;
-      entry.value = this.get_value (group, key);
+      unowned SList<unowned NotifyData> notifications;
+      Value value;
+
+      notifications = this.notify_funcs.get_data (full_key);
+      value = this.get_value (group, key);
       foreach (unowned NotifyData notify in notifications)
       {
-        notify.callback (entry);
+        notify.callback (group, key, value);
       }
     }
 

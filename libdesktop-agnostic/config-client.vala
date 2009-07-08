@@ -59,14 +59,17 @@ namespace DesktopAgnostic.Config
       }
       construct
       {
-        Value single_instance = this._schema.get_metadata_option ("single_instance");
-        if ((bool)single_instance)
+        if (value != null)
         {
-          critical ("The configuration schema has declared that there can only be a single configuration instance.");
-        }
-        else
-        {
-          this.instance = Config.new_for_instance (value, this._schema);
+          Value single_instance = this._schema.get_metadata_option ("single_instance");
+          if ((bool)single_instance)
+          {
+            critical ("The configuration schema has declared that there can only be a single configuration instance.");
+          }
+          else
+          {
+            this.instance = Config.new_for_instance (value, this._schema);
+          }
         }
       }
     }

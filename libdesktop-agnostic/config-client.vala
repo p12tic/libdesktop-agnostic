@@ -329,7 +329,7 @@ namespace DesktopAgnostic.Config
      */
     public void
     bind (string group, string key, Object obj, string property_name,
-          bool read_only, BindMethod method) throws GLib.Error
+          bool read_only, BindMethod method) throws Error
     {
       unowned Bridge bridge = Bridge.get_default ();
 
@@ -353,7 +353,7 @@ namespace DesktopAgnostic.Config
      */
     public void
     unbind (string group, string key, Object obj, string property_name,
-            bool read_only, BindMethod method) throws GLib.Error
+            bool read_only, BindMethod method) throws Error
     {
       unowned Bridge bridge = Bridge.get_default ();
 

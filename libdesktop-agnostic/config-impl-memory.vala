@@ -100,7 +100,7 @@ namespace DesktopAgnostic.Config
     }
 
     public override void
-    notify (string group, string key)
+    notify (string group, string key) throws GLib.Error
     {
       string full_key = "%s/%s".printf (group, key);
       Value value = this.get_value (group, key);

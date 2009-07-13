@@ -461,7 +461,7 @@ namespace DesktopAgnostic.Config
     }
 
     public override void
-    notify (string group, string key)
+    notify (string group, string key) throws GLib.Error
     {
       string full_key = this.generate_key (group, key);
       unowned SList<unowned NotifyData> notifications;

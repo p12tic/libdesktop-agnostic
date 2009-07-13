@@ -110,7 +110,7 @@ namespace DesktopAgnostic.Config
      * @param group the group the key is associated with
      * @param key the config key that is associated with the callback(s)
      */
-    public abstract new void notify (string group, string key);
+    public abstract new void notify (string group, string key) throws GLib.Error;
     /**
      * Removes the specified notification callback for the specified key.
      * @param group the group the key is associated with

@@ -281,7 +281,7 @@ namespace DesktopAgnostic.Config
       this.global.notify_add (group, key, callback);
     }
     public new void
-    notify (string group, string key)
+    notify (string group, string key) throws GLib.Error
     {
       if (this.instance != null)
       {

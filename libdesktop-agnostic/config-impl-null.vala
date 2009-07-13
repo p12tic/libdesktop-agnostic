@@ -43,7 +43,7 @@ namespace DesktopAgnostic.Config
     }
 
     public override void
-    notify (string group, string key)
+    notify (string group, string key) throws GLib.Error
     {
     }
 

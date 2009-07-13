@@ -372,6 +372,21 @@ namespace DesktopAgnostic.Config
         bridge.remove (this.instance, group, key, obj, property_name);
       }
     }
+    /**
+     * Removes all of the bindings for a given object.
+     */
+    public void
+    unbind_all_for_object (Object obj) throws Error
+    {
+      unowned Bridge bridge = Bridge.get_default ();
+
+      if (this.instance != null)
+      {
+        bridge.remove_all_for_object (this.instance, obj);
+      }
+
+      bridge.remove_all_for_object (this.global, obj);
+    }
   }
 }
 

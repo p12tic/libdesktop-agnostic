@@ -135,7 +135,7 @@ namespace DesktopAgnostic
     }
   }
   private static KeyFile module_config = null;
-  private Type
+  public Type
   get_module_type (string prefix, string key) throws GLib.Error
   {
     ModuleLoader loader;

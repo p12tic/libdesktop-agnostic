@@ -1,10 +1,13 @@
 #!/usr/bin/python
 # encoding: utf-8
 
-def build_test_program(bld, name):
+def build_test_program(bld, name, suffix):
     test = bld.new_task_gen('cc', 'program')
     test.source = name + '.vala'
-    test.uselib_local = 'desktop-agnostic'
+    if suffix == '':
+        test.uselib_local = 'desktop-agnostic'
+    else:
+        test.uselib_local = 'desktop-agnostic-%s' % suffix
     test.vapi_dirs = '../libdesktop-agnostic'
     #test.threading = True
     test.includes = '..'
@@ -12,7 +15,10 @@ def build_test_program(bld, name):
     test.install_path = ''
 
 def build(bld):
-    [build_test_program(bld, 'test-' + name)
-     for name in ['color', 'config', 'config-bridge', 'desktop-entry',
-                  'vfs-bookmarks-gtk', 'vfs-file', 'vfs-file-monitor',
+    [build_test_program(bld, 'test-' + name, 'cfg')
+     for name in ['color', 'config', 'config-bridge']]
+    [build_test_program(bld, 'test-' + name, 'de')
+     for name in ['desktop-entry']]
+    [build_test_program(bld, 'test-' + name, 'vfs')
+     for name in ['vfs-bookmarks-gtk', 'vfs-file', 'vfs-file-monitor',
                   'vfs-glob', 'vfs-trash', 'vfs-volume']]

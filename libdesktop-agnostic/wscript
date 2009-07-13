@@ -38,7 +38,8 @@ def task_module(type_name, src_prefix):
         if type_name in deps and name in deps[type_name]:
             module.uselib = deps[type_name][name]['uselib']
             module.packages = deps[type_name][name]['packages']
-        module.uselib_local = 'desktop-agnostic'
+        ftype, sep, tail = type_name.partition('-')
+        module.uselib_local = 'desktop-agnostic-%s' % ftype
         module.target = 'da-%s-%s' % (type_name, name)
         module.vapi_dirs = '../vapi'
         module.includes = '..'
@@ -62,29 +63,63 @@ def build(bld):
     lib = bld.new_task_gen('cc', 'shlib')
     lib.source = ' '.join([
         'color.vala',
-        'config.vala',
-        'config-bridge.vala',
-        'config-client.vala',
-        'config-schema.vala',
-        'config-schema-option.vala',
-        'config-schema-type.vala',
-        'desktop-entry.vala',
         'module.vala',
+        ])
+    lib.packages = 'gdk-2.0 gmodule-2.0'
+    lib.target = 'desktop-agnostic'
+    lib.gir = 'DesktopAgnostic-1.0'
+    lib.uselib = 'GDK GMODULE'
+    lib.packages_private = 'build'
+    lib.includes='..'
+    lib.vapi_dirs = '../vapi'
+
+    vfs = bld.new_task_gen('cc', 'shlib')
+    vfs.source = ' '.join([
         'vfs.vala',
         'vfs-bookmarks-gtk.vala',
         'vfs-file.vala',
         'vfs-file-monitor.vala',
         'vfs-glob.vala',
         'vfs-trash.vala',
-        'vfs-volume.vala'
+        'vfs-volume.vala',
         ])
-    lib.packages = 'gdk-2.0 gmodule-2.0 posix'
-    lib.target = 'desktop-agnostic'
-    lib.gir = 'DesktopAgnostic-1.0'
-    lib.uselib = 'GDK GMODULE'
-    lib.packages_private = 'build posix-glob'
-    lib.vapi_dirs = '../vapi'
-    lib.includes='..'
+    vfs.packages = 'desktop-agnostic posix'
+    vfs.target = 'desktop-agnostic-vfs'
+    vfs.header = 'vfs'
+    vfs.gir = 'DesktopAgnosticVFS-1.0'
+    vfs.uselib_local = 'desktop-agnostic'
+    vfs.packages_private = 'posix-glob'
+    vfs.includes='..'
+    vfs.vapi_dirs = '../vapi .'
+
+    cfg = bld.new_task_gen('cc', 'shlib')
+    cfg.source = ' '.join([
+        'config.vala',
+        'config-bridge.vala',
+        'config-client.vala',
+        'config-schema.vala',
+        'config-schema-option.vala',
+        'config-schema-type.vala',
+        ])
+    cfg.packages = 'desktop-agnostic-vfs'
+    cfg.target = 'desktop-agnostic-cfg'
+    cfg.header = 'config'
+    cfg.gir = 'DesktopAgnosticConfig-1.0'
+    cfg.uselib_local = 'desktop-agnostic-vfs'
+    cfg.includes='..'
+    cfg.vapi_dirs = '.'
+
+    de = bld.new_task_gen('cc', 'shlib')
+    de.source = ' '.join([
+        'desktop-entry.vala',
+        ])
+    de.packages = 'desktop-agnostic-vfs'
+    de.target = 'desktop-agnostic-de'
+    de.header = 'desktop-entry'
+    de.gir = 'DesktopAgnosticDesktopEntry-1.0'
+    de.uselib_local = 'desktop-agnostic-vfs'
+    de.vapi_dirs = '.'
+    de.includes='..'
 
     [task_module('cfg', 'config-impl')(bld, name)
      for name in bld.env['BACKENDS_CFG']]

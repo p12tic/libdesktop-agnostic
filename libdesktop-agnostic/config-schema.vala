@@ -88,13 +88,15 @@ namespace DesktopAgnostic.Config
           {
             if (type_modules.find (module) == null)
             {
-              ModuleLoader loader =
-                new ModuleLoader (Path.get_basename (module));
-              if (loader.load_from_path (module))
+              Type type;
+
+              unowned ModuleLoader loader = ModuleLoader.get_default ();
+              type = loader.load_from_path (Path.get_basename (module),
+                                            module);
+              if (type != type.INVALID)
               {
                 try
                 {
-                  Type type = loader.module_type;
                   Object obj = Object.new (type);
 
                   register_type ((SchemaType)((owned)obj));

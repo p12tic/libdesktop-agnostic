@@ -34,19 +34,11 @@ namespace DesktopAgnostic
    */
   public class ModuleLoader : Object
   {
-    public string name { get; construct; }
-
-    private Type _module_type;
-    public Type module_type
-    {
-      get
-      {
-        return this._module_type;
-      }
-    }
     private static string[] paths;
 
     private delegate Type RegisterModuleFunction ();
+
+    private static ModuleLoader? module_loader = null;
 
     static construct
     {
@@ -60,23 +52,30 @@ namespace DesktopAgnostic
       modules = Datalist<Module> ();
     }
 
-    construct
+    private ModuleLoader ()
     {
       assert (Module.supported ());
     }
 
-    public ModuleLoader (string name)
+    public static unowned ModuleLoader
+    get_default ()
     {
-      this.name = name;
+      if (module_loader == null)
+      {
+        module_loader = new ModuleLoader ();
+      }
+
+      return module_loader;
     }
 
-    public static string[] get_search_paths ()
+    public static string[]
+    get_search_paths ()
     {
       return paths;
     }
 
-    public bool
-    load_from_path (string path)
+    public Type
+    load_from_path (string name, string path)
     {
       Module module = null;
       void* function;
@@ -85,23 +84,20 @@ namespace DesktopAgnostic
       module = Module.open (path, ModuleFlags.BIND_LAZY);
       if (module == null)
       {
-        return false;
+        return Type.INVALID;
       }
       module.symbol ("register_plugin", out function);
       register_plugin = (RegisterModuleFunction) function;
-      modules.set_data (this.name, (owned)module);
+      modules.set_data (name, (owned)module);
 
-      this._module_type = register_plugin ();
-      debug ("Plugin type: %s", this._module_type.name ());
-
-      return true;
+      return register_plugin ();
     }
 
-    public bool
-    load ()
+    public Type
+    load (string name)
     {
       string path;
-      bool found_module = false;
+      Type module_type = Type.INVALID;
 
       foreach (unowned string prefix in this.paths)
       {
@@ -110,35 +106,35 @@ namespace DesktopAgnostic
           continue;
         }
         path = Module.build_path (Path.build_filename (prefix,
-                                                       Path.get_dirname (this.name)),
-                                  Path.get_basename (this.name));
-        found_module = this.load_from_path (path);
-        if (found_module)
+                                                       Path.get_dirname (name)),
+                                  Path.get_basename (name));
+        module_type = this.load_from_path (name, path);
+        debug ("Plugin type: %s", module_type.name ());
+        if (module_type != Type.INVALID)
         {
           break;
         }
       }
-      if (!found_module)
+      if (module_type == Type.INVALID)
       {
         // try the current directory, as a last resort
         path = Module.build_path (Environment.get_current_dir (),
-                                  Path.get_basename (this.name));
-        found_module = this.load_from_path (path);
-        if (!found_module)
+                                  Path.get_basename (name));
+        module_type = this.load_from_path (name, path);
+        if (module_type == Type.INVALID)
         {
-          warning ("Could not locate the plugin '%s'.", this.name);
-          return false;
+          warning ("Could not locate the plugin '%s'.", name);
         }
       }
 
-      return true;
+      return module_type;
     }
   }
   private static KeyFile module_config = null;
   public Type
   get_module_type (string prefix, string key) throws GLib.Error
   {
-    ModuleLoader loader;
+    unowned ModuleLoader loader;
     string cfg_file = "desktop-agnostic.ini";
 
     if (!Module.supported ())
@@ -168,15 +164,8 @@ namespace DesktopAgnostic
     }
     string library = "libda-%s-%s".printf (prefix,
                                            module_config.get_string ("DEFAULT", key));
-    loader = new ModuleLoader (library);
-    if (loader.load ())
-    {
-      return loader.module_type;
-    }
-    else
-    {
-      return Type.INVALID;
-    }
+    loader = ModuleLoader.get_default ();
+    return loader.load (library);
   }
 }
 

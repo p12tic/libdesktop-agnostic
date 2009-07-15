@@ -22,13 +22,8 @@
 
 using DesktopAgnostic;
 
-void print_cfg_color (Config.Backend cfg, string name)
+void print_color (Color? clr, string name)
 {
-  Value val;
-  Color? clr;
-
-  val = cfg.get_value (Config.GROUP_DEFAULT, name);
-  clr = val as Color;
   if (clr == null)
   {
     message ("color '%s' is NULL", name);
@@ -37,6 +32,14 @@ void print_cfg_color (Config.Backend cfg, string name)
   {
     message ("color '%s' = %s", name, clr.to_string ());
   }
+}
+
+void print_cfg_color (Config.Backend cfg, string name)
+{
+  Value val;
+
+  val = cfg.get_value (Config.GROUP_DEFAULT, name);
+  print_color (val as Color, name);
 }
 
 int main (string[] args)
@@ -57,6 +60,13 @@ int main (string[] args)
     Config.Backend cfg = Config.new (schema);
     print_cfg_color (cfg, "color");
     print_cfg_color (cfg, "none");
+    Value val = cfg.get_value (Config.GROUP_DEFAULT, "color_list");
+    unowned ValueArray array = (ValueArray)val;
+    for (uint i = 0; i < array.n_values; i++)
+    {
+      unowned Value v = array.get_nth (i);
+      print_color (v as Color, "color_list[%u]".printf (i));
+    }
   }
   catch (Error err)
   {

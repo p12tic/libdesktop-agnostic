@@ -8,4 +8,9 @@ type = list-color
 default = red;green;blue
 description = Some color list.
 
+[DEFAULT/none]
+type = color
+default = 
+description = no default color; should be a NULL object.
+
 ; vim: set ft=dosini :

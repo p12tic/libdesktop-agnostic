@@ -22,12 +22,27 @@
 
 using DesktopAgnostic;
 
+void print_cfg_color (Config.Backend cfg, string name)
+{
+  Value val;
+  Color? clr;
+
+  val = cfg.get_value (Config.GROUP_DEFAULT, name);
+  clr = val as Color;
+  if (clr == null)
+  {
+    message ("color '%s' is NULL", name);
+  }
+  else
+  {
+    message ("color '%s' = %s", name, clr.to_string ());
+  }
+}
+
 int main (string[] args)
 {
   try
   {
-    Config.Schema schema = new Config.Schema ("test-color.schema-ini");
-    Config.Backend cfg = Config.new (schema);
     try
     {
       Color green = new Color.from_string ("green");
@@ -38,8 +53,10 @@ int main (string[] args)
     {
       critical ("Color parse error: %s", err.message);
     }
-    Color clr = (Color)cfg.get_value (Config.GROUP_DEFAULT, "color").get_object ();
-    message ("cfg color = %s", clr.to_string ());
+    Config.Schema schema = new Config.Schema ("test-color.schema-ini");
+    Config.Backend cfg = Config.new (schema);
+    print_cfg_color (cfg, "color");
+    print_cfg_color (cfg, "none");
   }
   catch (Error err)
   {

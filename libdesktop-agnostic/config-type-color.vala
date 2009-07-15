@@ -50,11 +50,16 @@ namespace DesktopAgnostic.Config
     public override Value
     deserialize (string serialized) throws SchemaError
     {
-      Value val = Value (this.schema_type);
+      Value val;
+      if (serialized == "")
+      {
+        val = (Object)null;
+        return val;
+      }
       try
       {
         Color color = new Color.from_string (serialized);
-        val.take_object (color);
+        val = (owned)color;
         return val;
       }
       catch (ColorParseError err)

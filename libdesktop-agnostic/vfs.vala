@@ -58,6 +58,49 @@ namespace DesktopAgnostic.VFS
     }
     return vfs;
   }
+
+  /**
+   * Initializes the VFS, if the backend needs it.
+   */
+  public void
+  init () throws GLib.Error
+  {
+    unowned VFS.Implementation? vfs = get_default ();
+    if (vfs != null)
+    {
+      vfs.init ();
+    }
+  }
+
+  /**
+   * Shuts down the VFS, if the backend needs it.
+   */
+  public void
+  shutdown () throws GLib.Error
+  {
+    unowned VFS.Implementation? vfs = get_default ();
+    if (vfs != null)
+    {
+      vfs.shutdown ();
+    }
+  }
+
+  /**
+   * Creates a list of files based on a newline-delimited list of URIs.
+   */
+  public SList<File.Backend>?
+  files_from_uri_list (string uri_list) throws GLib.Error
+  {
+    unowned VFS.Implementation? vfs = get_default ();
+    if (vfs == null)
+    {
+      return null;
+    }
+    else
+    {
+      return vfs.files_from_uri_list (uri_list);
+    }
+  }
 }
 
 // vim: set et ts=2 sts=2 sw=2 ai :

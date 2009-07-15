@@ -1,7 +1,7 @@
 [DEFAULT/color]
 type = color
 default = red
-description = Some oclor.
+description = Some color.
 
 [DEFAULT/color_list]
 type = list-color

@@ -59,6 +59,8 @@ namespace DesktopAgnostic.Config
       SList<string> search_paths;
 
       type_modules = new List<string> ();
+      // jump-start the ModuleLoader static constructor
+      ModuleLoader.get_default ();
       paths = ModuleLoader.get_search_paths ();
       search_paths = new SList<string> ();
       foreach (unowned string path in paths)

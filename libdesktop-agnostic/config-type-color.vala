@@ -44,8 +44,15 @@ namespace DesktopAgnostic.Config
     public override string
     serialize (Value val) throws SchemaError
     {
-      unowned Color color = (Color)val.get_object ();
-      return color.to_string ();
+      unowned Color? color = (Color)val;
+      if (color == null)
+      {
+        return "";
+      }
+      else
+      {
+        return color.to_string ();
+      }
     }
     public override Value
     deserialize (string serialized) throws SchemaError

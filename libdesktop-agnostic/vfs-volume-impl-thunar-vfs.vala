@@ -22,9 +22,9 @@
 
 using DesktopAgnostic.VFS;
 
-namespace DesktopAgnostic.VFS.Volume
+namespace DesktopAgnostic.VFS
 {
-  public class ThunarVFSBackend : Object, Backend
+  public class VolumeThunarVFS : Object, Volume
   {
     private ThunarVfs.Volume vol;
     public ThunarVfs.Volume implementation
@@ -66,7 +66,7 @@ namespace DesktopAgnostic.VFS.Volume
     {
       return this.vol.is_mounted ();
     }
-    private Volume.Callback _mount_callback;
+    private VolumeCallback _mount_callback;
     public bool
     do_mount ()
     {
@@ -75,7 +75,7 @@ namespace DesktopAgnostic.VFS.Volume
       return false;
     }
     public void
-    mount (Volume.Callback callback)
+    mount (VolumeCallback callback)
     {
       if (this._mount_callback == null)
       {
@@ -84,7 +84,7 @@ namespace DesktopAgnostic.VFS.Volume
       }
     }
     public bool
-    mount_finish () throws Volume.Error
+    mount_finish () throws VolumeError
     {
       bool result = false;
       try
@@ -93,11 +93,11 @@ namespace DesktopAgnostic.VFS.Volume
       }
       catch (Error err)
       {
-        throw new Volume.Error.MOUNT (err.message);
+        throw new VolumeError.MOUNT (err.message);
       }
       return result;
     }
-    private Volume.Callback _unmount_callback;
+    private VolumeCallback _unmount_callback;
     public bool
     do_unmount ()
     {
@@ -106,7 +106,7 @@ namespace DesktopAgnostic.VFS.Volume
       return false;
     }
     public void
-    unmount (Volume.Callback callback)
+    unmount (VolumeCallback callback)
     {
       if (this._unmount_callback == null)
       {
@@ -115,7 +115,7 @@ namespace DesktopAgnostic.VFS.Volume
       }
     }
     public bool
-    unmount_finish () throws Volume.Error
+    unmount_finish () throws VolumeError
     {
       bool result = false;
       try
@@ -124,7 +124,7 @@ namespace DesktopAgnostic.VFS.Volume
       }
       catch (Error err)
       {
-        throw new Volume.Error.UNMOUNT (err.message);
+        throw new VolumeError.UNMOUNT (err.message);
       }
       return result;
     }
@@ -133,7 +133,7 @@ namespace DesktopAgnostic.VFS.Volume
     {
       return this.vol.is_ejectable ();
     }
-    private Volume.Callback _eject_callback;
+    private VolumeCallback _eject_callback;
     public bool
     do_eject ()
     {
@@ -142,7 +142,7 @@ namespace DesktopAgnostic.VFS.Volume
       return false;
     }
     public void
-    eject (Volume.Callback callback)
+    eject (VolumeCallback callback)
     {
       if (this._eject_callback == null)
       {
@@ -151,7 +151,7 @@ namespace DesktopAgnostic.VFS.Volume
       }
     }
     public bool
-    eject_finish () throws Volume.Error
+    eject_finish () throws VolumeError
     {
       bool result = false;
       try
@@ -160,20 +160,20 @@ namespace DesktopAgnostic.VFS.Volume
       }
       catch (Error err)
       {
-        throw new Volume.Error.EJECT (err.message);
+        throw new VolumeError.EJECT (err.message);
       }
       return result;
     }
   }
-  public class ThunarVFSMonitor : Object, Monitor
+  public class VolumeMonitorThunarVFS : Object, VolumeMonitor
   {
     private ThunarVfs.VolumeManager manager;
-    private HashTable<ThunarVfs.Volume,Backend> _volumes;
+    private HashTable<ThunarVfs.Volume,VFS.Volume> _volumes;
     construct
     {
       this.manager = ThunarVfs.VolumeManager.get_default ();
-      this._volumes = new HashTable<ThunarVfs.Volume,Backend> (direct_hash,
-                                                               direct_equal);
+      this._volumes = new HashTable<ThunarVfs.Volume,VFS.Volume> (direct_hash,
+                                                                  direct_equal);
       unowned List<ThunarVfs.Volume> vols = this.manager.get_volumes ();
       foreach (unowned ThunarVfs.Volume tvol in vols)
       {
@@ -184,16 +184,16 @@ namespace DesktopAgnostic.VFS.Volume
       this.manager.volumes_added += this.on_volumes_added;
       this.manager.volumes_removed += this.on_volumes_removed;
     }
-    private Backend
+    private VFS.Volume
     create_volume (ThunarVfs.Volume vol)
     {
-        return (Backend)Object.new (typeof (ThunarVFSBackend),
-                                    "implementation", vol);
+        return (VFS.Volume)Object.new (typeof (VolumeThunarVFS),
+                                       "implementation", vol);
     }
-    private Backend
+    private VFS.Volume
     check_volume (ThunarVfs.Volume tvol)
     {
-      Backend? vol = this._volumes.lookup (tvol);
+      VFS.Volume? vol = this._volumes.lookup (tvol);
       if (vol == null)
       {
         vol = this.create_volume (tvol);
@@ -226,7 +226,7 @@ namespace DesktopAgnostic.VFS.Volume
       unowned List<ThunarVfs.Volume> vols = (List<ThunarVfs.Volume>)ptr;
       foreach (unowned ThunarVfs.Volume tvol in vols)
       {
-        Backend? vol = this._volumes.lookup (tvol);
+        VFS.Volume? vol = this._volumes.lookup (tvol);
         if (vol != null)
         {
           this._volumes.remove (tvol);
@@ -240,7 +240,7 @@ namespace DesktopAgnostic.VFS.Volume
         return (void*)this.manager;
       }
     }
-    public List<Backend> volumes
+    public List<VFS.Volume> volumes
     {
       owned get
       {

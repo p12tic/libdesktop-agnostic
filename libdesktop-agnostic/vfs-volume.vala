@@ -22,15 +22,15 @@
 
 using DesktopAgnostic.VFS;
 
-namespace DesktopAgnostic.VFS.Volume
+namespace DesktopAgnostic.VFS
 {
-  public errordomain Error
+  public errordomain VolumeError
   {
     MOUNT,
     UNMOUNT,
     EJECT
   }
-  public interface Backend : Object
+  public interface Volume : Object
   {
     /**
      * The name of the volume.
@@ -49,21 +49,21 @@ namespace DesktopAgnostic.VFS.Volume
      * Tells whether the volume is mounted.
      */
     public abstract bool is_mounted ();
-    public abstract void mount (Volume.Callback callback);
-    public abstract bool mount_finish () throws Volume.Error;
-    public abstract void unmount (Volume.Callback callback);
-    public abstract bool unmount_finish () throws Volume.Error;
+    public abstract void mount (VolumeCallback callback);
+    public abstract bool mount_finish () throws VolumeError;
+    public abstract void unmount (VolumeCallback callback);
+    public abstract bool unmount_finish () throws VolumeError;
     public abstract bool can_eject ();
-    public abstract void eject (Volume.Callback callback);
-    public abstract bool eject_finish () throws Volume.Error;
+    public abstract void eject (VolumeCallback callback);
+    public abstract bool eject_finish () throws VolumeError;
   }
-  public delegate void Callback (Backend vol);
-  public interface Monitor : Object
+  public delegate void VolumeCallback (Volume vol);
+  public interface VolumeMonitor : Object
   {
     public abstract void* implementation { get; }
-    public abstract List<Backend> volumes { owned get; }
-    public abstract signal void volume_mounted (Backend volume);
-    public abstract signal void volume_unmounted (Backend volume);
+    public abstract List<Volume> volumes { owned get; }
+    public abstract signal void volume_mounted (Volume volume);
+    public abstract signal void volume_unmounted (Volume volume);
   }
 }
 

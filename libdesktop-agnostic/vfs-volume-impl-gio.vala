@@ -22,9 +22,9 @@
 
 using DesktopAgnostic.VFS;
 
-namespace DesktopAgnostic.VFS.Volume
+namespace DesktopAgnostic.VFS
 {
-  public class GIOBackend : Object, Backend
+  public class VolumeGIO : Object, Volume
   {
     private GLib.Volume vol;
     public GLib.Volume implementation
@@ -100,7 +100,7 @@ namespace DesktopAgnostic.VFS.Volume
     {
       return this.vol.get_mount () != null;
     }
-    private Volume.Callback _mount_callback;
+    private VolumeCallback _mount_callback;
     private AsyncResult async_result;
     private void on_mount (Object obj, AsyncResult res)
     {
@@ -109,7 +109,7 @@ namespace DesktopAgnostic.VFS.Volume
       this._mount_callback = null;
     }
     public void
-    mount (Volume.Callback callback)
+    mount (VolumeCallback callback)
     {
       if (this._mount_callback == null)
       {
@@ -117,7 +117,7 @@ namespace DesktopAgnostic.VFS.Volume
         this.vol.mount (MountMountFlags.NONE, null, null, this.on_mount);
       }
     }
-    public bool mount_finish () throws Volume.Error
+    public bool mount_finish () throws VolumeError
     {
       bool result = false;
       try
@@ -126,12 +126,12 @@ namespace DesktopAgnostic.VFS.Volume
       }
       catch (GLib.Error err)
       {
-        throw new Volume.Error.MOUNT (err.message);
+        throw new VolumeError.MOUNT (err.message);
       }
       this.async_result = null;
       return result;
     }
-    private Volume.Callback _unmount_callback;
+    private VolumeCallback _unmount_callback;
     private void on_unmount (Object obj, AsyncResult res)
     {
       this.async_result = res;
@@ -139,7 +139,7 @@ namespace DesktopAgnostic.VFS.Volume
       this._unmount_callback = null;
     }
     public void
-    unmount (Volume.Callback callback)
+    unmount (VolumeCallback callback)
     {
       if (this._unmount_callback == null)
       {
@@ -148,7 +148,7 @@ namespace DesktopAgnostic.VFS.Volume
                                        this.on_unmount);
       }
     }
-    public bool unmount_finish () throws Volume.Error
+    public bool unmount_finish () throws VolumeError
     {
       bool result = false;
       try
@@ -157,7 +157,7 @@ namespace DesktopAgnostic.VFS.Volume
       }
       catch (GLib.Error err)
       {
-        throw new Volume.Error.UNMOUNT (err.message);
+        throw new VolumeError.UNMOUNT (err.message);
       }
       this.async_result = null;
       return result;
@@ -167,7 +167,7 @@ namespace DesktopAgnostic.VFS.Volume
     {
       return this.vol.can_eject ();
     }
-    private Volume.Callback _eject_callback;
+    private VolumeCallback _eject_callback;
     private void
     on_eject (Object obj, AsyncResult res)
     {
@@ -176,7 +176,7 @@ namespace DesktopAgnostic.VFS.Volume
       this._eject_callback = null;
     }
     public void
-    eject (Volume.Callback callback)
+    eject (VolumeCallback callback)
     {
       if (this._eject_callback == null)
       {
@@ -184,7 +184,7 @@ namespace DesktopAgnostic.VFS.Volume
         this.vol.eject (MountUnmountFlags.NONE, null, this.on_eject);
       }
     }
-    public bool eject_finish () throws Volume.Error
+    public bool eject_finish () throws VolumeError
     {
       bool result = false;
       try
@@ -193,25 +193,25 @@ namespace DesktopAgnostic.VFS.Volume
       }
       catch (GLib.Error err)
       {
-        throw new Volume.Error.EJECT (err.message);
+        throw new VolumeError.EJECT (err.message);
       }
       this.async_result = null;
       return result;
     }
   }
-  public class GIOMonitor : Object, Monitor
+  public class VolumeMonitorGIO : Object, VolumeMonitor
   {
-    private VolumeMonitor monitor;
-    private HashTable<GLib.Volume,Backend> _volumes;
+    private GLib.VolumeMonitor monitor;
+    private HashTable<GLib.Volume,VFS.Volume> _volumes;
     construct
     {
-      this.monitor = VolumeMonitor.get ();
-      this._volumes = new HashTable<GLib.Volume,Backend> (direct_hash,
-                                                          direct_equal);
+      this.monitor = GLib.VolumeMonitor.get ();
+      this._volumes = new HashTable<GLib.Volume,VFS.Volume> (direct_hash,
+                                                             direct_equal);
       unowned List<GLib.Volume> vols = this.monitor.get_volumes ();
       foreach (unowned GLib.Volume gvol in vols)
       {
-        Volume.Backend vol = this.create_volume (gvol);
+        VFS.Volume vol = this.create_volume (gvol);
         this._volumes.insert (gvol, vol);
       }
       this.monitor.mount_added += this.on_mount_added;
@@ -219,16 +219,16 @@ namespace DesktopAgnostic.VFS.Volume
       this.monitor.volume_added += this.on_volume_added;
       this.monitor.volume_removed += this.on_volume_removed;
     }
-    private Backend
+    private VFS.Volume
     create_volume (GLib.Volume vol)
     {
-        return (Backend)Object.new (typeof (GIOBackend),
-                                    "implementation", vol);
+        return (VFS.Volume)Object.new (typeof (VolumeGIO),
+                                       "implementation", vol);
     }
-    private Backend
+    private VFS.Volume
     check_volume (GLib.Volume gvol)
     {
-      Backend? vol = this._volumes.lookup (gvol);
+      VFS.Volume? vol = this._volumes.lookup (gvol);
       if (vol == null)
       {
         vol = this.create_volume (gvol);
@@ -236,7 +236,7 @@ namespace DesktopAgnostic.VFS.Volume
       }
       return vol;
     }
-    private Backend?
+    private VFS.Volume?
     get_volume_from_mount (Mount mount)
     {
       GLib.Volume? gvol = mount.get_volume ();
@@ -250,32 +250,32 @@ namespace DesktopAgnostic.VFS.Volume
       }
     }
     private void
-    on_mount_added (VolumeMonitor vmonitor, Mount mount)
+    on_mount_added (GLib.VolumeMonitor vmonitor, Mount mount)
     {
-      Backend? volume = this.get_volume_from_mount (mount);
+      VFS.Volume? volume = this.get_volume_from_mount (mount);
       if (volume != null)
       {
         this.volume_mounted (volume);
       }
     }
     private void
-    on_mount_removed (VolumeMonitor vmonitor, Mount mount)
+    on_mount_removed (GLib.VolumeMonitor vmonitor, Mount mount)
     {
-      Backend? volume = this.get_volume_from_mount (mount);
+      VFS.Volume? volume = this.get_volume_from_mount (mount);
       if (volume != null)
       {
         this.volume_unmounted (volume);
       }
     }
     private void
-    on_volume_added (VolumeMonitor vmonitor, GLib.Volume gvol)
+    on_volume_added (GLib.VolumeMonitor vmonitor, GLib.Volume gvol)
     {
       this.check_volume (gvol);
     }
     private void
-    on_volume_removed (VolumeMonitor vmonitor, GLib.Volume gvol)
+    on_volume_removed (GLib.VolumeMonitor vmonitor, GLib.Volume gvol)
     {
-      Backend? vol = this._volumes.lookup (gvol);
+      VFS.Volume? vol = this._volumes.lookup (gvol);
       if (vol != null)
       {
         this._volumes.remove (gvol);
@@ -289,7 +289,7 @@ namespace DesktopAgnostic.VFS.Volume
         return (void*)this.monitor;
       }
     }
-    public List<Backend> volumes
+    public List<VFS.Volume> volumes
     {
       owned get
       {

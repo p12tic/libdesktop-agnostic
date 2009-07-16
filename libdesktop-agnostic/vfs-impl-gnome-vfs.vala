@@ -56,7 +56,7 @@ namespace DesktopAgnostic.VFS
     {
       get
       {
-        return typeof (Volume.GnomeVFSBackend);
+        return typeof (VolumeGnomeVFS);
       }
     }
     public void init ()
@@ -76,13 +76,13 @@ namespace DesktopAgnostic.VFS
       }
       return files;
     }
-    private Volume.Monitor vmonitor;
-    public unowned Volume.Monitor
+    private VolumeMonitor vmonitor;
+    public unowned VolumeMonitor
     volume_monitor_get_default ()
     {
       if (vmonitor == null)
       {
-        vmonitor = new Volume.GnomeVFSMonitor ();
+        vmonitor = new VolumeMonitorGnomeVFS ();
       }
       return vmonitor;
     }

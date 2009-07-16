@@ -22,15 +22,15 @@
 
 using DesktopAgnostic.VFS;
 
-namespace DesktopAgnostic.VFS.Volume
+namespace DesktopAgnostic.VFS
 {
-  private struct Result
+  private struct VolumeResult
   {
     public bool succeeded;
     public string error;
     public string detailed_error;
   }
-  public class GnomeVFSBackend : Object, Backend
+  public class VolumeGnomeVFS : Object, Volume
   {
     private GnomeVFS.Drive drive;
     public GnomeVFS.Drive implementation
@@ -72,12 +72,12 @@ namespace DesktopAgnostic.VFS.Volume
     {
       return this.drive.is_mounted ();
     }
-    private Volume.Result? result;
-    private Volume.Callback _mount_callback;
+    private VolumeResult? result;
+    private VolumeCallback _mount_callback;
     private void
     on_drive_mounted (bool succeeded, string error, string detailed_error)
     {
-      this.result = Result ();
+      this.result = VolumeResult ();
       result.succeeded = succeeded;
       result.error = error;
       result.detailed_error = detailed_error;
@@ -85,7 +85,7 @@ namespace DesktopAgnostic.VFS.Volume
       this._mount_callback = null;
     }
     public void
-    mount (Volume.Callback callback)
+    mount (VolumeCallback callback)
     {
       if (this._mount_callback == null)
       {
@@ -94,7 +94,7 @@ namespace DesktopAgnostic.VFS.Volume
       }
     }
     public bool
-    mount_finish () throws Volume.Error
+    mount_finish () throws VolumeError
     {
       bool result = this.result.succeeded;
       if (!result)
@@ -102,16 +102,16 @@ namespace DesktopAgnostic.VFS.Volume
         string msg = "%s (%s)".printf (this.result.error,
                                        this.result.detailed_error);
         this.result = null;
-        throw new Volume.Error.MOUNT (msg);
+        throw new VolumeError.MOUNT (msg);
       }
       this.result = null;
       return result;
     }
-    private Volume.Callback _unmount_callback;
+    private VolumeCallback _unmount_callback;
     private void
     on_drive_unmounted (bool succeeded, string error, string detailed_error)
     {
-      this.result = Result ();
+      this.result = VolumeResult ();
       result.succeeded = succeeded;
       result.error = error;
       result.detailed_error = detailed_error;
@@ -119,7 +119,7 @@ namespace DesktopAgnostic.VFS.Volume
       this._unmount_callback = null;
     }
     public void
-    unmount (Volume.Callback callback)
+    unmount (VolumeCallback callback)
     {
       if (this._unmount_callback == null)
       {
@@ -128,7 +128,7 @@ namespace DesktopAgnostic.VFS.Volume
       }
     }
     public bool
-    unmount_finish () throws Volume.Error
+    unmount_finish () throws VolumeError
     {
       bool result = this.result.succeeded;
       if (!result)
@@ -136,7 +136,7 @@ namespace DesktopAgnostic.VFS.Volume
         string msg = "%s (%s)".printf (this.result.error,
                                        this.result.detailed_error);
         this.result = null;
-        throw new Volume.Error.UNMOUNT (msg);
+        throw new VolumeError.UNMOUNT (msg);
       }
       this.result = null;
       return result;
@@ -146,11 +146,11 @@ namespace DesktopAgnostic.VFS.Volume
     {
       return true;
     }
-    private Volume.Callback _eject_callback;
+    private VolumeCallback _eject_callback;
     private void
     on_drive_ejected (bool succeeded, string error, string detailed_error)
     {
-      this.result = Result ();
+      this.result = VolumeResult ();
       result.succeeded = succeeded;
       result.error = error;
       result.detailed_error = detailed_error;
@@ -158,7 +158,7 @@ namespace DesktopAgnostic.VFS.Volume
       this._eject_callback = null;
     }
     public void
-    eject (Volume.Callback callback)
+    eject (VolumeCallback callback)
     {
       if (this._eject_callback == null)
       {
@@ -167,7 +167,7 @@ namespace DesktopAgnostic.VFS.Volume
       }
     }
     public bool
-    eject_finish () throws Volume.Error
+    eject_finish () throws VolumeError
     {
       bool result = this.result.succeeded;
       if (!result)
@@ -175,26 +175,26 @@ namespace DesktopAgnostic.VFS.Volume
         string msg = "%s (%s)".printf (this.result.error,
                                        this.result.detailed_error);
         this.result = null;
-        throw new Volume.Error.EJECT (msg);
+        throw new VolumeError.EJECT (msg);
       }
       this.result = null;
       return result;
     }
   }
-  public class GnomeVFSMonitor : Object, Monitor
+  public class VolumeMonitorGnomeVFS : Object, VolumeMonitor
   {
     private GnomeVFS.VolumeMonitor monitor;
-    private HashTable<GnomeVFS.Drive,Backend> _volumes;
+    private HashTable<GnomeVFS.Drive,VFS.Volume> _volumes;
     construct
     {
       this.monitor = GnomeVFS.get_volume_monitor ();
-      this._volumes = new HashTable<GnomeVFS.Drive,Backend> (direct_hash,
-                                                             direct_equal);
+      this._volumes = new HashTable<GnomeVFS.Drive,VFS.Volume> (direct_hash,
+                                                                direct_equal);
       unowned List<GnomeVFS.Drive> drives =
         this.monitor.get_connected_drives ();
       foreach (unowned GnomeVFS.Drive drive in drives)
       {
-        Volume.Backend vol = this.create_volume (drive);
+        VFS.Volume vol = this.create_volume (drive);
         this._volumes.insert (drive, vol);
       }
       this.monitor.drive_connected += this.on_drive_connected;
@@ -202,16 +202,16 @@ namespace DesktopAgnostic.VFS.Volume
       this.monitor.volume_mounted += this.on_volume_mounted;
       this.monitor.volume_unmounted += this.on_volume_unmounted;
     }
-    private Backend
+    private VFS.Volume
     create_volume (GnomeVFS.Drive drive)
     {
-        return (Backend)Object.new (typeof (GnomeVFSBackend),
-                                    "implementation", drive);
+        return (VFS.Volume)Object.new (typeof (VolumeGnomeVFS),
+                                       "implementation", drive);
     }
-    private Backend
+    private VFS.Volume
     check_volume (GnomeVFS.Drive drive)
     {
-      Backend? vol = this._volumes.lookup (drive);
+      VFS.Volume? vol = this._volumes.lookup (drive);
       if (vol == null)
       {
         vol = this.create_volume (drive);
@@ -228,13 +228,13 @@ namespace DesktopAgnostic.VFS.Volume
     on_drive_disconnected (GnomeVFS.VolumeMonitor vmonitor,
                            GnomeVFS.Drive drive)
     {
-      Backend? vol = this._volumes.lookup (drive);
+      VFS.Volume? vol = this._volumes.lookup (drive);
       if (vol != null)
       {
         this._volumes.remove (drive);
       }
     }
-    private Backend
+    private VFS.Volume
     get_volume (GnomeVFS.Volume gvol)
     {
       return this.check_volume (gvol.get_drive ());
@@ -258,7 +258,7 @@ namespace DesktopAgnostic.VFS.Volume
         return (void*)this.monitor;
       }
     }
-    public List<Backend> volumes
+    public List<VFS.Volume> volumes
     {
       owned get
       {

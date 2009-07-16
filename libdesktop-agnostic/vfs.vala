@@ -35,7 +35,7 @@ namespace DesktopAgnostic.VFS
     public abstract void init ();
     public abstract SList<File.Backend>
       files_from_uri_list (string uri_list) throws GLib.Error;
-    public abstract unowned Volume.Monitor volume_monitor_get_default ();
+    public abstract unowned VolumeMonitor volume_monitor_get_default ();
     public abstract void shutdown ();
   }
 

@@ -33,7 +33,7 @@ public interface Xfce.Trash : DBus.Object
   public signal void TrashChanged (bool full);
 }
 
-namespace DesktopAgnostic.VFS.Trash
+namespace DesktopAgnostic.VFS
 {
   private enum TrashState
   {
@@ -41,7 +41,7 @@ namespace DesktopAgnostic.VFS.Trash
     EMPTY,
     FULL
   }
-  public class ThunarVFSImplementation : Backend, GLib.Object
+  public class TrashThunarVFS : Trash, GLib.Object
   {
     protected unowned ThunarVfs.Path trash;
     private Connection dbus;

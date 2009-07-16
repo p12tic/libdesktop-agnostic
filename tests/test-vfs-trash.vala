@@ -25,7 +25,7 @@ using DesktopAgnostic;
 public class TestTrash
 {
   static MainLoop mainloop;
-  static void on_file_count_changed (VFS.Trash.Backend t)
+  static void on_file_count_changed (VFS.Trash t)
   {
     message ("Number of files in the trash: %u\n", t.file_count);
     mainloop.quit ();
@@ -34,13 +34,12 @@ public class TestTrash
   {
     try
     {
-      VFS.Implementation vfs = VFS.get_default ();
-      vfs.init ();
-      VFS.Trash.Backend t = (VFS.Trash.Backend)Object.new (vfs.trash_type);
+      VFS.init ();
+      unowned VFS.Trash t = VFS.trash_get_default ();
       t.file_count_changed += on_file_count_changed;
       mainloop = new MainLoop (null, true);
       mainloop.run ();
-      vfs.shutdown ();
+      VFS.shutdown ();
     }
     catch (GLib.Error err)
     {
@@ -50,4 +49,4 @@ public class TestTrash
   }
 }
 
-// vim: set ft=vala et ts=2 sts=2 sw=2 ai :
+// vim: set et ts=2 sts=2 sw=2 ai :

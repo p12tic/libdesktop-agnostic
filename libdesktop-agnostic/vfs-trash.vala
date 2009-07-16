@@ -20,16 +20,28 @@
  * Author : Mark Lee <libdesktop-agnostic@lazymalevolence.com>
  */
 
-using DesktopAgnostic.VFS;
-
-namespace DesktopAgnostic.VFS.Trash
+namespace DesktopAgnostic.VFS
 {
-  public interface Backend : Object
+  public interface Trash : Object
   {
     public abstract uint file_count { get; }
     public signal void file_count_changed ();
     public abstract void send_to_trash (File.Backend file) throws GLib.Error;
     public abstract void empty ();
+  }
+
+  private static Trash? trash = null;
+
+  public unowned Trash
+  trash_get_default () throws GLib.Error
+  {
+    if (trash == null)
+    {
+      unowned VFS.Implementation vfs = VFS.get_default ();
+      trash = (Trash)Object.new (vfs.trash_type);
+    }
+
+    return trash;
   }
 }
 

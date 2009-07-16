@@ -49,7 +49,7 @@ namespace DesktopAgnostic.VFS
     {
       get
       {
-        return typeof (Trash.ThunarVFSImplementation);
+        return typeof (TrashThunarVFS);
       }
     }
     public Type volume_type

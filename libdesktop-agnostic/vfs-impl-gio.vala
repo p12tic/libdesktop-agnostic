@@ -49,7 +49,7 @@ namespace DesktopAgnostic.VFS
     {
       get
       {
-        return typeof (Trash.GIOImplementation);
+        return typeof (TrashGIO);
       }
     }
     public Type volume_type

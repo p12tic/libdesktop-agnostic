@@ -49,7 +49,7 @@ namespace DesktopAgnostic.VFS
     {
       get
       {
-        return typeof (Trash.GnomeVFSImplementation);
+        return typeof (TrashGnomeVFS);
       }
     }
     public Type volume_type

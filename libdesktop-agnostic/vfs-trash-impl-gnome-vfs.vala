@@ -23,9 +23,9 @@
 using DesktopAgnostic.VFS;
 using GnomeVFS;
 
-namespace DesktopAgnostic.VFS.Trash
+namespace DesktopAgnostic.VFS
 {
-  class TrashVolume : Object
+  private class TrashVolume : Object
   {
     private uint _file_count;
     public uint file_count
@@ -35,7 +35,7 @@ namespace DesktopAgnostic.VFS.Trash
         return this._file_count;
       }
     }
-    private unowned Backend trash;
+    private unowned Trash trash;
     private unowned MonitorHandle monitor;
     private unowned URI _uri;
     public URI uri
@@ -59,7 +59,7 @@ namespace DesktopAgnostic.VFS.Trash
       }
     }
 
-    public TrashVolume (Backend trash, URI uri)
+    public TrashVolume (Trash trash, URI uri)
     {
       this._file_count = 0;
       this.trash = trash;
@@ -152,7 +152,7 @@ namespace DesktopAgnostic.VFS.Trash
     }
   }
 
-  public class GnomeVFSImplementation : Backend, Object
+  public class TrashGnomeVFS : Trash, Object
   {
     protected HashTable<GnomeVFS.Volume, TrashVolume> trash_dirs;
 

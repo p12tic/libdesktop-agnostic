@@ -20,11 +20,9 @@
  * Author : Mark Lee <libdesktop-agnostic@lazymalevolence.com>
  */
 
-using DesktopAgnostic.VFS;
-
-namespace DesktopAgnostic.VFS.Trash
+namespace DesktopAgnostic.VFS
 {
-  public class GIOImplementation : Backend, Object
+  public class TrashGIO : Trash, Object
   {
     private File.Backend trash;
     private File.Monitor monitor;

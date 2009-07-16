@@ -21,10 +21,10 @@
  */
 
 using DesktopAgnostic;
-using DesktopAgnostic.VFS.Bookmarks;
+using DesktopAgnostic.VFS;
 
 void
-print_bookmarks (GtkParser parser)
+print_bookmarks (GtkBookmarks parser)
 {
   if (parser.bookmarks == null)
   {
@@ -52,21 +52,21 @@ int
 main (string[] args)
 {
   VFS.Implementation vfs;
-  GtkParser parser;
+  GtkBookmarks parser;
 
   vfs = VFS.get_default ();
   vfs.init ();
 
   if (args.length < 2)
   {
-    parser = new GtkParser ();
+    parser = new GtkBookmarks ();
   }
   else
   {
     try
     {
       VFS.File.Backend file = VFS.File.new_for_path (args[1]);
-      parser = new GtkParser (file);
+      parser = new GtkBookmarks (file);
     }
     catch (GLib.Error err)
     {

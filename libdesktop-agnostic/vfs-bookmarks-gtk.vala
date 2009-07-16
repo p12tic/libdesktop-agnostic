@@ -25,7 +25,7 @@
 
 using DesktopAgnostic.VFS;
 
-namespace DesktopAgnostic.VFS.Bookmarks
+namespace DesktopAgnostic.VFS
 {
   /**
    * A representation of a simple bookmark.
@@ -38,7 +38,7 @@ namespace DesktopAgnostic.VFS.Bookmarks
   /**
    * Parses .gtk-bookmarks files.
    */
-  public class GtkParser : Object
+  public class GtkBookmarks : Object
   {
     private File.Backend _file;
     private File.Monitor _monitor;
@@ -75,7 +75,7 @@ namespace DesktopAgnostic.VFS.Bookmarks
      * @param monitor if %TRUE, monitors the file for changes, and notifies of
      * changes via the "changed" signal (defaults to %TRUE)
      */
-    public GtkParser (File.Backend? file = null, bool monitor = true)
+    public GtkBookmarks (File.Backend? file = null, bool monitor = true)
     {
       this.file = file;
       if (this._file.exists)

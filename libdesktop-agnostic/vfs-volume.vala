@@ -65,6 +65,19 @@ namespace DesktopAgnostic.VFS
     public abstract signal void volume_mounted (Volume volume);
     public abstract signal void volume_unmounted (Volume volume);
   }
+  public unowned VFS.VolumeMonitor?
+  volume_monitor_get_default () throws GLib.Error
+  {
+    unowned VFS.Implementation? vfs = get_default ();
+    if (vfs == null)
+    {
+      return null;
+    }
+    else
+    {
+      return vfs.volume_monitor_get_default ();
+    }
+  }
 }
 
 // vim: set et ts=2 sts=2 sw=2 ai :

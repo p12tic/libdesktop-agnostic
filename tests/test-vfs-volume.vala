@@ -29,15 +29,14 @@ public class TestVolume
   {
     try
     {
-      VFS.Implementation vfs = VFS.get_default ();
-      vfs.init ();
-      VFS.VolumeMonitor vm = vfs.volume_monitor_get_default ();
+      VFS.init ();
+      VFS.VolumeMonitor vm = VFS.volume_monitor_get_default ();
       foreach (unowned VFS.Volume vol in vm.volumes)
       {
         message ("Volume[%s] (Mounted=%s): %s", vol.name,
                  vol.is_mounted ().to_string(), vol.uri.uri);
       }
-      vfs.shutdown ();
+      VFS.shutdown ();
     }
     catch (GLib.Error err)
     {

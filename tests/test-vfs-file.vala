@@ -28,17 +28,16 @@ int main (string[] args)
 {
   try
   {
-    VFS.Implementation vfs = VFS.get_default ();
-    vfs.init ();
+    VFS.init ();
     unowned string path = Environment.get_tmp_dir ();
-    VFS.File.Backend tmp = VFS.File.new_for_path (path);
+    VFS.File tmp = VFS.file_new_for_path (path);
     assert (tmp.exists);
-    assert (tmp.file_type == VFS.File.FileType.DIRECTORY);
+    assert (tmp.file_type == VFS.FileType.DIRECTORY);
     message ("URI: %s", tmp.uri);
     message ("Path: %s", tmp.path);
     tmp = null;
     string file_path = Path.build_filename (path, "desktop-agnostic-test");
-    VFS.File.Backend file = VFS.File.new_for_path (file_path);
+    VFS.File file = VFS.file_new_for_path (file_path);
     file.replace_contents (CONTENT);
     string contents;
     size_t length;
@@ -46,7 +45,7 @@ int main (string[] args)
     assert (contents == CONTENT);
     assert (file.launch ());
     file = null;
-    vfs.shutdown ();
+    VFS.shutdown ();
   }
   catch (Error err)
   {

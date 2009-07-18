@@ -20,9 +20,9 @@
  * Author : Mark Lee <libdesktop-agnostic@lazymalevolence.com>
  */
 
-namespace DesktopAgnostic.VFS.File
+namespace DesktopAgnostic.VFS
 {
-  public class GnomeVFSMonitor : Object, Monitor
+  public class FileMonitorGnomeVFS : Object, FileMonitor
   {
     private bool _cancelled;
     public bool cancelled
@@ -33,8 +33,8 @@ namespace DesktopAgnostic.VFS.File
       }
     }
     private unowned GnomeVFS.MonitorHandle handle;
-    private Backend _file;
-    public GnomeVFSMonitor (GnomeVFSBackend file)
+    private File _file;
+    public FileMonitorGnomeVFS (FileGnomeVFS file)
     {
       this._file = file;
       GnomeVFS.MonitorType mt;
@@ -54,32 +54,32 @@ namespace DesktopAgnostic.VFS.File
                                    string monitor_uri, string info_uri,
                                    GnomeVFS.MonitorEventType event)
     {
-      Backend info_file = null;
+      File info_file = null;
       if (info_uri != null)
       {
-        info_file = File.new_for_uri (info_uri);
+        info_file = file_new_for_uri (info_uri);
       }
-      MonitorEvent da_event;
+      FileMonitorEvent da_event;
       switch (event)
       {
         case GnomeVFS.MonitorEventType.CHANGED:
-          da_event = MonitorEvent.CHANGED;
+          da_event = FileMonitorEvent.CHANGED;
           break;
         case GnomeVFS.MonitorEventType.CREATED:
-          da_event = MonitorEvent.CREATED;
+          da_event = FileMonitorEvent.CREATED;
           break;
         case GnomeVFS.MonitorEventType.DELETED:
-          da_event = MonitorEvent.DELETED;
+          da_event = FileMonitorEvent.DELETED;
           break;
         case GnomeVFS.MonitorEventType.METADATA_CHANGED:
-          da_event = MonitorEvent.ATTRIBUTE_CHANGED;
+          da_event = FileMonitorEvent.ATTRIBUTE_CHANGED;
           break;
         default:
           return;
       }
       this.changed (this._file, info_file, da_event);
     }
-    public void emit (Backend? other, MonitorEvent event)
+    public void emit (File? other, FileMonitorEvent event)
     {
       // emit () is not implemented (sanely) by the GNOME VFS library.
       /*
@@ -91,16 +91,16 @@ namespace DesktopAgnostic.VFS.File
       GnomeVFS.MonitorEventType gnome_event;
       switch (event)
       {
-        case MonitorEvent.CHANGED:
+        case FileMonitorEvent.CHANGED:
           gnome_event = GnomeVFS.MonitorEventType.CHANGED;
           break;
-        case MonitorEvent.CREATED:
+        case FileMonitorEvent.CREATED:
           gnome_event = GnomeVFS.MonitorEventType.CREATED;
           break;
-        case MonitorEvent.DELETED:
+        case FileMonitorEvent.DELETED:
           gnome_event = GnomeVFS.MonitorEventType.DELETED;
           break;
-        case MonitorEvent.ATTRIBUTE_CHANGED:
+        case FileMonitorEvent.ATTRIBUTE_CHANGED:
           gnome_event = GnomeVFS.MonitorEventType.METADATA_CHANGED;
           break;
         default:

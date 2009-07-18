@@ -35,14 +35,14 @@ namespace DesktopAgnostic.VFS
     {
       get
       {
-        return typeof (File.GIOBackend);
+        return typeof (FileGIO);
       }
     }
     public Type file_monitor_type
     {
       get
       {
-        return typeof (File.GIOMonitor);
+        return typeof (FileMonitorGIO);
       }
     }
     public Type trash_type
@@ -62,14 +62,14 @@ namespace DesktopAgnostic.VFS
     public void init ()
     {
     }
-    public SList<File.Backend>
+    public SList<File>
     files_from_uri_list (string uri_list) throws GLib.Error
     {
-      SList<File.Backend> files = new SList<File.Backend> ();
+      SList<File> files = new SList<File> ();
       string[] uris = Uri.list_extract_uris (uri_list);
       foreach (unowned string uri in uris)
       {
-        File.Backend file = File.new_for_uri (uri);
+        File file = file_new_for_uri (uri);
         files.append ((owned)file);
       }
       return files;

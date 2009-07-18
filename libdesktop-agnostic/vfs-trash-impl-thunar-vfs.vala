@@ -119,7 +119,7 @@ namespace DesktopAgnostic.VFS
     }
 
     public void
-    send_to_trash (File.Backend file) throws GLib.Error
+    send_to_trash (File file) throws GLib.Error
     {
       string[] uris = new string[] { file.uri };
       this.xfce_trash.MoveToTrash (uris, "");

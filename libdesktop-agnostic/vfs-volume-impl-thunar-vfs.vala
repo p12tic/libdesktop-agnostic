@@ -41,15 +41,15 @@ namespace DesktopAgnostic.VFS
         return this.vol.get_name ();
       }
     }
-    private File.Backend _uri;
-    public File.Backend uri
+    private File _uri;
+    public File uri
     {
       get
       {
         if (this._uri == null)
         {
           ThunarVfs.Path path = this.vol.get_mount_point ();
-          this._uri = File.new_for_uri (path.dup_uri ());
+          this._uri = file_new_for_uri (path.dup_uri ());
         }
         return this._uri;
       }

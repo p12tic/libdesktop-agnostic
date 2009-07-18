@@ -33,7 +33,7 @@ namespace DesktopAgnostic.VFS
     public abstract Type trash_type { get; }
     public abstract Type volume_type { get; }
     public abstract void init ();
-    public abstract SList<File.Backend>
+    public abstract SList<File>
       files_from_uri_list (string uri_list) throws GLib.Error;
     public abstract unowned VolumeMonitor volume_monitor_get_default ();
     public abstract void shutdown ();
@@ -88,7 +88,7 @@ namespace DesktopAgnostic.VFS
   /**
    * Creates a list of files based on a newline-delimited list of URIs.
    */
-  public SList<File.Backend>?
+  public SList<File>?
   files_from_uri_list (string uri_list) throws GLib.Error
   {
     unowned VFS.Implementation? vfs = get_default ();

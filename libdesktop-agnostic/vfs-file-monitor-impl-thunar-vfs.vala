@@ -20,12 +20,12 @@
  * Author : Mark Lee <libdesktop-agnostic@lazymalevolence.com>
  */
 
-namespace DesktopAgnostic.VFS.File
+namespace DesktopAgnostic.VFS
 {
-  public class ThunarVFSMonitor : Object, Monitor
+  public class FileMonitorThunarVFS : Object, FileMonitor
   {
     private unowned ThunarVfs.MonitorHandle handle;
-    private Backend file;
+    private File file;
     private bool _cancelled;
     public bool cancelled
     {
@@ -34,7 +34,7 @@ namespace DesktopAgnostic.VFS.File
         return this._cancelled;
       }
     }
-    public ThunarVFSMonitor (ThunarVFSBackend file)
+    public FileMonitorThunarVFS (FileThunarVFS file)
     {
       this.file = file;
       unowned ThunarVfs.Monitor mon = ThunarVfs.Monitor.get_default ();
@@ -54,18 +54,18 @@ namespace DesktopAgnostic.VFS.File
     {
       try
       {
-        Backend event_file = File.new_for_uri (event_path.dup_uri ());
-        MonitorEvent da_event = MonitorEvent.UNKNOWN;
+        File event_file = file_new_for_uri (event_path.dup_uri ());
+        FileMonitorEvent da_event = FileMonitorEvent.UNKNOWN;
         switch (event)
         {
           case ThunarVfs.MonitorEvent.CHANGED:
-            da_event = MonitorEvent.CHANGED;
+            da_event = FileMonitorEvent.CHANGED;
             break;
           case ThunarVfs.MonitorEvent.CREATED:
-            da_event = MonitorEvent.CREATED;
+            da_event = FileMonitorEvent.CREATED;
             break;
           case ThunarVfs.MonitorEvent.DELETED:
-            da_event = MonitorEvent.DELETED;
+            da_event = FileMonitorEvent.DELETED;
             break;
         }
         this.changed (this.file, event_file, da_event);
@@ -75,20 +75,20 @@ namespace DesktopAgnostic.VFS.File
         critical ("Error: %s", err.message);
       }
     }
-    public void emit (Backend? other, MonitorEvent event)
+    public void emit (File? other, FileMonitorEvent event)
     {
       ThunarVfs.MonitorEvent tvfs_event;
       ThunarVfs.Path path;
       unowned ThunarVfs.Monitor mon = ThunarVfs.Monitor.get_default ();
       switch (event)
       {
-        case MonitorEvent.CHANGED:
+        case FileMonitorEvent.CHANGED:
           tvfs_event = ThunarVfs.MonitorEvent.CHANGED;
           break;
-        case MonitorEvent.CREATED:
+        case FileMonitorEvent.CREATED:
           tvfs_event = ThunarVfs.MonitorEvent.CREATED;
           break;
-        case MonitorEvent.DELETED:
+        case FileMonitorEvent.DELETED:
           tvfs_event = ThunarVfs.MonitorEvent.DELETED;
           break;
         default:

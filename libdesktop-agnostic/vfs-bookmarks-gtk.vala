@@ -32,7 +32,7 @@ namespace DesktopAgnostic.VFS
    */
   public class Bookmark : Object
   {
-    public File.Backend file { get; set; }
+    public File file { get; set; }
     public string? alias { get; set; }
   }
   /**
@@ -40,9 +40,9 @@ namespace DesktopAgnostic.VFS
    */
   public class GtkBookmarks : Object
   {
-    private File.Backend _file;
-    private File.Monitor _monitor;
-    public File.Backend? file
+    private File _file;
+    private FileMonitor _monitor;
+    public File? file
     {
       construct
       {
@@ -52,7 +52,7 @@ namespace DesktopAgnostic.VFS
 
           fname = Path.build_filename (Environment.get_home_dir (),
                                        ".gtk-bookmarks");
-          this._file = VFS.File.new_for_path (fname);
+          this._file = file_new_for_path (fname);
         }
         else
         {
@@ -75,7 +75,7 @@ namespace DesktopAgnostic.VFS
      * @param monitor if %TRUE, monitors the file for changes, and notifies of
      * changes via the "changed" signal (defaults to %TRUE)
      */
-    public GtkBookmarks (File.Backend? file = null, bool monitor = true)
+    public GtkBookmarks (File? file = null, bool monitor = true)
     {
       this.file = file;
       if (this._file.exists)
@@ -115,7 +115,7 @@ namespace DesktopAgnostic.VFS
           {
             Bookmark bookmark = new Bookmark ();
             tokens[0].strip ();
-            bookmark.file = VFS.File.new_for_uri (tokens[0]);
+            bookmark.file = file_new_for_uri (tokens[0]);
             if (tokens[1] == null)
             {
               bookmark.alias = null;
@@ -136,17 +136,17 @@ namespace DesktopAgnostic.VFS
       }
     }
     private void
-    on_file_changed (File.Monitor monitor, File.Backend file,
-                     File.Backend? other, File.MonitorEvent event)
+    on_file_changed (FileMonitor monitor, File file,
+                     File? other, FileMonitorEvent event)
     {
       switch (event)
       {
-        case File.MonitorEvent.CREATED:
-        case File.MonitorEvent.CHANGED:
+        case FileMonitorEvent.CREATED:
+        case FileMonitorEvent.CHANGED:
           this.parse ();
           this.changed ();
           break;
-        case File.MonitorEvent.DELETED:
+        case FileMonitorEvent.DELETED:
           this._bookmarks = null;
           this.changed ();
           break;

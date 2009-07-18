@@ -41,8 +41,8 @@ namespace DesktopAgnostic.VFS
         return this.vol.get_name ();
       }
     }
-    private File.Backend _uri;
-    public File.Backend uri
+    private File _uri;
+    public File uri
     {
       get
       {
@@ -52,7 +52,7 @@ namespace DesktopAgnostic.VFS
           if (mount != null)
           {
             GLib.File file = mount.get_root ();
-            this._uri = File.new_for_uri (file.get_uri ());
+            this._uri = file_new_for_uri (file.get_uri ());
           }
         }
         return this._uri;

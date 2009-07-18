@@ -65,7 +65,7 @@ main (string[] args)
   {
     try
     {
-      VFS.File.Backend file = VFS.File.new_for_path (args[1]);
+      VFS.File file = VFS.file_new_for_path (args[1]);
       parser = new GtkBookmarks (file);
     }
     catch (GLib.Error err)

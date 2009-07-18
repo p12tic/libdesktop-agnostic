@@ -29,8 +29,8 @@ namespace DesktopAgnostic.DesktopEntry
   {
     private DesktopItem item = null;
 
-    private VFS.File.Backend _file = null;
-    public VFS.File.Backend? file
+    private VFS.File _file = null;
+    public VFS.File? file
     {
       get
       {
@@ -259,7 +259,7 @@ namespace DesktopAgnostic.DesktopEntry
     }
 
     public void
-    save (VFS.File.Backend? new_file) throws GLib.Error
+    save (VFS.File? new_file) throws GLib.Error
     {
       string? uri = null;
       if (new_file != null)

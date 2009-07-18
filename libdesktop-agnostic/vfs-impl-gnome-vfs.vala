@@ -35,14 +35,14 @@ namespace DesktopAgnostic.VFS
     {
       get
       {
-        return typeof (File.GnomeVFSBackend);
+        return typeof (FileGnomeVFS);
       }
     }
     public Type file_monitor_type
     {
       get
       {
-        return typeof (File.GnomeVFSMonitor);
+        return typeof (FileMonitorGnomeVFS);
       }
     }
     public Type trash_type
@@ -63,15 +63,15 @@ namespace DesktopAgnostic.VFS
     {
       GnomeVFS.init ();
     }
-    public SList<File.Backend>
+    public SList<File>
     files_from_uri_list (string uri_list) throws GLib.Error
     {
-      SList<File.Backend> files = new SList<File.Backend> ();
+      SList<File> files = new SList<File> ();
       unowned List<GnomeVFS.URI> uris = GnomeVFS.URI.list_parse (uri_list);
       foreach (unowned GnomeVFS.URI uri in uris)
       {
         string uri_str = uri.to_string (GnomeVFS.URIHideOptions.NONE);
-        File.Backend file = File.new_for_uri (uri_str);
+        File file = file_new_for_uri (uri_str);
         files.append ((owned)file);
       }
       return files;

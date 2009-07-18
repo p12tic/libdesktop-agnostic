@@ -29,9 +29,9 @@ namespace DesktopAgnostic.DesktopEntry
   {
     private KeyFile _keyfile = null;
     private bool loaded = false;
-    private VFS.File.Backend _file = null;
+    private VFS.File _file = null;
 
-    public VFS.File.Backend? file
+    public VFS.File? file
     {
       get
       {
@@ -265,7 +265,7 @@ namespace DesktopAgnostic.DesktopEntry
           if (this._keyfile.has_key (GROUP, "URL"))
           {
             string uri = this._keyfile.get_string (GROUP, "URL");
-            VFS.File.Backend file = VFS.File.new_for_uri (uri);
+            VFS.File file = VFS.file_new_for_uri (uri);
             return file.exists;
           }
           else
@@ -546,7 +546,7 @@ namespace DesktopAgnostic.DesktopEntry
             throw new DesktopEntry.Error.NOT_LAUNCHABLE ("Cannot pass documents to a 'Link' desktop entry.");
           }
           string uri = this._keyfile.get_string (GROUP, "URL");
-          VFS.File.Backend file = VFS.File.new_for_uri (uri);
+          VFS.File file = VFS.file_new_for_uri (uri);
           file.launch ();
           return (Pid)0;
         default:
@@ -555,9 +555,9 @@ namespace DesktopAgnostic.DesktopEntry
     }
 
     public void
-    save (VFS.File.Backend? new_file) throws GLib.Error
+    save (VFS.File? new_file) throws GLib.Error
     {
-      VFS.File.Backend? file = null;
+      VFS.File? file = null;
       if (new_file != null)
       {
         file = new_file;

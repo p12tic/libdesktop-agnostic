@@ -81,7 +81,7 @@ namespace DesktopAgnostic.DesktopEntry
      * Note: these are really construct-only, but construct-only properties
      * don't work with GModules.
      */
-    public abstract VFS.File.Backend? file { get; set; }
+    public abstract VFS.File? file { get; set; }
     /**
      * The URI of the desktop entry. Cannot be constructed with either file
      * or data.
@@ -121,7 +121,7 @@ namespace DesktopAgnostic.DesktopEntry
      */
     public abstract bool exists ();
     public abstract Pid launch (LaunchFlags flags, SList<string>? documents) throws GLib.Error;
-    public abstract void save (VFS.File.Backend? new_file) throws GLib.Error;
+    public abstract void save (VFS.File? new_file) throws GLib.Error;
   }
 
   private static GLib.Type? module_type = null;
@@ -154,10 +154,10 @@ namespace DesktopAgnostic.DesktopEntry
   }
 
   /**
-   * Convenience method for loading a desktop entry via a VFS.File.Backend.
+   * Convenience method for loading a desktop entry via a VFS.File.
    */
   public Backend?
-  new_for_file (VFS.File.Backend file) throws GLib.Error
+  new_for_file (VFS.File file) throws GLib.Error
   {
     GLib.Type type = get_type ();
     if (type == GLib.Type.INVALID)

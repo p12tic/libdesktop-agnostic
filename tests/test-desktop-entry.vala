@@ -27,8 +27,7 @@ int main (string[] args)
 {
   try
   {
-    VFS.Implementation vfs = VFS.get_default ();
-    vfs.init ();
+    VFS.init ();
     if (args.length > 1)
     {
       bool hit_first_arg = false;
@@ -40,7 +39,7 @@ int main (string[] args)
           continue;
         }
 
-        VFS.File.Backend file = VFS.File.new_for_path (arg);
+        VFS.File file = VFS.file_new_for_path (arg);
         Backend entry = new_for_file (file);
         message ("Entry: %s", entry.name);
         if (entry.exists ())
@@ -56,17 +55,17 @@ int main (string[] args)
     else
     {
       Backend entry;
-      VFS.File.Backend file;
+      VFS.File file;
 
       entry = DesktopEntry.new ();
       entry.name = "hosts file";
       entry.entry_type = DesktopEntry.Type.LINK;
       entry.set_string ("URL", "file:///etc/hosts");
-      file = VFS.File.new_for_path ("/tmp/desktop-agnostic-test.desktop");
+      file = VFS.file_new_for_path ("/tmp/desktop-agnostic-test.desktop");
       entry.save (file);
       entry = null;
     }
-    vfs.shutdown ();
+    VFS.shutdown ();
   }
   catch (GLib.Error err)
   {

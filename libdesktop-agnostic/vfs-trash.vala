@@ -26,7 +26,7 @@ namespace DesktopAgnostic.VFS
   {
     public abstract uint file_count { get; }
     public signal void file_count_changed ();
-    public abstract void send_to_trash (File.Backend file) throws GLib.Error;
+    public abstract void send_to_trash (File file) throws GLib.Error;
     public abstract void empty ();
   }
 

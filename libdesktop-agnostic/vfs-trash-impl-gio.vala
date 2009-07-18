@@ -24,13 +24,13 @@ namespace DesktopAgnostic.VFS
 {
   public class TrashGIO : Trash, Object
   {
-    private File.Backend trash;
-    private File.Monitor monitor;
+    private File trash;
+    private FileMonitor monitor;
     private uint _file_count;
 
     construct
     {
-      this.trash = File.new_for_uri ("trash://");
+      this.trash = file_new_for_uri ("trash://");
       if (this.trash == null)
       {
         critical ("trash is NULL!!!!");
@@ -50,10 +50,10 @@ namespace DesktopAgnostic.VFS
     }
 
     private void
-    on_trash_changed (File.Monitor monitor,
-                      File.Backend file,
-                      File.Backend? other_file,
-                      File.MonitorEvent event_type)
+    on_trash_changed (FileMonitor monitor,
+                      File file,
+                      File? other_file,
+                      FileMonitorEvent event_type)
     {
       this.update_file_count ();
     }
@@ -114,7 +114,7 @@ namespace DesktopAgnostic.VFS
       {
         GLib.File child;
         child = dir.get_child (info.get_name ());
-        if (info.get_file_type () == FileType.DIRECTORY)
+        if (info.get_file_type () == GLib.FileType.DIRECTORY)
         {
           this.do_empty (child);
         }
@@ -130,7 +130,7 @@ namespace DesktopAgnostic.VFS
     }
 
     public void
-    send_to_trash (File.Backend uri) throws GLib.Error
+    send_to_trash (File uri) throws GLib.Error
     {
       GLib.File file = (GLib.File)uri.implementation;
       file.trash (null);

@@ -20,7 +20,7 @@
  * Author : Mark Lee <libdesktop-agnostic@lazymalevolence.com>
  */
 
-namespace DesktopAgnostic.VFS.File
+namespace DesktopAgnostic.VFS
 {
   /**
    * The kinds of files recognized by the File backends.
@@ -36,7 +36,7 @@ namespace DesktopAgnostic.VFS.File
   /**
    * Abstract base class for representations of files.
    */
-  public abstract class Backend : Object
+  public abstract class File : Object
   {
     /**
      * The pointer to the implementation used.
@@ -101,7 +101,7 @@ namespace DesktopAgnostic.VFS.File
      * Adds a monitor to the file.
      * @return the monitor associated with the file
      */
-    public abstract Monitor monitor ();
+    public abstract FileMonitor monitor ();
 
     /**
      * Loads the contents of the file to a string.
@@ -124,8 +124,8 @@ namespace DesktopAgnostic.VFS.File
     public abstract bool launch () throws Error;
   }
 
-  public Backend?
-  new_for_path (string path) throws Error
+  public File?
+  file_new_for_path (string path) throws Error
   {
     unowned Implementation? vfs = get_default ();
     if (vfs == null)
@@ -134,12 +134,12 @@ namespace DesktopAgnostic.VFS.File
     }
     else
     {
-      return (Backend)Object.new (vfs.file_type, "path", path);
+      return (File)Object.new (vfs.file_type, "path", path);
     }
   }
 
-  public Backend?
-  new_for_uri (string uri) throws Error
+  public File?
+  file_new_for_uri (string uri) throws Error
   {
     unowned Implementation? vfs = get_default ();
     if (vfs == null)
@@ -148,7 +148,7 @@ namespace DesktopAgnostic.VFS.File
     }
     else
     {
-      return (Backend)Object.new (vfs.file_type, "uri", uri);
+      return (File)Object.new (vfs.file_type, "uri", uri);
     }
   }
 }

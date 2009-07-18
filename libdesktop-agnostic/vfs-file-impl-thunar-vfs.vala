@@ -20,9 +20,9 @@
  * Author : Mark Lee <libdesktop-agnostic@lazymalevolence.com>
  */
 
-namespace DesktopAgnostic.VFS.File
+namespace DesktopAgnostic.VFS
 {
-  public class ThunarVFSBackend : Backend
+  public class FileThunarVFS : File
   {
     private ThunarVfs.Path _path;
     private ThunarVfs.Info _info;
@@ -121,9 +121,9 @@ namespace DesktopAgnostic.VFS.File
         critical (err.message);
       }
     }
-    public override Monitor monitor ()
+    public override FileMonitor monitor ()
     {
-      return new ThunarVFSMonitor (this);
+      return new FileMonitorThunarVFS (this);
     }
     public override bool
     load_contents (out string contents, out size_t length) throws Error

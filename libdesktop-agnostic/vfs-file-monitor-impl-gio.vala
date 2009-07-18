@@ -20,11 +20,11 @@
  * Author : Mark Lee <libdesktop-agnostic@lazymalevolence.com>
  */
 
-namespace DesktopAgnostic.VFS.File
+namespace DesktopAgnostic.VFS
 {
-  public class GIOMonitor : Object, Monitor
+  public class FileMonitorGIO : Object, FileMonitor
   {
-    private FileMonitor monitor;
+    private GLib.FileMonitor monitor;
     public bool cancelled
     {
       get
@@ -32,8 +32,8 @@ namespace DesktopAgnostic.VFS.File
         return this.monitor.is_cancelled ();
       }
     }
-    private Backend file;
-    public GIOMonitor (GIOBackend file)
+    private File file;
+    public FileMonitorGIO (FileGIO file)
     {
       this.file = file;
       GLib.File impl = (GLib.File)file.implementation;
@@ -47,51 +47,52 @@ namespace DesktopAgnostic.VFS.File
       }
       this.monitor.changed += this.monitor_callback;
     }
-    private void monitor_callback (FileMonitor monitor, GLib.File file,
-                                   GLib.File? other, FileMonitorEvent event_type)
+    private void monitor_callback (GLib.FileMonitor monitor, GLib.File file,
+                                   GLib.File? other,
+                                   GLib.FileMonitorEvent event_type)
     {
-      Backend other_file = null;
+      File other_file = null;
       if (other != null)
       {
-        other_file = File.new_for_uri (other.get_uri ());
+        other_file = file_new_for_uri (other.get_uri ());
       }
-      MonitorEvent da_event;
+      FileMonitorEvent da_event;
       switch (event_type)
       {
-        case FileMonitorEvent.CHANGED:
-          da_event = MonitorEvent.CHANGED;
+        case GLib.FileMonitorEvent.CHANGED:
+          da_event = FileMonitorEvent.CHANGED;
           break;
-        case FileMonitorEvent.CREATED:
-          da_event = MonitorEvent.CREATED;
+        case GLib.FileMonitorEvent.CREATED:
+          da_event = FileMonitorEvent.CREATED;
           break;
-        case FileMonitorEvent.DELETED:
-          da_event = MonitorEvent.DELETED;
+        case GLib.FileMonitorEvent.DELETED:
+          da_event = FileMonitorEvent.DELETED;
           break;
-        case FileMonitorEvent.ATTRIBUTE_CHANGED:
-          da_event = MonitorEvent.ATTRIBUTE_CHANGED;
+        case GLib.FileMonitorEvent.ATTRIBUTE_CHANGED:
+          da_event = FileMonitorEvent.ATTRIBUTE_CHANGED;
           break;
         default:
-          da_event = MonitorEvent.UNKNOWN;
+          da_event = FileMonitorEvent.UNKNOWN;
           break;
       }
       this.changed (this.file, other_file, da_event);
     }
-    public void emit (Backend? other, MonitorEvent event)
+    public void emit (File? other, FileMonitorEvent event)
     {
       GLib.FileMonitorEvent gio_event;
       GLib.File other_file = null;
       switch (event)
       {
-        case MonitorEvent.CHANGED:
+        case FileMonitorEvent.CHANGED:
           gio_event = GLib.FileMonitorEvent.CHANGED;
           break;
-        case MonitorEvent.CREATED:
+        case FileMonitorEvent.CREATED:
           gio_event = GLib.FileMonitorEvent.CREATED;
           break;
-        case MonitorEvent.DELETED:
+        case FileMonitorEvent.DELETED:
           gio_event = GLib.FileMonitorEvent.DELETED;
           break;
-        case MonitorEvent.ATTRIBUTE_CHANGED:
+        case FileMonitorEvent.ATTRIBUTE_CHANGED:
           gio_event = GLib.FileMonitorEvent.ATTRIBUTE_CHANGED;
           break;
         default:

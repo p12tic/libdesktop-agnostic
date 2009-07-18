@@ -24,30 +24,29 @@ using DesktopAgnostic;
 
 class TestFileMonitor
 {
-  private static VFS.Implementation vfs;
-  private static VFS.File.Backend file;
-  private static VFS.File.Monitor monitor;
-  private static void on_change (VFS.File.Monitor monitor,
-                                 VFS.File.Backend file,
-                                 VFS.File.Backend? other,
-                                 VFS.File.MonitorEvent event)
+  private static VFS.File file;
+  private static VFS.FileMonitor monitor;
+  private static void on_change (VFS.FileMonitor monitor,
+                                 VFS.File file,
+                                 VFS.File? other,
+                                 VFS.FileMonitorEvent event)
   {
     string evt_str = "?";
     switch (event)
     {
-      case VFS.File.MonitorEvent.CHANGED:
+      case VFS.FileMonitorEvent.CHANGED:
         evt_str = "Changed";
         break;
-      case VFS.File.MonitorEvent.CREATED:
+      case VFS.FileMonitorEvent.CREATED:
         evt_str = "Created";
         break;
-      case VFS.File.MonitorEvent.DELETED:
+      case VFS.FileMonitorEvent.DELETED:
         evt_str = "Deleted";
         break;
-      case VFS.File.MonitorEvent.ATTRIBUTE_CHANGED:
+      case VFS.FileMonitorEvent.ATTRIBUTE_CHANGED:
         evt_str = "Attribute Changed";
         break;
-      case VFS.File.MonitorEvent.UNKNOWN:
+      case VFS.FileMonitorEvent.UNKNOWN:
         evt_str = "Unknown";
         break;
     }
@@ -63,8 +62,8 @@ class TestFileMonitor
     try
     {
       string filename = Path.build_filename (file.path, "test-vfs-file.txt");
-      VFS.File.Backend other = VFS.File.new_for_path (filename);
-      monitor.emit (other, VFS.File.MonitorEvent.CREATED);
+      VFS.File other = VFS.file_new_for_path (filename);
+      monitor.emit (other, VFS.FileMonitorEvent.CREATED);
     }
     catch (Error err)
     {
@@ -81,21 +80,28 @@ class TestFileMonitor
       stderr.printf ("Usage: %s [FILE | DIRECTORY FILE] \n", args[0]);
       return 1;
     }
-    vfs = VFS.get_default ();
-    vfs.init ();
-    unowned string path = args[1];
-    file = VFS.File.new_for_path (path);
-    monitor = file.monitor ();
-    monitor.changed += on_change;
-    MainLoop mainloop = new MainLoop (null, false);
-    if (args.length == 3 && file.file_type == VFS.File.FileType.DIRECTORY)
+    try
     {
-      Timeout.add_seconds (2, do_emit);
+      VFS.init ();
+      unowned string path = args[1];
+      file = VFS.file_new_for_path (path);
+      monitor = file.monitor ();
+      monitor.changed += on_change;
+      MainLoop mainloop = new MainLoop (null, false);
+      if (args.length == 3 && file.file_type == VFS.FileType.DIRECTORY)
+      {
+        Timeout.add_seconds (2, do_emit);
+      }
+      mainloop.run ();
+      monitor.cancel ();
+      assert (monitor.cancelled);
+      VFS.shutdown ();
     }
-    mainloop.run ();
-    monitor.cancel ();
-    assert (monitor.cancelled);
-    vfs.shutdown ();
+    catch (Error err)
+    {
+      critical ("VFS Error: %s", err.message);
+      return 1;
+    }
     return 0;
   }
 }

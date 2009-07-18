@@ -39,7 +39,7 @@ namespace DesktopAgnostic.VFS
     /**
      * Usually, the mount point of the volume.
      */
-    public abstract File.Backend uri { get; }
+    public abstract File uri { get; }
     /**
      * Either an icon name usable with gtk.IconTheme, or an absolute path to
      * an image (either of which are associated with the volume).

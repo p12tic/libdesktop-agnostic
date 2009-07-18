@@ -47,15 +47,15 @@ namespace DesktopAgnostic.VFS
         return this.drive.get_display_name ();
       }
     }
-    private File.Backend _uri;
-    public File.Backend uri
+    private File _uri;
+    public File uri
     {
       get
       {
         if (this._uri == null)
         {
           string activation_uri = this.drive.get_activation_uri ();
-          this._uri = File.new_for_uri (activation_uri);
+          this._uri = file_new_for_uri (activation_uri);
         }
         return this._uri;
       }

@@ -35,14 +35,14 @@ namespace DesktopAgnostic.VFS
     {
       get
       {
-        return typeof (File.ThunarVFSBackend);
+        return typeof (FileThunarVFS);
       }
     }
     public Type file_monitor_type
     {
       get
       {
-        return typeof (File.ThunarVFSMonitor);
+        return typeof (FileMonitorThunarVFS);
       }
     }
     public Type trash_type
@@ -63,15 +63,15 @@ namespace DesktopAgnostic.VFS
     {
       ThunarVfs.init ();
     }
-    public SList<File.Backend>
+    public SList<File>
     files_from_uri_list (string uri_list) throws GLib.Error
     {
-      SList<File.Backend> files = new SList<File.Backend> ();
+      SList<File> files = new SList<File> ();
       unowned List<ThunarVfs.Path> paths = ThunarVfs.PathList.from_string (uri_list);
       foreach (unowned ThunarVfs.Path path in paths)
       {
         unowned string uri = path.dup_uri ();
-        File.Backend file = File.new_for_uri (uri);
+        File file = file_new_for_uri (uri);
         files.append ((owned)file);
       }
       return files;

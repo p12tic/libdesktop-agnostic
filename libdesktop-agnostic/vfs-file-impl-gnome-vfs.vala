@@ -20,9 +20,9 @@
  * Author : Mark Lee <libdesktop-agnostic@lazymalevolence.com>
  */
 
-namespace DesktopAgnostic.VFS.File
+namespace DesktopAgnostic.VFS
 {
-  public class GnomeVFSBackend : Backend
+  public class FileGnomeVFS : File
   {
     private GnomeVFS.URI _uri;
     public override void* implementation
@@ -99,9 +99,9 @@ namespace DesktopAgnostic.VFS.File
       this._uri_str = uri;
       this._uri = new GnomeVFS.URI (uri);
     }
-    public override Monitor monitor ()
+    public override FileMonitor monitor ()
     {
-      return new GnomeVFSMonitor (this);
+      return new FileMonitorGnomeVFS (this);
     }
     /**
      * @return %TRUE if it's an error

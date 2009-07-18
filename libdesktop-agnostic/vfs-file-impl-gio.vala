@@ -20,9 +20,9 @@
  * Author : Mark Lee <libdesktop-agnostic@lazymalevolence.com>
  */
 
-namespace DesktopAgnostic.VFS.File
+namespace DesktopAgnostic.VFS
 {
-  public class GIOBackend : Backend
+  public class FileGIO : File
   {
     private GLib.File _file;
     public override void* implementation
@@ -98,9 +98,9 @@ namespace DesktopAgnostic.VFS.File
     {
       this._file = GLib.File.new_for_uri (uri);
     }
-    public override Monitor monitor ()
+    public override FileMonitor monitor ()
     {
-      return new GIOMonitor (this);
+      return new FileMonitorGIO (this);
     }
     public override bool
     load_contents (out string contents, out size_t length) throws Error

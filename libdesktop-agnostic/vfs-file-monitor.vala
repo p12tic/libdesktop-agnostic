@@ -20,12 +20,12 @@
  * Author : Mark Lee <libdesktop-agnostic@lazymalevolence.com>
  */
 
-namespace DesktopAgnostic.VFS.File
+namespace DesktopAgnostic.VFS
 {
   /**
    * The file monitor events that will be propagated to the signal handlers.
    */
-  public enum MonitorEvent
+  public enum FileMonitorEvent
   {
     UNKNOWN = 0,
     CHANGED,
@@ -36,7 +36,7 @@ namespace DesktopAgnostic.VFS.File
   /**
    * The base class for file/directory monitoring.
    */
-  public interface Monitor : Object
+  public interface FileMonitor : Object
   {
     /**
      * Emits a file monitor event for the file backend associated with
@@ -45,7 +45,7 @@ namespace DesktopAgnostic.VFS.File
      * triggered the event. Otherwise, it should be NULL.
      * @param event the event type to emit.
      */
-    public abstract void emit (Backend? other, MonitorEvent event);
+    public abstract void emit (File? other, FileMonitorEvent event);
     /**
      * Prevent the monitor from monitoring any events from the URI associated
      * with it.
@@ -58,12 +58,12 @@ namespace DesktopAgnostic.VFS.File
     public abstract bool cancelled { get; }
     /**
      * The signal emitted when something changes
-     * @param file the file backend associated with the monitor.
+     * @param file the file associated with the monitor.
      * @param other if the URI associated with the monitor is a directory, the
      * child file that triggered the event. Otherwise, it should be NULL.
      * @param event the event type to send
      */
-    public signal void changed (Backend file, Backend? other, MonitorEvent event);
+    public signal void changed (File file, File? other, FileMonitorEvent event);
   }
 }
 

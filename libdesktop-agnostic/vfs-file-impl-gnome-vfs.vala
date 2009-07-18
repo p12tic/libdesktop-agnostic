@@ -47,19 +47,12 @@ namespace DesktopAgnostic.VFS
         return this._uri.get_path ();
       }
     }
-    public override bool exists
-    {
-      get
-      {
-        return this._uri.exists ();
-      }
-    }
     public override FileType file_type
     {
       get
       {
         FileType ft;
-        if (this.exists)
+        if (this.exists ())
         {
           GnomeVFS.FileInfo info = new GnomeVFS.FileInfo ();
           GnomeVFS.get_file_info_uri (this._uri, info,
@@ -98,6 +91,10 @@ namespace DesktopAgnostic.VFS
     {
       this._uri_str = uri;
       this._uri = new GnomeVFS.URI (uri);
+    }
+    public override bool exists ()
+    {
+      return this._uri.exists ();
     }
     public override FileMonitor monitor ()
     {
@@ -161,7 +158,7 @@ namespace DesktopAgnostic.VFS
       GnomeVFS.Result res;
       unowned GnomeVFS.Handle handle;
 
-      if (this.exists)
+      if (this.exists ())
       {
         res = GnomeVFS.open_uri (out handle, this._uri, GnomeVFS.OpenMode.WRITE);
       }

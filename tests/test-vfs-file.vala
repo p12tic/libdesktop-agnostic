@@ -31,7 +31,7 @@ int main (string[] args)
     VFS.init ();
     unowned string path = Environment.get_tmp_dir ();
     VFS.File tmp = VFS.file_new_for_path (path);
-    assert (tmp.exists);
+    assert (tmp.exists ());
     assert (tmp.file_type == VFS.FileType.DIRECTORY);
     message ("URI: %s", tmp.uri);
     message ("Path: %s", tmp.path);

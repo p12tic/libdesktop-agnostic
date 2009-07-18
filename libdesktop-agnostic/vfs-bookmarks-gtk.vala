@@ -78,7 +78,7 @@ namespace DesktopAgnostic.VFS
     public GtkBookmarks (File? file = null, bool monitor = true)
     {
       this.file = file;
-      if (this._file.exists)
+      if (this._file.exists ())
       {
         this.parse ();
       }

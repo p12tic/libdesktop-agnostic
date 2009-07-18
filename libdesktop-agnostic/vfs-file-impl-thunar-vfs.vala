@@ -48,13 +48,6 @@ namespace DesktopAgnostic.VFS
         return this._uri;
       }
     }
-    public override bool exists
-    {
-      get
-      {
-        return FileUtils.test (this.path, FileTest.EXISTS);
-      }
-    }
     public override FileType file_type
     {
       get
@@ -120,6 +113,10 @@ namespace DesktopAgnostic.VFS
       {
         critical (err.message);
       }
+    }
+    public override bool exists ()
+    {
+      return FileUtils.test (this.path, FileTest.EXISTS);
     }
     public override FileMonitor monitor ()
     {

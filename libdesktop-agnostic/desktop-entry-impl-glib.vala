@@ -266,7 +266,7 @@ namespace DesktopAgnostic.DesktopEntry
           {
             string uri = this._keyfile.get_string (GROUP, "URL");
             VFS.File file = VFS.file_new_for_uri (uri);
-            return file.exists;
+            return file.exists ();
           }
           else
           {

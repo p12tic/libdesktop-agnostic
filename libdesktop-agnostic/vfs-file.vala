@@ -85,10 +85,6 @@ namespace DesktopAgnostic.VFS
       }
     }
     /**
-     * Whether something exists at the URI that the object represents.
-     */
-    public abstract bool exists { get; }
-    /**
      * The kind of file that the object represents.
      */
     public abstract FileType file_type { get; }
@@ -97,6 +93,10 @@ namespace DesktopAgnostic.VFS
      * associate the URI with the implementation pointer.
      */
     protected abstract void init (string uri);
+    /**
+     * Whether something exists at the URI that the object represents.
+     */
+    public abstract bool exists ();
     /**
      * Adds a monitor to the file.
      * @return the monitor associated with the file

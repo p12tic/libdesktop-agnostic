@@ -51,19 +51,12 @@ namespace DesktopAgnostic.VFS
         return this._uri;
       }
     }
-    public override bool exists
-    {
-      get
-      {
-        return this._file.query_exists (null);
-      }
-    }
     public override FileType file_type
     {
       get
       {
         FileType ft;
-        if (this.exists)
+        if (this.exists ())
         {
           switch (this._file.query_file_type (FileQueryInfoFlags.NOFOLLOW_SYMLINKS, null))
           {
@@ -97,6 +90,10 @@ namespace DesktopAgnostic.VFS
     init (string uri)
     {
       this._file = GLib.File.new_for_uri (uri);
+    }
+    public override bool exists ()
+    {
+      return this._file.query_exists (null);
     }
     public override FileMonitor monitor ()
     {

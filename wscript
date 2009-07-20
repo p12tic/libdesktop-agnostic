@@ -43,6 +43,10 @@ def set_options(opt):
     opt.add_option('--enable-debug', action='store_true',
                    dest='debug', default=False,
                    help='Enables the library to be built with debug symbols.')
+    opt.add_option('--enable-profiling', action='store_true',
+                   dest='profiling', default=False,
+                   help='Enables the library to be built so that it is '
+                        'instrumented to measure performance.')
 
 def configure(conf):
     print 'Configuring %s %s' % (APPNAME, VERSION)
@@ -59,6 +63,7 @@ def configure(conf):
     conf.env['BACKENDS_DE'] = Options.options.de_backends.split(',')
 
     conf.env['DEBUG'] = Options.options.debug
+    conf.env['PROFILING'] = Options.options.profiling
 
     conf.check_tool('compiler_cc misc vala')
 
@@ -115,6 +120,9 @@ def configure(conf):
     if conf.env['DEBUG']:
         conf.env.append_value('VALAFLAGS', '-g')
         conf.env.append_value('CCFLAGS', '-ggdb')
+    if conf.env['PROFILING']:
+        conf.env.append_value('CCFLAGS', '-pg')
+        conf.env.append_value('LINKFLAGS', '-pg')
 
     conf.env.append_value('CCFLAGS', '-D_GNU_SOURCE')
     conf.env.append_value('CCFLAGS', '-DHAVE_BUILD_CONFIG_H')

@@ -7,3 +7,4 @@ debian/*.debhelper*
 debian/files
 debian/*.substvars
 debian/*libdesktop-agnostic*/
+gmon.out

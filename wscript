@@ -116,6 +116,7 @@ def configure(conf):
         conf.env.append_value('VALAFLAGS', '-g')
         conf.env.append_value('CCFLAGS', '-ggdb')
 
+    conf.env.append_value('CCFLAGS', '-D_GNU_SOURCE')
     conf.env.append_value('CCFLAGS', '-DHAVE_BUILD_CONFIG_H')
 
     conf.write_config_header('build-config.h')

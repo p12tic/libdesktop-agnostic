@@ -151,12 +151,32 @@ namespace DesktopAgnostic
       // load the system file first
       system_path = Path.build_filename (Build.SYSCONFDIR, "xdg",
                                          "libdesktop-agnostic", cfg_file);
-      loaded_config = module_config.load_from_file (system_path,
-                                                    KeyFileFlags.NONE);
+      try
+      {
+        if (FileUtils.test (system_path, FileTest.EXISTS))
+        {
+          loaded_config = module_config.load_from_file (system_path,
+                                                        KeyFileFlags.NONE);
+        }
+      }
+      catch (KeyFileError error)
+      {
+        warning ("KeyFile error: %s", error.message);
+      }
       user_path = Path.build_filename (Environment.get_user_config_dir (),
                                        cfg_file);
-      loaded_config |= module_config.load_from_file (user_path,
-                                                     KeyFileFlags.NONE);
+      try
+      {
+        if (FileUtils.test (user_path, FileTest.EXISTS))
+        {
+          loaded_config |= module_config.load_from_file (user_path,
+                                                         KeyFileFlags.NONE);
+        }
+      }
+      catch (KeyFileError error)
+      {
+        warning ("KeyFile error: %s", error.message);
+      }
       if (!loaded_config)
       {
         throw new ModuleError.NO_CONFIG_FOUND ("Could not find any libdesktop-agnostic configuration files.");

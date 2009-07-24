@@ -194,7 +194,7 @@ namespace DesktopAgnostic.DesktopEntry
     public string
     get_string (string key)
     {
-      return this.get_string (key);
+      return this.item.get_string (key);
     }
 
     public void

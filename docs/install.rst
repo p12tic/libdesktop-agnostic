@@ -16,21 +16,21 @@ Build-only
 Build/Runtime (*required*)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-* Vala 0.7.3 or later
+* Vala 0.7.4 or later
 * GLib 2.12 or later
 * GTK 2.12 or later
 
 One of the following VFS libraries:
 
-* GIO 2.18 or later (recommended) (Needs Vala 0.7.4 or later)
-* GNOME VFS 2.6 or later (Needs Vala 0.7.4 or later)
+* GIO 2.18 or later (recommended)
+* GNOME VFS 2.6 or later
 * Thunar VFS (also requires the D-Bus bindings for GLib [``dbus-glib``])
 
 Build/Runtime (*optional*)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * GConf (Needs GLib 2.14 or later, for ``GRegex`` support)
-* GNOME Desktop (Needs Vala 0.7.4 or later)
+* GNOME Desktop
 
 --------------------
 Building the Package

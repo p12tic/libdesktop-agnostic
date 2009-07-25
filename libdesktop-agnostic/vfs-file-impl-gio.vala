@@ -58,25 +58,42 @@ namespace DesktopAgnostic.VFS
         FileType ft;
         if (this.exists ())
         {
-          switch (this._file.query_file_type (FileQueryInfoFlags.NOFOLLOW_SYMLINKS, null))
+          // File.query_file_type requires GIO 2.18...
+          FileInfo info;
+          GLib.FileType gft;
+
+          try
           {
-            case GLib.FileType.REGULAR:
-              ft = FileType.REGULAR;
-              break;
-            case GLib.FileType.DIRECTORY:
-            case GLib.FileType.MOUNTABLE:
-              ft = FileType.DIRECTORY;
-              break;
-            case GLib.FileType.SYMBOLIC_LINK:
-            case GLib.FileType.SHORTCUT:
-              ft = FileType.SYMBOLIC_LINK;
-              break;
-            case GLib.FileType.SPECIAL:
-              ft = FileType.SPECIAL;
-              break;
-            case GLib.FileType.UNKNOWN:
-              ft = FileType.UNKNOWN;
-              break;
+            info = this._file.query_info (FILE_ATTRIBUTE_STANDARD_TYPE,
+                                          FileQueryInfoFlags.NOFOLLOW_SYMLINKS,
+                                          null);
+            gft = (GLib.FileType)info.get_attribute_uint32 (FILE_ATTRIBUTE_STANDARD_TYPE);
+            switch (gft)
+            {
+              case GLib.FileType.REGULAR:
+                ft = FileType.REGULAR;
+                break;
+              case GLib.FileType.DIRECTORY:
+              case GLib.FileType.MOUNTABLE:
+                ft = FileType.DIRECTORY;
+                break;
+              case GLib.FileType.SYMBOLIC_LINK:
+              case GLib.FileType.SHORTCUT:
+                ft = FileType.SYMBOLIC_LINK;
+                break;
+              case GLib.FileType.SPECIAL:
+                ft = FileType.SPECIAL;
+                break;
+              case GLib.FileType.UNKNOWN:
+                ft = FileType.UNKNOWN;
+                break;
+            }
+          }
+          catch (Error err)
+          {
+            warning ("An error occurred while querying the file type: %s",
+                     err.message);
+            ft = FileType.UNKNOWN;
           }
         }
         else

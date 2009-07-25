@@ -22,7 +22,7 @@ Build/Runtime (*required*)
 
 One of the following VFS libraries:
 
-* GIO 2.18 or later (recommended)
+* GIO 2.16 or later (recommended)
 * GNOME VFS 2.6 or later
 * Thunar VFS (also requires the D-Bus bindings for GLib [``dbus-glib``])
 

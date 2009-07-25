@@ -90,7 +90,7 @@ def configure(conf):
                        mandatory=True, args='--cflags --libs')
     if 'gio' in conf.env['BACKENDS_VFS']:
         conf.check_cfg(package='gio-2.0', uselib_store='GIO',
-                       atleast_version='2.18.0', mandatory=True,
+                       atleast_version='2.16.0', mandatory=True,
                        args='--cflags --libs')
     if 'thunar-vfs' in conf.env['BACKENDS_VFS']:
         conf.check_cfg(package='thunar-vfs-1', uselib_store='THUNAR_VFS',

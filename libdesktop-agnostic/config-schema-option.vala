@@ -25,34 +25,20 @@ namespace DesktopAgnostic.Config
   /**
    * A representation of one configuration option as defined by the schema.
    */
-  public class SchemaOption
+  public class SchemaOption : Object
   {
-    private Type _type;
     /**
      * The type of the configuration option. Can be one of the following types
      * (as represented by GType): boolean, integer, float, string, color, list
      * (AKA ValueArray). If something weird happened, the type is "invalid".
      */
-    public Type option_type
-    {
-      get
-      {
-        return this._type;
-      }
-    }
-    private Type _list_type;
+    public Type option_type { get; private set; }
     /**
      * If the configuration option type is a list (AKA ValueArray), the type
      * of values that the list holds. Can be one of the following: boolean,
      * integer, float, string, color. Otherwise, the list type is "invalid".
      */
-    public Type list_type
-    {
-      get
-      {
-        return this._list_type;
-      }
-    }
+    public Type list_type { get; private set; }
     private Value _default_value;
     /**
      * The default value of the configuration option. Its value type depends on
@@ -65,29 +51,15 @@ namespace DesktopAgnostic.Config
         return this._default_value;
       }
     }
-    private string _description;
     /**
      * The description of the configuration option.
      */
-    public string description
-    {
-      get
-      {
-        return this._description;
-      }
-    }
-    private string? _summary;
+    public string description { get; private set; }
     /**
      * A summary of the configuration option. This is an optional piece of
      * metadata.
      */
-    public string? summary
-    {
-      get
-      {
-        return this._summary;
-      }
-    }
+    public string? summary { get; private set; }
     private Value? _lower_boundary;
     /**
      * The lower boundary (inclusive) of a configuration option. This is an
@@ -151,19 +123,12 @@ namespace DesktopAgnostic.Config
         return this._blacklist;
       }
     }
-    private bool _per_instance = true;
     /**
      * Determines whether a configuration option is per instance, or applied
      * towards all instances of the configuration. Defaults to true. Note that
      * this option only applies if the "single_instance" metadata key is false.
      */
-    public bool per_instance
-    {
-      get
-      {
-        return this._per_instance;
-      }
-    }
+    public bool per_instance { get; private set; default = true; }
     /**
      * Parses a schema option from the specification in the schema configuration
      * file.
@@ -180,16 +145,16 @@ namespace DesktopAgnostic.Config
       this.parse_type (schema.get_value (full_key, "type"));
       this.parse_default_value (schema, full_key);
       // TODO handle proper locale for description/summary
-      this._description = schema.get_value (full_key, "description");
+      this.description = schema.get_value (full_key, "description");
       if (schema.has_key (full_key, "summary"))
       {
-        this._summary = schema.get_value (full_key, "summary");
+        this.summary = schema.get_value (full_key, "summary");
       }
       // TODO handle optional upper/lower boundaries
       // TODO handle optional blacklist/whitelist
       if (schema.has_key (full_key, "per_instance"))
       {
-        this._per_instance = schema.get_boolean (full_key, "per_instance");
+        this.per_instance = schema.get_boolean (full_key, "per_instance");
       }
     }
     /**
@@ -200,14 +165,14 @@ namespace DesktopAgnostic.Config
     {
       if (serialized.has_prefix ("list-"))
       {
-        this._type = typeof (ValueArray);
+        this.option_type = typeof (ValueArray);
         unowned string subtype = serialized.offset (5);
-        this._list_type = this.parse_simple_type_from_string (subtype);
+        this.list_type = this.parse_simple_type_from_string (subtype);
       }
       else
       {
-        this._type = this.parse_simple_type_from_string (serialized);
-        this._list_type = Type.INVALID;
+        this.option_type = this.parse_simple_type_from_string (serialized);
+        this.list_type = Type.INVALID;
       }
     }
     /**
@@ -249,31 +214,30 @@ namespace DesktopAgnostic.Config
     parse_default_value (KeyFile schema, string group) throws GLib.Error
     {
       string key = "default";
-      this._default_value = Value (this._type);
-      if (this._type == typeof (bool))
+      if (this.option_type == typeof (bool))
       {
-        this._default_value.set_boolean (schema.get_boolean (group, key));
+        this._default_value= schema.get_boolean (group, key);
       }
-      else if (this._type == typeof (int))
+      else if (this.option_type == typeof (int))
       {
-        this._default_value.set_int (schema.get_integer (group, key));
+        this._default_value = schema.get_integer (group, key);
       }
-      else if (this._type == typeof (float))
+      else if (this.option_type == typeof (float))
       {
-        this._default_value.set_float ((float)schema.get_double (group, key));
+        this._default_value = (float)schema.get_double (group, key);
       }
-      else if (this._type == typeof (string))
+      else if (this.option_type == typeof (string))
       {
-        this._default_value.take_string (schema.get_string (group, key));
+        this._default_value = schema.get_string (group, key);
       }
       else
       {
-        SchemaType st = Schema.find_type (this._type);
+        SchemaType st = Schema.find_type (this.option_type);
         if (st != null)
         {
           this._default_value = st.deserialize (schema.get_string (group, key));
         }
-        else if (this._type == typeof (ValueArray))
+        else if (this.option_type == typeof (ValueArray))
         {
           ValueArray array = null;
           if (this.list_type == typeof (bool))
@@ -282,8 +246,8 @@ namespace DesktopAgnostic.Config
             array = new ValueArray (list.length);
             foreach (bool item in list)
             {
-              Value val = Value (typeof (bool));
-              val.set_boolean (item);
+              Value val;
+              val = item;
               array.append (val);
             }
           }
@@ -293,8 +257,8 @@ namespace DesktopAgnostic.Config
             array = new ValueArray (list.length);
             foreach (int item in list)
             {
-              Value val = Value (typeof (int));
-              val.set_int (item);
+              Value val;
+              val = item;
               array.append (val);
             }
           }
@@ -304,8 +268,8 @@ namespace DesktopAgnostic.Config
             array = new ValueArray (list.length);
             foreach (double item in list)
             {
-              Value val = Value (typeof (float));
-              val.set_float ((float)item);
+              Value val;
+              val = (float)item;
               array.append (val);
             }
           }
@@ -315,14 +279,14 @@ namespace DesktopAgnostic.Config
             array = new ValueArray (list.length);
             foreach (unowned string item in list)
             {
-              Value val = Value (typeof (string));
-              val.take_string (item);
+              Value val;
+              val = item;
               array.append (val);
             }
           }
           else
           {
-            st = Schema.find_type (this._list_type);
+            st = Schema.find_type (this.list_type);
             if (st == null)
             {
               throw new SchemaError.INVALID_LIST_TYPE ("Invalid option list type.");
@@ -337,12 +301,12 @@ namespace DesktopAgnostic.Config
               }
             }
           }
-          this._default_value.set_boxed (array);
+          this._default_value = array;
         }
         else
         {
           throw new SchemaError.INVALID_TYPE ("Invalid option type for %s: %s.",
-                                              group, this._type.name ());
+                                              group, this.option_type.name ());
         }
       }
     }

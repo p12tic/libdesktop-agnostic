@@ -2,7 +2,6 @@
 # encoding: utf-8
 
 import os
-import intltool, gnome
 
 API_VERSION = '1.0'
 

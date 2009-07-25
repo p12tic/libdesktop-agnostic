@@ -110,6 +110,9 @@ def configure(conf):
                    'is too old. The project requires at least ' +
                    'version %d.%d.%d' % MIN_VALA_VERSION)
 
+    # check for gobject-introspection
+    conf.find_program('g-ir-compiler', var='G_IR_COMPILER', mandatory=True)
+
     conf.define('API_VERSION', str(API_VERSION))
     conf.define('VERSION', str(VERSION))
     conf.define('GETTEXT_PACKAGE', APPNAME + '-1.0')

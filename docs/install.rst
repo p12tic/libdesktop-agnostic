@@ -12,6 +12,7 @@ Build-only
 ~~~~~~~~~~
 
 * Python 2.4 or later
+* GObject Introspection 0.6.3 or later
 
 Build/Runtime (*required*)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -1,6 +1,10 @@
 #! /usr/bin/env python
 # encoding: utf-8
 
+import Task
+from TaskGen import after, feature, taskgen
+import os
+
 deps = {
     'cfg': {
         'gconf': {
@@ -29,6 +33,31 @@ deps = {
         }
     }
 }
+
+@taskgen
+@feature('cc')
+def generate_typelib(self):
+    if hasattr(self, 'gir'):
+        node = self.path.find_resource('%s.gir' % self.gir)
+        if not node:
+            print "Not a valid GIR file!"
+            return
+        task = self.create_task('typelib')
+        bld = task.generator.bld
+        task.set_inputs(node)
+        target = '%s.typelib' % self.gir
+        tnode = node.parent.find_or_declare(target)
+        task.set_outputs(tnode)
+        dirname = os.path.join(bld.bdir, tnode.bld_dir(task.env))
+        task.generator.env['CURRENT_BUILD_DIR'] = dirname
+        bld.install_files('${LIBDIR}/girepository-1.0', target)
+
+def create_typelib_task():
+    rule = 'LD_LIBRARY_PATH="${CURRENT_BUILD_DIR}" ${G_IR_COMPILER} ' + \
+           '-o ${TGT} ${SRC}'
+    Task.simple_task_type('typelib', rule, after='cc_link')
+
+create_typelib_task()
 
 def task_module(type_name, src_prefix):
     def build_module(bld, name):

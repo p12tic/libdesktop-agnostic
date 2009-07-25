@@ -131,3 +131,13 @@ def build(bld):
      for name in bld.env['BACKENDS_VFS']]
     [task_module('de', 'desktop-entry-impl')(bld, name)
      for name in bld.env['BACKENDS_DE']]
+
+    mod_guess = bld.new_task_gen('cc', 'shlib')
+    mod_guess.source = 'module-guesser.vala'
+    mod_guess.uselib_local = 'desktop-agnostic-vfs'
+    mod_guess.target = 'da-module-guesser'
+    mod_guess.vapi_dirs = '../vapi'
+    mod_guess.includes = '..'
+    mod_guess.install_path = None
+    bld.install_files('${LIBDIR}/desktop-agnostic/modules',
+                      bld.env['shlib_PATTERN'] % mod_guess.target)

@@ -24,8 +24,7 @@ namespace DesktopAgnostic
 {
   public errordomain ModuleError
   {
-    NO_GMODULE,
-    NO_CONFIG_FOUND
+    NO_GMODULE
   }
   private static Datalist<Module> modules;
   /**
@@ -52,9 +51,13 @@ namespace DesktopAgnostic
       modules = Datalist<Module> ();
     }
 
+    private delegate Type GuessModuleFunction (ModuleLoader loader, string library_prefix);
+    private Module? module_guesser;
+
     private ModuleLoader ()
     {
       assert (Module.supported ());
+      this.module_guesser = null;
     }
 
     public static unowned ModuleLoader
@@ -129,19 +132,71 @@ namespace DesktopAgnostic
 
       return module_type;
     }
+    public bool
+    is_guess_module_loaded ()
+    {
+      return this.module_guesser != null;
+    }
+    private Module?
+    try_load_guess_module (string prefix)
+    {
+      string library = "libda-module-guesser";
+      string path;
+
+      path = Module.build_path (prefix, library);
+      return Module.open (path, ModuleFlags.BIND_LAZY);
+    }
+    public Type
+    guess_module (string library_prefix)
+    {
+      void* function;
+      GuessModuleFunction guess_module;
+
+      if (this.module_guesser == null)
+      {
+        // load the module guesser
+        foreach (unowned string prefix in this.paths)
+        {
+          if (prefix == null || !FileUtils.test (prefix, FileTest.IS_DIR))
+          {
+            continue;
+          }
+
+          this.module_guesser = this.try_load_guess_module (prefix);
+
+          if (this.module_guesser != null)
+          {
+            break;
+          }
+        }
+        if (this.module_guesser == null)
+        {
+          // try the current directory, as a last resort
+          this.module_guesser = this.try_load_guess_module (Environment.get_current_dir ());
+        }
+      }
+      assert (this.module_guesser != null);
+
+      this.module_guesser.symbol ("guess_module", out function);
+      guess_module = (GuessModuleFunction)function;
+      return guess_module (this, library_prefix);
+    }
   }
   private static KeyFile module_config = null;
   public Type
   get_module_type (string prefix, string key) throws GLib.Error
   {
-    unowned ModuleLoader loader;
+    unowned ModuleLoader? loader = null;
     string cfg_file = "desktop-agnostic.ini";
 
     if (!Module.supported ())
     {
       throw new ModuleError.NO_GMODULE ("libdesktop-agnostic requires GModule support.");
     }
-    if (module_config == null)
+
+    loader = ModuleLoader.get_default ();
+
+    if (module_config == null && !loader.is_guess_module_loaded ())
     {
       bool loaded_config = false;
       string system_path;
@@ -155,6 +210,7 @@ namespace DesktopAgnostic
       {
         if (FileUtils.test (system_path, FileTest.EXISTS))
         {
+          debug ("Loading module config from the system: '%s'", system_path);
           loaded_config = module_config.load_from_file (system_path,
                                                         KeyFileFlags.NONE);
         }
@@ -169,6 +225,8 @@ namespace DesktopAgnostic
       {
         if (FileUtils.test (user_path, FileTest.EXISTS))
         {
+          debug ("Loading module config from the user directory: '%s'",
+                 system_path);
           loaded_config |= module_config.load_from_file (user_path,
                                                          KeyFileFlags.NONE);
         }
@@ -177,15 +235,20 @@ namespace DesktopAgnostic
       {
         warning ("KeyFile error: %s", error.message);
       }
-      if (!loaded_config)
-      {
-        throw new ModuleError.NO_CONFIG_FOUND ("Could not find any libdesktop-agnostic configuration files.");
-      }
     }
-    string library = "libda-%s-%s".printf (prefix,
-                                           module_config.get_string ("DEFAULT", key));
-    loader = ModuleLoader.get_default ();
-    return loader.load (library);
+
+    if (module_config.has_group ("DEFAULT"))
+    {
+      string library = "libda-%s-%s".printf (prefix,
+                                             module_config.get_string ("DEFAULT", key));
+      return loader.load (library);
+    }
+    else
+    {
+      debug ("No module config files found, falling back to guessing.");
+      string library_prefix = "libda-%s-".printf (prefix);
+      return loader.guess_module (library_prefix);
+    }
   }
 }
 

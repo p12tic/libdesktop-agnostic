@@ -95,7 +95,7 @@ namespace DesktopAgnostic.Config
               unowned ModuleLoader loader = ModuleLoader.get_default ();
               type = loader.load_from_path (Path.get_basename (module),
                                             module);
-              if (type != type.INVALID)
+              if (type != Type.INVALID)
               {
                 try
                 {

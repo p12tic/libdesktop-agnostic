@@ -42,6 +42,7 @@ int main (string[] args)
         VFS.File file = VFS.file_new_for_path (arg);
         Backend entry = new_for_file (file);
         message ("Entry: %s", entry.name);
+        message ("Entry exec line: %s", entry.get_string ("Exec"));
         if (entry.exists ())
         {
           entry.launch (0, null);

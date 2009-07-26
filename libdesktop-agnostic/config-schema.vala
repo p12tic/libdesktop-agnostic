@@ -59,8 +59,19 @@ namespace DesktopAgnostic.Config
       SList<string> search_paths;
 
       type_modules = new List<string> ();
-      // jump-start the ModuleLoader static constructor
+      // pre-load the ModuleLoader static constructor
       ModuleLoader.get_default ();
+      // pre-load the default config backend module.
+      try
+      {
+        Config.get_type ();
+      }
+      catch (GLib.Error err)
+      {
+        // Do nothing.
+      }
+
+      // search for the config type modules
       paths = ModuleLoader.get_search_paths ();
       search_paths = new SList<string> ();
       foreach (unowned string path in paths)

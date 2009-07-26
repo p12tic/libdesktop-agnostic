@@ -50,7 +50,8 @@ def generate_typelib(self):
         task.set_outputs(tnode)
         dirname = os.path.join(bld.bdir, tnode.bld_dir(task.env))
         task.generator.env['CURRENT_BUILD_DIR'] = dirname
-        bld.install_files('${LIBDIR}/girepository-1.0', target)
+        bld.install_files('${LIBDIR}/girepository-1.0',
+                          tnode.abspath(task.env), task.env)
 
 def create_typelib_task():
     rule = 'LD_LIBRARY_PATH="${CURRENT_BUILD_DIR}" ${G_IR_COMPILER} ' + \

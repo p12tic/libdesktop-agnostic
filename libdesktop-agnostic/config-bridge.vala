@@ -134,8 +134,14 @@ namespace DesktopAgnostic.Config
         unowned List<Binding> bindings_list = this.bindings.get_data (binding_key);
         bindings_list.append ((owned)binding);
         full_key = binding_key + ":" + property_name;
-        unowned List<string> key_list = this.bindings_by_obj.lookup (obj);
-        if (key_list.find_custom (full_key, (CompareFunc)strcmp) == null)
+        unowned List<string>? key_list = this.bindings_by_obj.lookup (obj);
+        if (key_list == null)
+        {
+          List<string> new_key_list = new List<string> ();
+          new_key_list.append (full_key);
+          this.bindings_by_obj.insert (obj, (owned)new_key_list);
+        }
+        else if (key_list.find_custom (full_key, (CompareFunc)strcmp) == null)
         {
           key_list.append (full_key);
         }

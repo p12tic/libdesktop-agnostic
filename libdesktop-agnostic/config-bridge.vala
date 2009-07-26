@@ -154,8 +154,8 @@ namespace DesktopAgnostic.Config
           }
           props_str += property.name;
         }
-        warning ("Invalid property name for the object. Valid properties (%d): %s",
-                 properties.length, props_str);
+        warning ("Invalid property name for the object (%s). Valid properties (%d): %s",
+                 property_name, properties.length, props_str);
       }
     }
 

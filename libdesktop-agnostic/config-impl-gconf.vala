@@ -510,7 +510,8 @@ namespace DesktopAgnostic.Config
       gc_val = this.client.get_entry (full_key, null, true).get_value ();
       if (gc_val == null)
       {
-        throw new Error.KEY_NOT_FOUND ("Could not find key specified.");
+        throw new Error.KEY_NOT_FOUND ("Could not find the key specified: %s.",
+                                       full_key);
       }
       else
       {

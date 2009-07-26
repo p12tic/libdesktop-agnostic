@@ -142,7 +142,8 @@ namespace DesktopAgnostic.Config
       Value? result = this.values.get_data (full_key);
       if (result == null)
       {
-        throw new Error.KEY_NOT_FOUND ("Could not find key specified.");
+        throw new Error.KEY_NOT_FOUND ("Could not find the key specified: %s.",
+                                       full_key);
       }
       else
       {

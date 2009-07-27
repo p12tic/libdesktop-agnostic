@@ -187,10 +187,18 @@ namespace DesktopAgnostic.Config
     parse_group_and_key (string full_key, out string group, out string key)
     {
       unowned string key_to_parse = full_key.offset (this.path.length + 1);
-      unowned string last_slash = key_to_parse.rchr (key_to_parse.length, '/');
-      long offset = key_to_parse.pointer_to_offset (last_slash);
-      group = key_to_parse.substring (0, offset);
-      key = key_to_parse.offset (offset + 1);
+      unowned string? last_slash = key_to_parse.rchr (key_to_parse.length, '/');
+      if (last_slash == null)
+      {
+        group = GROUP_DEFAULT;
+        key = key_to_parse;
+      }
+      else
+      {
+        long offset = key_to_parse.pointer_to_offset (last_slash);
+        group = key_to_parse.substring (0, offset);
+        key = key_to_parse.offset (offset + 1);
+      }
     }
 
     private Type

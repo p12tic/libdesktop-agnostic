@@ -133,33 +133,38 @@ namespace DesktopAgnostic.Config
     set_value (string group, string key, Value value) throws GLib.Error
     {
       SchemaOption option = this._schema.get_option (group, key);
+      Type option_type;
+
       if (option == null)
       {
         throw new Error.KEY_NOT_FOUND ("Could not find group and/or key in schema.");
       }
-      if (option.option_type == typeof (bool))
+
+      option_type = option.option_type;
+
+      if (option_type == typeof (bool))
       {
-        this.set_bool (group, key, value.get_boolean ());
+        this.set_bool (group, key, (bool)value);
       }
-      else if (option.option_type == typeof (float))
+      else if (option_type == typeof (float))
       {
-        this.set_float (group, key, value.get_float ());
+        this.set_float (group, key, (float)value);
       }
-      else if (option.option_type == typeof (int))
+      else if (option_type == typeof (int))
       {
-        this.set_int (group, key, value.get_int ());
+        this.set_int (group, key, (int)value);
       }
-      else if (option.option_type == typeof (string))
+      else if (option_type == typeof (string))
       {
-        this.set_string (group, key, value.get_string ());
+        this.set_string (group, key, (string)value);
       }
-      else if (option.option_type == typeof (ValueArray))
+      else if (option_type == typeof (ValueArray))
       {
-        this.set_list (group, key, (ValueArray)value.get_boxed ());
+        this.set_list (group, key, (ValueArray)value);
       }
       else
       {
-        SchemaType st = this.schema.find_type (option.option_type);
+        SchemaType st = this.schema.find_type (option_type);
         if (st == null)
         {
           throw new Error.INVALID_TYPE ("Invalid config value type.");

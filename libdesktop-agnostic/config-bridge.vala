@@ -131,8 +131,19 @@ namespace DesktopAgnostic.Config
         }
         binding.read_only = read_only;
         binding_key = group + "/" + key;
-        unowned List<Binding> bindings_list = this.bindings.get_data (binding_key);
-        bindings_list.append ((owned)binding);
+        unowned List<Binding>? bindings_list = this.bindings.get_data (binding_key);
+        if (bindings_list == null)
+        {
+          List<Binding> new_bindings_list;
+
+          new_bindings_list = new List<Binding> ();
+          new_bindings_list.append ((owned)binding);
+          this.bindings.set_data (binding_key, (owned)new_bindings_list);
+        }
+        else
+        {
+          bindings_list.append ((owned)binding);
+        }
         full_key = binding_key + ":" + property_name;
         unowned List<string>? key_list = this.bindings_by_obj.lookup (obj);
         if (key_list == null)

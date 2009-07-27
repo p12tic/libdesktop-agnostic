@@ -36,7 +36,7 @@ namespace DesktopAgnostic.Config
     private string schema_path;
     private string path;
     private unowned GConf.Client client;
-    private Datalist<unowned SList<unowned NotifyData>> notify_funcs;
+    private Datalist<unowned SList<NotifyData>> notify_funcs;
 
     public override string name
     {
@@ -58,7 +58,7 @@ namespace DesktopAgnostic.Config
       string base_path;
       Schema schema = this.schema;
 
-      this.notify_funcs = Datalist<unowned SList<unowned NotifyData>> ();
+      this.notify_funcs = Datalist<SList<NotifyData>> ();
       base_path = schema.get_metadata_option (opt_prefix +
                                               "base_path").get_string ();
       this.schema_path = "/schemas%s/%s".printf (base_path, schema.app_name);
@@ -425,7 +425,7 @@ namespace DesktopAgnostic.Config
 
       this.parse_group_and_key (full_key, out group, out key);
       value = this.gconfvalue_to_gvalue (entry.get_value ());
-      unowned SList<unowned NotifyData> notify_func_list =
+      unowned SList<NotifyData> notify_func_list =
         this.notify_funcs.get_data (full_key);
       foreach (unowned NotifyData notify_func in notify_func_list)
       {
@@ -446,7 +446,7 @@ namespace DesktopAgnostic.Config
       NotifyData notify;
       string full_key;
       uint func_id;
-      unowned SList<unowned NotifyData> callbacks;
+      unowned SList<NotifyData>? callbacks;
 
       notify = new NotifyData ();
       notify.callback = callback;
@@ -474,7 +474,7 @@ namespace DesktopAgnostic.Config
     notify (string group, string key) throws GLib.Error
     {
       string full_key = this.generate_key (group, key);
-      unowned SList<unowned NotifyData> notifications;
+      unowned SList<NotifyData> notifications;
       Value value;
 
       notifications = this.notify_funcs.get_data (full_key);
@@ -490,7 +490,7 @@ namespace DesktopAgnostic.Config
                    NotifyFunc callback) throws GLib.Error
     {
       string full_key = this.generate_key (group, key);
-      unowned SList<unowned NotifyData> notifications = this.notify_funcs.get_data (full_key);
+      unowned SList<NotifyData> notifications = this.notify_funcs.get_data (full_key);
       foreach (unowned NotifyData notify in notifications)
       {
         if (notify.callback == callback)

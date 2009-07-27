@@ -274,33 +274,38 @@ namespace DesktopAgnostic.Config
     }
 
     private GLib.Value
-    gconfvalue_to_gvalue (GConf.Value gc_val) throws Error
+    gconfvalue_to_gvalue (string group, string key,
+                          GConf.Value gc_val) throws Error
     {
+      SchemaOption schema_option;
       Type type;
       GLib.Value value;
-      type = this.valuetype_to_type (gc_val.type, true);
-      value = GLib.Value (type);
+
+      schema_option = this.schema.get_option (group, key);
+      type = schema_option.option_type;
       if (type == typeof (bool))
       {
-        value.set_boolean (gc_val.get_bool ());
+        value = gc_val.get_bool ();
       }
       else if (type == typeof (float))
       {
-        value.set_float ((float)gc_val.get_float ());
+        value = (float)gc_val.get_float ();
       }
       else if (type == typeof (int))
       {
-        value.set_int (gc_val.get_int ());
+        value = gc_val.get_int ();
       }
       else if (type == typeof (string))
       {
-        value.set_string (gc_val.get_string ());
+        value = gc_val.get_string ();
       }
       else if (type == typeof (ValueArray))
       {
         Type list_type;
         ValueArray array;
-        list_type = this.valuetype_to_type (gc_val.get_list_type (), false);
+
+        value = Value (type);
+        list_type = schema_option.list_type;
         array = this.slist_to_valuearray (gc_val.get_list (), list_type);
         value.set_boxed ((owned)array);
       }
@@ -424,7 +429,7 @@ namespace DesktopAgnostic.Config
       Value value;
 
       this.parse_group_and_key (full_key, out group, out key);
-      value = this.gconfvalue_to_gvalue (entry.get_value ());
+      value = this.gconfvalue_to_gvalue (group, key, entry.get_value ());
       unowned SList<NotifyData> notify_func_list =
         this.notify_funcs.get_data (full_key);
       foreach (unowned NotifyData notify_func in notify_func_list)
@@ -513,8 +518,6 @@ namespace DesktopAgnostic.Config
       string full_key;
       unowned GConf.Value? gc_val;
       GLib.Value val;
-      Type option_type;
-      unowned SchemaType? st;
 
       full_key = this.generate_key (group, key);
       gc_val = this.client.get_entry (full_key, null, true).get_value ();
@@ -525,16 +528,7 @@ namespace DesktopAgnostic.Config
       }
       else
       {
-        val = this.gconfvalue_to_gvalue (gc_val);
-        if (val.holds (typeof (string)))
-        {
-          option_type = this.schema.get_option (group, key).option_type;
-          st = Schema.find_type (option_type);
-          if (st != null)
-          {
-            val = st.deserialize ((string)val);
-          }
-        }
+        val = this.gconfvalue_to_gvalue (group, key, gc_val);
       }
       return val;
     }

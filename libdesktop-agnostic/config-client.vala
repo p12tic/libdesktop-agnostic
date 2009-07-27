@@ -101,126 +101,70 @@ namespace DesktopAgnostic.Config
       this.schema_filename = schema_filename;
       this.instance_id = instance_id;
     }
+    // helper methods
+    private unowned Backend
+    get_backend (string group, string key)
+    {
+      if (this.instance == null ||
+          !this._schema.get_option (group, key).per_instance)
+      {
+        return this.global;
+      }
+      else
+      {
+        return this.instance;
+      }
+    }
     // methods
     public bool
     get_bool (string group, string key) throws GLib.Error
     {
-      if (this.instance == null)
-      {
-        return this.global.get_bool (group, key);
-      }
-      else
-      {
-        return this.instance.get_bool (group, key);
-      }
+      return this.get_backend (group, key).get_bool (group, key);
     }
     public void
     set_bool (string group, string key, bool value) throws GLib.Error
     {
-      if (this.instance == null)
-      {
-        this.global.set_bool (group, key, value);
-      }
-      else
-      {
-        this.instance.set_bool (group, key, value);
-      }
+      this.get_backend (group, key).set_bool (group, key, value);
     }
     public int
     get_int (string group, string key) throws GLib.Error
     {
-      if (this.instance == null)
-      {
-        return this.global.get_int (group, key);
-      }
-      else
-      {
-        return this.instance.get_int (group, key);
-      }
+      return this.get_backend (group, key).get_int (group, key);
     }
     public void
     set_int (string group, string key, int value) throws GLib.Error
     {
-      if (this.instance == null)
-      {
-        this.global.set_int (group, key, value);
-      }
-      else
-      {
-        this.instance.set_int (group, key, value);
-      }
+      this.get_backend (group, key).set_int (group, key, value);
     }
     public float
     get_float (string group, string key) throws GLib.Error
     {
-      if (this.instance == null)
-      {
-        return this.global.get_float (group, key);
-      }
-      else
-      {
-        return this.instance.get_float (group, key);
-      }
+      return this.get_backend (group, key).get_float (group, key);
     }
     public void
     set_float (string group, string key, float value) throws GLib.Error
     {
-      if (this.instance == null)
-      {
-        this.global.set_float (group, key, value);
-      }
-      else
-      {
-        this.instance.set_float (group, key, value);
-      }
+      this.get_backend (group, key).set_float (group, key, value);
     }
     public string
     get_string (string group, string key) throws GLib.Error
     {
-      if (this.instance == null)
-      {
-        return this.global.get_string (group, key);
-      }
-      else
-      {
-        return this.instance.get_string (group, key);
-      }
+      return this.get_backend (group, key).get_string (group, key);
     }
     public void
     set_string (string group, string key, string value) throws GLib.Error
     {
-      if (this.instance == null)
-      {
-        this.global.set_string (group, key, value);
-      }
-      else
-      {
-        this.instance.set_string (group, key, value);
-      }
+      this.get_backend (group, key).set_string (group, key, value);
     }
     public ValueArray
     get_list (string group, string key) throws GLib.Error
     {
-      if (this.instance == null)
-      {
-        return this.global.get_list (group, key);
-      }
-      else
-      {
-        return this.instance.get_list (group, key);
-      }
+      return this.get_backend (group, key).get_list (group, key);
     }
     public void
     set_list (string group, string key, ValueArray value) throws GLib.Error
     {
-      if (this.instance == null)
-      {
-        this.global.set_list (group, key, value);
-      }
-      else
-      {
-        this.instance.set_list (group, key, value);
-      }
+      this.get_backend (group, key).set_list (group, key, value);
     }
     /**
      * Retrieves the value of the configuration key. If the client has an
@@ -235,7 +179,8 @@ namespace DesktopAgnostic.Config
 
       try
       {
-        if (this.instance != null)
+        if (this.instance != null &&
+            this._schema.get_option (group, key).per_instance)
         {
           temp_val = this.instance.get_value (group, key);
         }
@@ -262,42 +207,23 @@ namespace DesktopAgnostic.Config
     public void
     set_value (string group, string key, Value value) throws GLib.Error
     {
-      if (this.instance == null)
-      {
-        this.global.set_value (group, key, value);
-      }
-      else
-      {
-        this.instance.set_value (group, key, value);
-      }
+      this.get_backend (group, key).set_value (group, key, value);
     }
     public void
     notify_add (string group, string key, NotifyFunc callback)
     {
-      if (this.instance != null)
-      {
-        this.instance.notify_add (group, key, callback);
-      }
-      this.global.notify_add (group, key, callback);
+      this.get_backend (group, key).notify_add (group, key, callback);
     }
     public new void
     notify (string group, string key) throws GLib.Error
     {
-      if (this.instance != null)
-      {
-        this.instance.notify (group, key);
-      }
-      this.global.notify (group, key);
+      this.get_backend (group, key).notify (group, key);
     }
     public void
     notify_remove (string group, string key,
                    NotifyFunc callback) throws GLib.Error
     {
-      if (this.instance != null)
-      {
-        this.instance.notify_remove (group, key, callback);
-      }
-      this.global.notify_remove (group, key, callback);
+      this.get_backend (group, key).notify_remove (group, key, callback);
     }
     public void
     remove_instance ()

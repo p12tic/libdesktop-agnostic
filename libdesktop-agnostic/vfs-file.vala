@@ -23,6 +23,13 @@
 namespace DesktopAgnostic.VFS
 {
   /**
+   * File-related errors.
+   */
+  public errordomain FileError
+  {
+    FILE_NOT_FOUND
+  }
+  /**
    * The kinds of files recognized by the File backends.
    */
   public enum FileType
@@ -122,6 +129,12 @@ namespace DesktopAgnostic.VFS
      * @return %TRUE on successful launch, %FALSE on failure.
      */
     public abstract bool launch () throws Error;
+
+    /**
+     * Removes the specified file. Only works on files, not directories.
+     * @return %TRUE on success, %FALSE on failure.
+     */
+    public abstract bool remove () throws Error;
   }
 
   public File?

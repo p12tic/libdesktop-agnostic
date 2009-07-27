@@ -137,6 +137,16 @@ namespace DesktopAgnostic.VFS
       files.append (this._file);
       return app_info.launch (files, null);
     }
+    public override bool
+    remove () throws Error
+    {
+      if (!this.exists ())
+      {
+        throw new FileError.FILE_NOT_FOUND ("The file '%s' does not exist.",
+                                            this.uri);
+      }
+      return this._file.delete (null);
+    }
   }
 }
 

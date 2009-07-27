@@ -146,6 +146,19 @@ namespace DesktopAgnostic.VFS
       paths.append (this._path);
       return mime_app.exec (Gdk.Screen.get_default (), paths);
     }
+    /**
+     * Note: not using a ThunarVfs.Job because they're async.
+     */
+    public override bool
+    remove () throws Error
+    {
+      if (!this.exists ())
+      {
+        throw new FileError.FILE_NOT_FOUND ("The file '%s' does not exist.",
+                                            this.uri);
+      }
+      return (FileUtils.unlink (this.impl_path) == 0);
+    }
   }
 }
 

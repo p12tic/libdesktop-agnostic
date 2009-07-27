@@ -199,6 +199,16 @@ namespace DesktopAgnostic.VFS
       uris.append (this._uri_str);
       return mime_app.launch (uris) == GnomeVFS.Result.OK;
     }
+    public override bool
+    remove () throws Error
+    {
+      if (!this.exists ())
+      {
+        throw new FileError.FILE_NOT_FOUND ("The file '%s' does not exist.",
+                                            this.uri);
+      }
+      return (GnomeVFS.unlink_from_uri (this._uri) == GnomeVFS.Result.OK);
+    }
   }
 }
 

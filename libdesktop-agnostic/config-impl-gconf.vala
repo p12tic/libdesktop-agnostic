@@ -102,6 +102,9 @@ namespace DesktopAgnostic.Config
         string key;
         GConf.Entry? pref_entry;
         string pref_schema_key;
+        string cgroup;
+        string ckey;
+        SchemaOption option;
 
         schema_key = entry.get_key ();
         key = "%s/%s".printf (pref_dir, Path.get_basename (schema_key));
@@ -113,6 +116,13 @@ namespace DesktopAgnostic.Config
          * the key is already correctly associated.
          */
         pref_entry = this.client.get_entry (key, null, true);
+
+        this.parse_group_and_key (key, out cgroup, out ckey);
+        option = this.schema.get_option (cgroup, ckey);
+        if (option == null || option.per_instance)
+        {
+          continue;
+        }
 
         if (pref_entry == null)
         {

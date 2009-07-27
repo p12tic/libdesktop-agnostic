@@ -106,6 +106,8 @@ namespace DesktopAgnostic.Config
         schema_key = entry.get_key ();
         key = "%s/%s".printf (pref_dir, Path.get_basename (schema_key));
 
+        this.client.add_dir (pref_dir, GConf.ClientPreloadType.NONE);
+
         /* Associating a schema is potentially expensive, so let's try
          * to avoid this by doing it only when needed. So we check if
          * the key is already correctly associated.
@@ -451,7 +453,7 @@ namespace DesktopAgnostic.Config
       full_key = this.generate_key (group, key);
       try
       {
-        func_id = this.client.notify_add (full_key, (GConf.ClientNotifyFunc)this.notify_proxy);
+        func_id = this.client.notify_add (full_key, this.notify_proxy);
         if (func_id == 0)
         {
           warning ("Something went wrong when we tried to add a notification callback.");

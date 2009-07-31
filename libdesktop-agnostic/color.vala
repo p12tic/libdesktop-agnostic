@@ -91,11 +91,22 @@ namespace DesktopAgnostic
         this._color.blue = this.ushortify (value);
       }
     }
-    public ushort alpha;
+    private ushort _alpha;
+    public int alpha
+    {
+      get
+      {
+        return this._alpha;
+      }
+      set
+      {
+        this._alpha = this.ushortify (value);
+      }
+    }
     public Color (Gdk.Color color, ushort alpha)
     {
       this._color = color;
-      this.alpha = alpha;
+      this._alpha = alpha;
     }
     public Color.from_values (ushort red, ushort green, ushort blue, ushort alpha)
     {
@@ -103,7 +114,7 @@ namespace DesktopAgnostic
       this._color.red = red;
       this._color.green = green;
       this._color.blue = blue;
-      this.alpha = alpha;
+      this._alpha = alpha;
     }
     /**
      * @see Gdk.Color.parse
@@ -111,7 +122,7 @@ namespace DesktopAgnostic
     public Color.from_string (string spec) throws ColorParseError
     {
       this._color = Gdk.Color ();
-      this.alpha = 0;
+      this._alpha = 0;
       string color_data;
       if (spec.get_char () == '#')
       {
@@ -127,16 +138,16 @@ namespace DesktopAgnostic
         size_t offset = hex_len * 3;
         string rgb_hex = color_hex.substring (0, (long)offset);
         unowned string alpha_hex = color_hex.offset ((long)offset);
-        if (alpha_hex.scanf ("%" + hex_len.to_string () + "hx", ref this.alpha) == 0)
+        if (alpha_hex.scanf ("%" + hex_len.to_string () + "hx", ref this._alpha) == 0)
         {
           throw new ColorParseError.INVALID_ALPHA ("Could not parse alpha section of input: %s",
                                                    alpha_hex);
         }
         ushort bits = (ushort)cd_len;
-        this.alpha <<= 16 - bits;
+        this._alpha <<= 16 - bits;
         while (bits < 16)
         {
-          this.alpha |= (this.alpha >> bits);
+          this._alpha |= (this._alpha >> bits);
           bits *= 2;
         }
         color_data = "#" + rgb_hex;
@@ -158,7 +169,7 @@ namespace DesktopAgnostic
       return HTML_STRING.printf (this.red / HTML_SCALE,
                                  this.green / HTML_SCALE,
                                  this.blue / HTML_SCALE,
-                                 this.alpha / HTML_SCALE);
+                                 this._alpha / HTML_SCALE);
     }
     /**
      * Behaves the same as Gdk.Color.to_string (), except that it adds
@@ -169,7 +180,7 @@ namespace DesktopAgnostic
     to_string ()
     {
       string gdk_str = this._color.to_string ();
-      return "%s%04x".printf (gdk_str, this.alpha);
+      return "%s%04x".printf (gdk_str, this._alpha);
     }
     /**
      * Returns the color values as doubles, where 0.0 < value <= 1.0.
@@ -192,7 +203,7 @@ namespace DesktopAgnostic
       }
       if (&alpha != null)
       {
-        alpha = gdk_value_to_cairo (this.alpha);
+        alpha = gdk_value_to_cairo (this._alpha);
       }
     }
     /**
@@ -215,7 +226,7 @@ namespace DesktopAgnostic
       }
       if (alpha > 0.0f && alpha <= 1.0f)
       {
-        this.alpha = cairo_value_to_gdk (alpha);
+        this._alpha = cairo_value_to_gdk (alpha);
       }
     }
     /**

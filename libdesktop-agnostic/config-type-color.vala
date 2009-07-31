@@ -101,11 +101,35 @@ namespace DesktopAgnostic.Config
       }
     }
   }
+  /**
+   * Used for Value transforms.
+   */
+  public static void
+  color_to_string (Value src_value, out Value dest_value)
+  {
+    ColorType ct = new ColorType ();
+    dest_value = ct.serialize (src_value);
+  }
+  /**
+   * Used for Value transforms.
+   */
+  public static void
+  string_to_color (Value src_value, out Value dest_value)
+  {
+    ColorType ct = new ColorType ();
+    dest_value = ct.deserialize ((string)src_value);
+  }
 }
 [ModuleInit]
 public Type
 register_plugin ()
 {
+  Value.register_transform_func (typeof (DesktopAgnostic.Color),
+                                 typeof (string),
+                                 DesktopAgnostic.Config.color_to_string);
+  Value.register_transform_func (typeof (string),
+                                 typeof (DesktopAgnostic.Color),
+                                 DesktopAgnostic.Config.string_to_color);
   return typeof (DesktopAgnostic.Config.ColorType);
 }
 

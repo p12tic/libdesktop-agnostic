@@ -115,18 +115,18 @@ namespace DesktopAgnostic
       string color_data;
       if (spec.get_char () == '#')
       {
-        long cd_len = 0;
+        size_t cd_len = 0;
         unowned string color_hex = spec.offset (1);
         // adapted from pango_color_parse (), licensed under the LGPL2.1+.
-        cd_len = color_hex.size ();
+        cd_len = (size_t)color_hex.size ();
         if (cd_len % 4 != 0 || cd_len < 4 || cd_len > 16)
         {
           throw new ColorParseError.INVALID_INPUT ("Invalid input size.");
         }
-        long hex_len = cd_len / 4;
-        long offset = hex_len * 3;
-        string rgb_hex = color_hex.substring (0, offset);
-        unowned string alpha_hex = color_hex.offset (offset);
+        size_t hex_len = cd_len / 4;
+        size_t offset = hex_len * 3;
+        string rgb_hex = color_hex.substring (0, (long)offset);
+        unowned string alpha_hex = color_hex.offset ((long)offset);
         if (alpha_hex.scanf ("%" + hex_len.to_string () + "hx", ref this.alpha) == 0)
         {
           throw new ColorParseError.INVALID_ALPHA ("Could not parse alpha section of input: %s",

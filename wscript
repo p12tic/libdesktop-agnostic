@@ -78,6 +78,7 @@ def configure(conf):
                    atleast_version='2.12.0', mandatory=True,
                    args='--cflags --libs')
     # Needed for the Color class
+    conf.check(lib='m', uselib='MATH')
     conf.check_cfg(package='gdk-2.0', uselib_store='GDK',
                    atleast_version='2.12.0', mandatory=True,
                    args='--cflags --libs')

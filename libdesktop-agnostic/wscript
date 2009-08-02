@@ -2,7 +2,7 @@
 # encoding: utf-8
 
 import Task
-from TaskGen import after, feature, taskgen
+from TaskGen import feature, taskgen
 import os
 
 deps = {

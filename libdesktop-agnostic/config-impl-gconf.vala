@@ -386,7 +386,8 @@ namespace DesktopAgnostic.Config
           SchemaType st = this.schema.find_type (type);
           if (st == null)
           {
-            throw new Error.INVALID_TYPE ("Invalid config value type.");
+            throw new Error.INVALID_TYPE ("Invalid config value type: %s.",
+                                          type.name ());
           }
           else
           {

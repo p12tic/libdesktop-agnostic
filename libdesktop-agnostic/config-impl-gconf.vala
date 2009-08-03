@@ -64,7 +64,22 @@ namespace DesktopAgnostic.Config
       this.schema_path = "/schemas%s/%s".printf (base_path, schema.app_name);
       if (this.instance_id == null)
       {
+        unowned SList<string> dirs;
+
         this.path = "%s/%s".printf (base_path, schema.app_name);
+        // make sure notifications work
+        dirs = this.client.all_dirs (this.path);
+        try
+        {
+          foreach (unowned string dir in dirs)
+          {
+            this.client.add_dir (dir, GConf.ClientPreloadType.NONE);
+          }
+        }
+        catch (GLib.Error err)
+        {
+          critical ("Config (GConf) error: %s", err.message);
+        }
       }
       else
       {

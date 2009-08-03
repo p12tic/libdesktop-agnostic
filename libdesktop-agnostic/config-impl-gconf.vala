@@ -134,7 +134,7 @@ namespace DesktopAgnostic.Config
 
         this.parse_group_and_key (key, out cgroup, out ckey);
         option = this.schema.get_option (cgroup, ckey);
-        if (option == null || option.per_instance)
+        if (option == null || !option.per_instance)
         {
           continue;
         }

@@ -314,14 +314,6 @@ namespace DesktopAgnostic.Config
       return value;
     }
 
-    private GConf.ValueType
-    get_gconf_list_valuetype (string key) throws GLib.Error
-    {
-      unowned GConf.Value value;
-      value = this.client.get (key);
-      return value.get_list_type ();
-    }
-
     private GLib.ValueArray
     slist_to_valuearray (SList<unowned GConf.Value> list, Type type) throws Error
     {
@@ -362,53 +354,6 @@ namespace DesktopAgnostic.Config
         arr.append (val);
       }
       return arr;
-    }
-
-    private SList<GConf.Value>?
-    valuearray_to_slist (ValueArray arr)
-    {
-      if (arr == null || arr.n_values == 0)
-      {
-        return null;
-      }
-      else
-      {
-        uint i;
-        unowned GLib.Value v = arr.values[0];
-        Type type = v.type ();
-        SList<unowned GConf.Value> list = new SList<unowned GConf.Value> ();
-        for (i = 0; i < arr.n_values; i++)
-        {
-          unowned GLib.Value val;
-          GConf.Value gc_val;
-          unowned GConf.Value gc_val2;
-          val = arr.values[i];
-          gc_val = new GConf.Value (this.type_to_valuetype (type));
-          if (type == typeof (bool))
-          {
-            gc_val.set_bool (val.get_boolean ());
-          }
-          else if (type == typeof (float))
-          {
-            gc_val.set_float (val.get_float ());
-          }
-          else if (type == typeof (int))
-          {
-            gc_val.set_int (val.get_int ());
-          }
-          else if (type == typeof (string))
-          {
-            gc_val.set_string (val.get_string ());
-          }
-          else
-          {
-            throw new Error.INVALID_TYPE ("Invalid config value type.");
-          }
-          gc_val2 = gc_val;
-          list.append (gc_val);
-        }
-        return list;
-      }
     }
 
     private void
@@ -595,12 +540,49 @@ namespace DesktopAgnostic.Config
     set_list (string group, string key, GLib.ValueArray value) throws GLib.Error
     {
       string full_key;
-      SList list;
+      SList<unowned GConf.Value> list;
+      GConf.Value val;
+      Type type = this.schema.get_option (group, key).list_type;
+      GConf.ValueType gc_type = this.type_to_valuetype (type);
+
       full_key = this.generate_key (group, key);
-      list = this.valuearray_to_slist (value);
-      this.client.set_list (full_key,
-                            this.get_gconf_list_valuetype (full_key),
-                            list);
+      list = new SList<unowned GConf.Value> ();
+      for (uint i = 0; i < value.n_values; i++)
+      {
+        unowned GLib.Value list_val;
+        GConf.Value gc_val;
+        unowned GConf.Value gc_val2;
+
+        list_val = value.get_nth (i);
+        gc_val = new GConf.Value (gc_type);
+        if (type == typeof (bool))
+        {
+          gc_val.set_bool (list_val.get_boolean ());
+        }
+        else if (type == typeof (float))
+        {
+          gc_val.set_float (list_val.get_float ());
+        }
+        else if (type == typeof (int))
+        {
+          gc_val.set_int (list_val.get_int ());
+        }
+        else if (type == typeof (string))
+        {
+          gc_val.set_string (list_val.get_string ());
+        }
+        else
+        {
+          throw new Error.INVALID_TYPE ("Invalid config value type: %s.",
+                                        type.name ());
+        }
+        gc_val2 = gc_val;
+        list.append (gc_val);
+      }
+      val = new GConf.Value (GConf.ValueType.LIST);
+      val.set_list_type (gc_type);
+      val.set_list (list);
+      this.client.set (full_key, val);
     }
   }
 }

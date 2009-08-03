@@ -228,41 +228,6 @@ namespace DesktopAgnostic.Config
       }
     }
 
-    private Type
-    valuetype_to_type (GConf.ValueType vt, bool list_is_type)
-    {
-      Type type;
-      switch (vt)
-      {
-        case GConf.ValueType.BOOL:
-          type = typeof (bool);
-          break;
-        case GConf.ValueType.FLOAT:
-          type = typeof (float);
-          break;
-        case GConf.ValueType.INT:
-          type = typeof (int);
-          break;
-        case GConf.ValueType.STRING:
-          type = typeof (string);
-          break;
-        case GConf.ValueType.LIST:
-          if (list_is_type)
-          {
-            type = typeof (ValueArray);
-          }
-          else
-          {
-            type = Type.INVALID;
-          }
-          break;
-        default:
-          type = Type.INVALID;
-          break;
-      }
-      return type;
-    }
-
     private GConf.ValueType
     type_to_valuetype (Type type)
     {
@@ -618,14 +583,13 @@ namespace DesktopAgnostic.Config
     get_list (string group, string key) throws GLib.Error
     {
       string full_key;
-      GConf.ValueType vt;
+      Type list_type;
       unowned SList list;
 
       full_key = this.generate_key (group, key);
-      vt = this.get_gconf_list_valuetype (full_key);
+      list_type = this.schema.get_option (group, key).list_type;
       list = this.client.get (full_key).get_list ();
-      return this.slist_to_valuearray (list,
-                                       this.valuetype_to_type (vt, false));
+      return this.slist_to_valuearray (list, list_type);
     }
     public override void
     set_list (string group, string key, GLib.ValueArray value) throws GLib.Error

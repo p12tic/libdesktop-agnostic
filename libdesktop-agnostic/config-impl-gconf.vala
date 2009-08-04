@@ -540,49 +540,83 @@ namespace DesktopAgnostic.Config
     set_list (string group, string key, GLib.ValueArray value) throws GLib.Error
     {
       string full_key;
-      SList<unowned GConf.Value> list;
-      GConf.Value val;
-      Type type = this.schema.get_option (group, key).list_type;
-      GConf.ValueType gc_type = this.type_to_valuetype (type);
+      Type type;
 
       full_key = this.generate_key (group, key);
-      list = new SList<unowned GConf.Value> ();
-      for (uint i = 0; i < value.n_values; i++)
+      type = this.schema.get_option (group, key).list_type;
+      if (type == typeof (bool) || type == typeof (float) ||
+          type == typeof (int))
       {
-        unowned GLib.Value list_val;
-        GConf.Value gc_val;
-        unowned GConf.Value gc_val2;
+        SList<unowned GConf.Value> list;
+        GConf.Value val;
+        GConf.ValueType gc_type = this.type_to_valuetype (type);
 
-        list_val = value.get_nth (i);
-        gc_val = new GConf.Value (gc_type);
-        if (type == typeof (bool))
+        list = new SList<GConf.Value> ();
+        for (uint i = 0; i < value.n_values; i++)
         {
-          gc_val.set_bool (list_val.get_boolean ());
+          unowned GLib.Value list_val;
+          GConf.Value gc_val;
+
+          list_val = value.get_nth (i);
+          gc_val = new GConf.Value (gc_type);
+          if (type == typeof (bool))
+          {
+            gc_val.set_bool (list_val.get_boolean ());
+          }
+          else if (type == typeof (float))
+          {
+            gc_val.set_float (list_val.get_float ());
+          }
+          else if (type == typeof (int))
+          {
+            gc_val.set_int (list_val.get_int ());
+          }
+          else
+          {
+            // should not be reached
+            throw new Error.INVALID_TYPE ("Invalid config value type: %s.",
+                                          type.name ());
+          }
+          list.append ((owned)gc_val);
         }
-        else if (type == typeof (float))
-        {
-          gc_val.set_float (list_val.get_float ());
-        }
-        else if (type == typeof (int))
-        {
-          gc_val.set_int (list_val.get_int ());
-        }
-        else if (type == typeof (string))
-        {
-          gc_val.set_string (list_val.get_string ());
-        }
-        else
-        {
-          throw new Error.INVALID_TYPE ("Invalid config value type: %s.",
-                                        type.name ());
-        }
-        gc_val2 = gc_val;
-        list.append (gc_val);
+        val = new GConf.Value (GConf.ValueType.LIST);
+        val.set_list_type (gc_type);
+        val.set_list (list);
+        this.client.set (full_key, val);
       }
-      val = new GConf.Value (GConf.ValueType.LIST);
-      val.set_list_type (gc_type);
-      val.set_list (list);
-      this.client.set (full_key, val);
+      else // handle strings via the set_list method.
+      {
+        SchemaType? st = null;
+        SList<string> list;
+
+        if (type != typeof (string))
+        {
+          st = Schema.find_type (type);
+          if (st == null)
+          {
+            throw new Error.INVALID_TYPE ("Invalid config value type: %s.",
+                                          type.name ());
+          }
+        }
+
+        list = new SList<string> ();
+
+        for (uint i = 0; i < value.n_values; i++)
+        {
+          unowned GLib.Value list_val;
+
+          list_val = value.get_nth (i);
+          if (st == null)
+          {
+            list.append ((string)list_val);
+          }
+          else
+          {
+            list.append (st.serialize (list_val));
+          }
+        }
+        this.client.set_list (full_key, GConf.ValueType.STRING, list);
+      }
     }
   }
 }

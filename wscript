@@ -135,4 +135,4 @@ def configure(conf):
 
 def build(bld):
     # process subfolders from here
-    bld.add_subdirs('libdesktop-agnostic tests data')
+    bld.add_subdirs('libdesktop-agnostic tools tests data')

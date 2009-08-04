@@ -1,0 +1,9 @@
+#!/usr/bin/python
+# encoding: utf-8
+
+def build(bld):
+    schema = bld.new_task_gen('cc', 'program')
+    schema.source = 'lda-schema-to-gconf.vala'
+    schema.uselib_local = 'desktop-agnostic-cfg'
+    schema.vapi_dirs = '../libdesktop-agnostic'
+    schema.target = 'lda-schema-to-gconf'

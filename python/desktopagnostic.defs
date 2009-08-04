@@ -1,0 +1,267 @@
+;; -*- scheme -*-
+; boxed definitions ...
+
+; interface definitions ...
+
+; object definitions ...
+
+(define-object Color
+  (in-module "DesktopAgnostic")
+  (parent "GObject")
+  (c-name "DesktopAgnosticColor")
+  (gtype-id "DESKTOP_AGNOSTIC_TYPE_COLOR")
+)
+
+(define-object ModuleLoader
+  (in-module "DesktopAgnostic")
+  (parent "GObject")
+  (c-name "DesktopAgnosticModuleLoader")
+  (gtype-id "DESKTOP_AGNOSTIC_TYPE_MODULE_LOADER")
+)
+
+; pointer definitions ...
+
+;; Enumerations and Flags ...
+
+;; Untyped enumerations and flags ...
+
+(define-enum ModuleError
+  (in-module "DesktopAgnostic")
+  (c-name "DesktopAgnosticModuleError")
+  (values
+    '("gmodule" "DESKTOP_AGNOSTIC_MODULE_ERROR_NO_GMODULE")
+  )
+)
+
+(define-enum ColorParseError
+  (in-module "DesktopAgnostic")
+  (c-name "DesktopAgnosticColorParseError")
+  (values
+    '("input" "DESKTOP_AGNOSTIC_COLOR_PARSE_ERROR_INVALID_INPUT")
+    '("alpha" "DESKTOP_AGNOSTIC_COLOR_PARSE_ERROR_INVALID_ALPHA")
+  )
+)
+
+
+;; From desktop-agnostic.h
+
+(define-function color_get_type
+  (c-name "desktop_agnostic_color_get_type")
+  (return-type "GType")
+)
+
+(define-function color_new
+  (c-name "desktop_agnostic_color_new")
+  (is-constructor-of "DesktopAgnosticColor")
+  (return-type "DesktopAgnosticColor*")
+  (properties
+    '("color" (argname "color"))
+    '("alpha" (argname "alpha"))
+  )
+)
+
+(define-function color_new_from_values
+  (c-name "desktop_agnostic_color_new_from_values")
+  (return-type "DesktopAgnosticColor*")
+  (parameters
+    '("gushort" "red")
+    '("gushort" "green")
+    '("gushort" "blue")
+    '("gushort" "alpha")
+  )
+)
+
+(define-function color_new_from_string
+  (c-name "desktop_agnostic_color_new_from_string")
+  (return-type "DesktopAgnosticColor*")
+  (parameters
+    '("const-char*" "spec")
+    '("GError**" "error")
+  )
+)
+
+(define-method to_html_color
+  (of-object "DesktopAgnosticColor")
+  (c-name "desktop_agnostic_color_to_html_color")
+  (return-type "char*")
+)
+
+(define-method to_string
+  (of-object "DesktopAgnosticColor")
+  (c-name "desktop_agnostic_color_to_string")
+  (return-type "char*")
+)
+
+(define-method get_cairo_color
+  (of-object "DesktopAgnosticColor")
+  (c-name "desktop_agnostic_color_get_cairo_color")
+  (return-type "none")
+  (parameters
+    '("double*" "red")
+    '("double*" "green")
+    '("double*" "blue")
+    '("double*" "alpha")
+  )
+)
+
+(define-method set_cairo_color
+  (of-object "DesktopAgnosticColor")
+  (c-name "desktop_agnostic_color_set_cairo_color")
+  (return-type "none")
+  (parameters
+    '("double" "red")
+    '("double" "green")
+    '("double" "blue")
+    '("double" "alpha")
+  )
+)
+
+(define-function color_cairo_value_to_gdk
+  (c-name "desktop_agnostic_color_cairo_value_to_gdk")
+  (return-type "gushort")
+  (parameters
+    '("double" "value")
+  )
+)
+
+(define-function color_gdk_value_to_cairo
+  (c-name "desktop_agnostic_color_gdk_value_to_cairo")
+  (return-type "double")
+  (parameters
+    '("gushort" "value")
+  )
+)
+
+(define-method get_color
+  (of-object "DesktopAgnosticColor")
+  (c-name "desktop_agnostic_color_get_color")
+  (return-type "none")
+  (parameters
+    '("GdkColor*" "value")
+  )
+)
+
+(define-method set_color
+  (of-object "DesktopAgnosticColor")
+  (c-name "desktop_agnostic_color_set_color")
+  (return-type "none")
+  (parameters
+    '("GdkColor*" "value")
+  )
+)
+
+(define-method get_red
+  (of-object "DesktopAgnosticColor")
+  (c-name "desktop_agnostic_color_get_red")
+  (return-type "gint")
+)
+
+(define-method set_red
+  (of-object "DesktopAgnosticColor")
+  (c-name "desktop_agnostic_color_set_red")
+  (return-type "none")
+  (parameters
+    '("gint" "value")
+  )
+)
+
+(define-method get_green
+  (of-object "DesktopAgnosticColor")
+  (c-name "desktop_agnostic_color_get_green")
+  (return-type "gint")
+)
+
+(define-method set_green
+  (of-object "DesktopAgnosticColor")
+  (c-name "desktop_agnostic_color_set_green")
+  (return-type "none")
+  (parameters
+    '("gint" "value")
+  )
+)
+
+(define-method get_blue
+  (of-object "DesktopAgnosticColor")
+  (c-name "desktop_agnostic_color_get_blue")
+  (return-type "gint")
+)
+
+(define-method set_blue
+  (of-object "DesktopAgnosticColor")
+  (c-name "desktop_agnostic_color_set_blue")
+  (return-type "none")
+  (parameters
+    '("gint" "value")
+  )
+)
+
+(define-method get_alpha
+  (of-object "DesktopAgnosticColor")
+  (c-name "desktop_agnostic_color_get_alpha")
+  (return-type "gint")
+)
+
+(define-method set_alpha
+  (of-object "DesktopAgnosticColor")
+  (c-name "desktop_agnostic_color_set_alpha")
+  (return-type "none")
+  (parameters
+    '("gint" "value")
+  )
+)
+
+(define-function module_loader_get_type
+  (c-name "desktop_agnostic_module_loader_get_type")
+  (return-type "GType")
+)
+
+(define-function module_loader_get_default
+  (c-name "desktop_agnostic_module_loader_get_default")
+  (return-type "DesktopAgnosticModuleLoader*")
+)
+
+(define-method load_from_path
+  (of-object "DesktopAgnosticModuleLoader")
+  (c-name "desktop_agnostic_module_loader_load_from_path")
+  (return-type "GType")
+  (parameters
+    '("const-char*" "name")
+    '("const-char*" "path")
+  )
+)
+
+(define-method load
+  (of-object "DesktopAgnosticModuleLoader")
+  (c-name "desktop_agnostic_module_loader_load")
+  (return-type "GType")
+  (parameters
+    '("const-char*" "name")
+  )
+)
+
+(define-method is_guess_module_loaded
+  (of-object "DesktopAgnosticModuleLoader")
+  (c-name "desktop_agnostic_module_loader_is_guess_module_loaded")
+  (return-type "gboolean")
+)
+
+(define-method guess_module
+  (of-object "DesktopAgnosticModuleLoader")
+  (c-name "desktop_agnostic_module_loader_guess_module")
+  (return-type "GType")
+  (parameters
+    '("const-char*" "library_prefix")
+  )
+)
+
+(define-function get_module_type
+  (c-name "desktop_agnostic_get_module_type")
+  (return-type "GType")
+  (parameters
+    '("const-char*" "prefix")
+    '("const-char*" "key")
+    '("GError**" "error")
+  )
+)
+
+

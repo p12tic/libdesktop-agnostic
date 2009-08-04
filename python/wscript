@@ -1,0 +1,107 @@
+#!/usr/bin/python
+# encoding: utf-8
+# ---------------
+# PyGObject bindings generator (until the gi module is stable)
+# copied/modified from gnome-python-desktop
+
+import Task
+from TaskGen import extension
+import Utils
+import misc
+import os
+import types
+
+GDK_DEFS = lambda bld: os.path.join(bld.env['PYGTK_DEFSDIR'], 'gdk-types.defs')
+
+
+def configure(conf):
+    conf.check_python_headers()
+    conf.check_cfg(package='pygobject-2.0', uselib_store='PYGOBJECT',
+                   atleast_version='2.12.0', mandatory=True,
+                   args='--cflags --libs')
+    if not conf.find_program('pygobject-codegen-2.0', var='CODEGEN'):
+        if not conf.find_program('pygtk-codegen-2.0', var='CODEGEN'):
+            conf.fatal('Could not find the PyGObject/PyGTK code generator script')
+    conf.env['PYGTK_DEFSDIR'] = Utils.cmd_output('pkg-config --variable defsdir pygtk-2.0',
+                                                 silent=1).strip()
+
+def run_pyg_codegen(self):
+    # stolen from TaskGen.exec_rule
+    func, func_vars = Task.compile_fun('', self.generator.rule,
+                                       shell=getattr(self.generator, 'shell',
+                                                     True))
+    func.code = self.generator.rule
+    func(self)
+
+Task.task_type_from_func('pyg_codegen', run_pyg_codegen, ext_out='.c')
+
+@extension('.defs')
+def defs_hook(self, node):
+    override_node = node.parent.find_resource('%s.override' % self.name)
+    c_node = node.change_ext('.c')
+
+    sources = [override_node, node]
+
+    rule = ['${CODEGEN}']
+    if getattr(self, 'py_ssize_t_clean', True):
+        rule += [' --py_ssize_t-clean']
+    for load in getattr(self, 'local_load_types', ()):
+        sources += [node.find_resource(load)]
+        rule += ['--load-types', '${SRC[%i].abspath(env)}' % (len(sources) - 1)]
+    for reg in getattr(self, 'local_register', ()):
+        source += [node.find_resource(reg)]
+        rule += ['--register', '${SRC[%i].abspath(env)}' % (len(sources) - 1)]
+    for reg in getattr(self, 'register', ()):
+        rule += ['--register', reg]
+    if hasattr(self, 'prefix'):
+        rule += ['--prefix', self.prefix]
+    else:
+        rule += ['--prefix', 'py%s' % self.name]
+
+    rule += ['--override', '${SRC}', '>', '${TGT}']
+
+    self.rule = ' '.join(rule)
+
+    task = self.create_task('pyg_codegen')
+    task.inputs = sources
+    task.outputs = [c_node]
+
+    self.allnodes.append(c_node)
+
+def pyg_module(bld, module, dependencies, prefix=None):
+    pyext = bld.new_task_gen('cc', 'shlib', 'pyext')
+    pyext.source = '%s.defs %smodule.c' % (module, module)
+    pyext.target = module
+    if prefix is not None:
+        pyext.prefix = prefix
+    pyext.uselib = 'PYEXT PYGOBJECT'
+    pyext.uselib_local = dependencies
+    pyext.includes = '..'
+    pyext.install_path = '${PYTHONDIR}/desktopagnostic'
+
+    bld.install_files('${DATADIR}/pygtk/2.0/defs', ['%s.defs' % module])
+
+    return pyext
+
+def build(bld):
+    # Attach the 'codegen' and pyg_module methods to the build context
+    bld.pyg_module = types.MethodType(pyg_module, bld)
+
+    pyda = bld.pyg_module('desktopagnostic', 'desktop-agnostic')
+    pyda.register = [GDK_DEFS(bld)]
+    pyda.uselib += ' GDK'
+
+    for module, dep in (('config', 'cfg'),):
+        pyext = bld.pyg_module(module, 'desktop-agnostic-%s' % dep,
+                               'pydesktopagnostic_%s' % module)
+
+    init = bld.new_task_gen('subst')
+    init.source = '__init__.py.in'
+    init.target = '__init__.py'
+    init.dict = {
+        'VERSION': bld.env['VERSION'],
+    }
+    init.fun = misc.subst_func
+    init.install_path = '${PYTHONDIR}/desktopagnostic'
+
+# vim: set ts=4 sts=4 sw=4 et :

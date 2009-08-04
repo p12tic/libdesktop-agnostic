@@ -21,6 +21,10 @@ Build/Runtime (*required*)
 * GLib 2.12 or later
 * GTK 2.12 or later
 
+For the Python bindings:
+* PyGObject 2.12 or later
+* PyGTK 2.12 or later
+
 One of the following VFS libraries:
 
 * GIO 2.16 or later (recommended)

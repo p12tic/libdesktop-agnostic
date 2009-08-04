@@ -64,7 +64,7 @@ def configure(conf):
     conf.env['DEBUG'] = Options.options.debug
     conf.env['PROFILING'] = Options.options.profiling
 
-    conf.check_tool('compiler_cc misc vala')
+    conf.check_tool('compiler_cc misc vala python')
 
     MIN_VALA_VERSION = (0, 7, 4)
 
@@ -114,6 +114,9 @@ def configure(conf):
     # check for gobject-introspection
     conf.find_program('g-ir-compiler', var='G_IR_COMPILER', mandatory=True)
 
+    # manual Python bindings
+    conf.sub_config('python')
+
     conf.define('API_VERSION', str(API_VERSION))
     conf.define('VERSION', str(VERSION))
     conf.define('GETTEXT_PACKAGE', APPNAME + '-1.0')
@@ -135,4 +138,4 @@ def configure(conf):
 
 def build(bld):
     # process subfolders from here
-    bld.add_subdirs('libdesktop-agnostic tools tests data')
+    bld.add_subdirs('libdesktop-agnostic tools tests data python')

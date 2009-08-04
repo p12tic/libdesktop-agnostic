@@ -1,0 +1,313 @@
+;; -*- scheme -*-
+; boxed definitions ...
+
+; interface definitions ...
+
+; object definitions ...
+
+(define-object Client
+  (in-module "DesktopAgnosticConfig")
+  (parent "GObject")
+  (c-name "DesktopAgnosticConfigClient")
+  (gtype-id "DESKTOP_AGNOSTIC_CONFIG_TYPE_CLIENT")
+)
+; pointer definitions ...
+
+;; Enumerations and Flags ...
+
+(define-enum BindMethod
+  (in-module "DesktopAgnosticConfig")
+  (c-name "DesktopAgnosticConfigBindMethod")
+  (gtype-id "DESKTOP_AGNOSTIC_CONFIG_TYPE_BIND_METHOD")
+  (values
+    '("global" "DESKTOP_AGNOSTIC_CONFIG_BIND_METHOD_GLOBAL")
+    '("instance" "DESKTOP_AGNOSTIC_CONFIG_BIND_METHOD_INSTANCE")
+    '("fallback" "DESKTOP_AGNOSTIC_CONFIG_BIND_METHOD_FALLBACK")
+    '("both" "DESKTOP_AGNOSTIC_CONFIG_BIND_METHOD_BOTH")
+  )
+)
+
+;; Untyped enumerations and flags ...
+
+(define-enum SchemaError
+  (in-module "DesktopAgnosticConfig")
+  (c-name "DesktopAgnosticConfigSchemaError")
+  (values
+    '("parse" "DESKTOP_AGNOSTIC_CONFIG_SCHEMA_ERROR_PARSE")
+    '("invalid-metadata-option" "DESKTOP_AGNOSTIC_CONFIG_SCHEMA_ERROR_INVALID_METADATA_OPTION")
+    '("invalid-metadata-type" "DESKTOP_AGNOSTIC_CONFIG_SCHEMA_ERROR_INVALID_METADATA_TYPE")
+    '("invalid-type" "DESKTOP_AGNOSTIC_CONFIG_SCHEMA_ERROR_INVALID_TYPE")
+    '("invalid-list-type" "DESKTOP_AGNOSTIC_CONFIG_SCHEMA_ERROR_INVALID_LIST_TYPE")
+    '("type-name-exists" "DESKTOP_AGNOSTIC_CONFIG_SCHEMA_ERROR_TYPE_NAME_EXISTS")
+    '("type-gtype-exists" "DESKTOP_AGNOSTIC_CONFIG_SCHEMA_ERROR_TYPE_GTYPE_EXISTS")
+  )
+)
+
+(define-enum Error
+  (in-module "DesktopAgnosticConfig")
+  (c-name "DesktopAgnosticConfigError")
+  (values
+    '("no-schema" "DESKTOP_AGNOSTIC_CONFIG_ERROR_NO_SCHEMA")
+    '("invalid-type" "DESKTOP_AGNOSTIC_CONFIG_ERROR_INVALID_TYPE")
+    '("key-not-found" "DESKTOP_AGNOSTIC_CONFIG_ERROR_KEY_NOT_FOUND")
+  )
+)
+
+
+;; From config.h
+
+(define-function client_new
+  (c-name "desktop_agnostic_config_client_new")
+  (is-constructor-of "DesktopAgnosticConfigClient")
+  (return-type "DesktopAgnosticConfigClient*")
+  (properties
+    '("schema_filename" (argname "schema_filename"))
+  )
+)
+
+(define-function client_new_for_instance
+  (c-name "desktop_agnostic_config_client_new_for_instance")
+  (is-constructor-of "DesktopAgnosticConfigClient")
+  (return-type "DesktopAgnosticConfigClient*")
+  (parameters
+    '("const-char*" "schema_filename")
+    '("const-char*" "instance_id")
+    '("GError**" "error")
+  )
+)
+
+(define-method get_bool
+  (of-object "DesktopAgnosticConfigClient")
+  (c-name "desktop_agnostic_config_client_get_bool")
+  (return-type "gboolean")
+  (parameters
+    '("const-char*" "group")
+    '("const-char*" "key")
+    '("GError**" "error")
+  )
+)
+
+(define-method set_bool
+  (of-object "DesktopAgnosticConfigClient")
+  (c-name "desktop_agnostic_config_client_set_bool")
+  (return-type "none")
+  (parameters
+    '("const-char*" "group")
+    '("const-char*" "key")
+    '("gboolean" "value")
+    '("GError**" "error")
+  )
+)
+
+(define-method get_int
+  (of-object "DesktopAgnosticConfigClient")
+  (c-name "desktop_agnostic_config_client_get_int")
+  (return-type "gint")
+  (parameters
+    '("const-char*" "group")
+    '("const-char*" "key")
+    '("GError**" "error")
+  )
+)
+
+(define-method set_int
+  (of-object "DesktopAgnosticConfigClient")
+  (c-name "desktop_agnostic_config_client_set_int")
+  (return-type "none")
+  (parameters
+    '("const-char*" "group")
+    '("const-char*" "key")
+    '("gint" "value")
+    '("GError**" "error")
+  )
+)
+
+(define-method get_float
+  (of-object "DesktopAgnosticConfigClient")
+  (c-name "desktop_agnostic_config_client_get_float")
+  (return-type "float")
+  (parameters
+    '("const-char*" "group")
+    '("const-char*" "key")
+    '("GError**" "error")
+  )
+)
+
+(define-method set_float
+  (of-object "DesktopAgnosticConfigClient")
+  (c-name "desktop_agnostic_config_client_set_float")
+  (return-type "none")
+  (parameters
+    '("const-char*" "group")
+    '("const-char*" "key")
+    '("float" "value")
+    '("GError**" "error")
+  )
+)
+
+(define-method get_string
+  (of-object "DesktopAgnosticConfigClient")
+  (c-name "desktop_agnostic_config_client_get_string")
+  (return-type "char*")
+  (parameters
+    '("const-char*" "group")
+    '("const-char*" "key")
+    '("GError**" "error")
+  )
+)
+
+(define-method set_string
+  (of-object "DesktopAgnosticConfigClient")
+  (c-name "desktop_agnostic_config_client_set_string")
+  (return-type "none")
+  (parameters
+    '("const-char*" "group")
+    '("const-char*" "key")
+    '("const-char*" "value")
+    '("GError**" "error")
+  )
+)
+
+(define-method get_list
+  (of-object "DesktopAgnosticConfigClient")
+  (c-name "desktop_agnostic_config_client_get_list")
+  (return-type "GValueArray*")
+  (parameters
+    '("const-char*" "group")
+    '("const-char*" "key")
+    '("GError**" "error")
+  )
+)
+
+(define-method set_list
+  (of-object "DesktopAgnosticConfigClient")
+  (c-name "desktop_agnostic_config_client_set_list")
+  (return-type "none")
+  (parameters
+    '("const-char*" "group")
+    '("const-char*" "key")
+    '("GValueArray*" "value")
+    '("GError**" "error")
+  )
+)
+
+(define-method get_value
+  (of-object "DesktopAgnosticConfigClient")
+  (c-name "desktop_agnostic_config_client_get_value")
+  (return-type "GValue")
+  (parameters
+    '("const-char*" "group")
+    '("const-char*" "key")
+    '("GError**" "error")
+  )
+)
+
+(define-method set_value
+  (of-object "DesktopAgnosticConfigClient")
+  (c-name "desktop_agnostic_config_client_set_value")
+  (return-type "none")
+  (parameters
+    '("const-char*" "group")
+    '("const-char*" "key")
+    '("const-GValue*" "value")
+    '("GError**" "error")
+  )
+)
+
+(define-method notify_add
+  (of-object "DesktopAgnosticConfigClient")
+  (c-name "desktop_agnostic_config_client_notify_add")
+  (return-type "none")
+  (parameters
+    '("const-char*" "group")
+    '("const-char*" "key")
+    '("DesktopAgnosticConfigNotifyFunc" "callback")
+    '("void*" "callback_target")
+  )
+)
+
+(define-method notify
+  (of-object "DesktopAgnosticConfigClient")
+  (c-name "desktop_agnostic_config_client_notify")
+  (return-type "none")
+  (parameters
+    '("const-char*" "group")
+    '("const-char*" "key")
+    '("GError**" "error")
+  )
+)
+
+(define-method notify_remove
+  (of-object "DesktopAgnosticConfigClient")
+  (c-name "desktop_agnostic_config_client_notify_remove")
+  (return-type "none")
+  (parameters
+    '("const-char*" "group")
+    '("const-char*" "key")
+    '("DesktopAgnosticConfigNotifyFunc" "callback")
+    '("void*" "callback_target")
+    '("GError**" "error")
+  )
+)
+
+(define-method remove_instance
+  (of-object "DesktopAgnosticConfigClient")
+  (c-name "desktop_agnostic_config_client_remove_instance")
+  (return-type "none")
+)
+
+(define-method reset
+  (of-object "DesktopAgnosticConfigClient")
+  (c-name "desktop_agnostic_config_client_reset")
+  (return-type "none")
+  (parameters
+    '("gboolean" "instance_only")
+    '("GError**" "error")
+  )
+)
+
+(define-method bind
+  (of-object "DesktopAgnosticConfigClient")
+  (c-name "desktop_agnostic_config_client_bind")
+  (return-type "none")
+  (parameters
+    '("const-char*" "group")
+    '("const-char*" "key")
+    '("GObject*" "obj")
+    '("const-char*" "property_name")
+    '("gboolean" "read_only")
+    '("DesktopAgnosticConfigBindMethod" "method")
+    '("GError**" "error")
+  )
+)
+
+(define-method unbind
+  (of-object "DesktopAgnosticConfigClient")
+  (c-name "desktop_agnostic_config_client_unbind")
+  (return-type "none")
+  (parameters
+    '("const-char*" "group")
+    '("const-char*" "key")
+    '("GObject*" "obj")
+    '("const-char*" "property_name")
+    '("gboolean" "read_only")
+    '("DesktopAgnosticConfigBindMethod" "method")
+    '("GError**" "error")
+  )
+)
+
+(define-method unbind_all_for_object
+  (of-object "DesktopAgnosticConfigClient")
+  (c-name "desktop_agnostic_config_client_unbind_all_for_object")
+  (return-type "none")
+  (parameters
+    '("GObject*" "obj")
+    '("GError**" "error")
+  )
+)
+
+(define-method get_instance_id
+  (of-object "DesktopAgnosticConfigClient")
+  (c-name "desktop_agnostic_config_client_get_instance_id")
+  (return-type "const-char*")
+)

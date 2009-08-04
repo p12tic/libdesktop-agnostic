@@ -1,0 +1,167 @@
+%%
+headers
+/*
+ * Copyright (c) 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+*/
+
+#ifdef HAVE_BUILD_CONFIG_H
+#include "build-config.h"
+#endif
+#include <pygobject.h>
+#include <libdesktop-agnostic/desktop-agnostic.h>
+%%
+modulename desktopagnostic
+%%
+import gobject.GObject as PyGObject_Type
+%%
+ignore-glob
+  *_get_type
+  desktop_agnostic_color_cairo_value_to_gdk
+  desktop_agnostic_color_gdk_value_to_cairo
+  desktop_agnostic_color_new_from_values
+  desktop_agnostic_color_new_from_string
+  desktop_agnostic_module_loader_get_default
+%%
+define DesktopAgnosticColor.gdk_value_to_cairo onearg staticmethod
+static PyObject *
+_wrap_desktop_agnostic_color_gdk_value_to_cairo (PyObject *self, PyObject *arg)
+{
+  int value;
+  double ret;
+
+  if (!PyInt_Check (arg))
+  {
+    PyErr_SetString (PyExc_TypeError,
+                     "The parameter must be a unsigned short value.");
+    return NULL;
+  }
+
+  value = (int)PyInt_AsLong (arg);
+
+  if (value < 0 || value > G_MAXUSHORT)
+  {
+    PyErr_SetString (PyExc_TypeError,
+                     "The parameter must be a unsigned short value.");
+    return NULL;
+  }
+
+  ret = desktop_agnostic_color_gdk_value_to_cairo (value);
+  
+  return PyFloat_FromDouble (ret);
+}
+%%
+define DesktopAgnosticColor.cairo_value_to_gdk onearg staticmethod
+static PyObject *
+_wrap_desktop_agnostic_color_cairo_value_to_gdk (PyObject *self, PyObject *arg)
+{
+  int ret;
+  double value;
+
+  if (!PyFloat_Check (arg))
+  {
+    PyErr_SetString (PyExc_TypeError,
+                     "The parameter must be a float value between 0.0 and 1.0.");
+    return NULL;
+  }
+
+  value = PyFloat_AsDouble (arg);
+
+  if (value < 0.0 || value > 1.0)
+  {
+    PyErr_SetString (PyExc_TypeError,
+                     "The parameter must be a float value between 0.0 and 1.0.");
+    return NULL;
+  }
+    
+  ret = desktop_agnostic_color_cairo_value_to_gdk ((float)value);
+  
+  return PyInt_FromLong (ret);
+}
+%%
+define DesktopAgnosticColor.from_values kwargs staticmethod
+static PyObject *
+_wrap_desktop_agnostic_color_from_values (PyObject *self, PyObject *args,
+                                          PyObject *kwargs)
+{
+    static char *kwlist[] = { "red", "green", "blue", "alpha", NULL };
+    int red, green, blue, alpha;
+    DesktopAgnosticColor *ret;
+
+    if (!PyArg_ParseTupleAndKeywords (args, kwargs,
+                                      "iiii:color_new_from_values", kwlist,
+                                      &red, &green, &blue, &alpha))
+        return NULL;
+    
+    ret = desktop_agnostic_color_new_from_values (red, green, blue, alpha);
+    
+    /* pygobject_new handles NULL checking */
+    return pygobject_new ((GObject *)ret);
+}
+%%
+define DesktopAgnosticColor.from_string kwargs staticmethod
+static PyObject *
+_wrap_desktop_agnostic_color_from_string (PyObject *self, PyObject *args,
+                                          PyObject *kwargs)
+{
+  static char *kwlist[] = { "spec", NULL };
+  char *spec;
+  GError *error = NULL;
+  DesktopAgnosticColor *ret;
+
+  if (!PyArg_ParseTupleAndKeywords (args, kwargs, "s:color_new_from_string",
+                                    kwlist, &spec))
+  {
+    return NULL;
+  }
+  
+  ret = desktop_agnostic_color_new_from_string (spec, &error);
+  
+  if (pyg_error_check (&error))
+  {
+    return NULL;
+  }
+
+  /* pygobject_new handles NULL checking */
+  return pygobject_new ((GObject *)ret);
+}
+%%
+override-slot DesktopAgnosticColor.tp_str
+#define _wrap_desktop_agnostic_color_tp_str _wrap_desktop_agnostic_color_to_string
+%%
+define DesktopAgnosticModuleLoader.get_default noargs staticmethod
+static PyObject *
+_wrap_desktop_agnostic_module_loader_get_default (PyObject *self)
+{
+  DesktopAgnosticModuleLoader *ret;
+  
+  ret = desktop_agnostic_module_loader_get_default ();
+  
+  /* pygobject_new handles NULL checking */
+  return pygobject_new ((GObject *)ret);
+}
+%%
+override desktop_agnostic_color_get_cairo_color noargs
+static PyObject *
+_wrap_desktop_agnostic_color_get_cairo_color (PyGObject *self)
+{
+    gdouble red, green, blue, alpha;
+    desktop_agnostic_color_get_cairo_color (DESKTOP_AGNOSTIC_COLOR (self->obj),
+                                            &red, &green, &blue, &alpha);
+
+    return Py_BuildValue("(ffff)", red, green, blue, alpha);
+}

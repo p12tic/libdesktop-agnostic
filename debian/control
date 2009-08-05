@@ -10,6 +10,12 @@ Build-Depends: debhelper (>= 7),
                gobject-introspection (>> 0.6.3),
                libglib2.0-dev (>= 2.16.0),
                libgtk2.0-dev,
+# python bindings
+               python-central (>= 0.5.6),
+               python-dev,
+               python-all-dev (>= 2.5),
+               python-gobject-dev (>= 2.12),
+               python-gtk2-dev (>= 2.12),
 # module deps
                libgconf2-dev,
                libthunar-vfs-1-dev,
@@ -166,6 +172,37 @@ Description:  A desktop-agnostic library for GLib-based projects.
  there are desktop-specific modules.
  .
  This package contains the GObject Introspection data for the core library.
+
+Package: libdesktop-agnostic-bin
+Architecture: any
+Depends: 	${shlibs:Depends},
+		${misc:Depends},
+		libdesktop-agnostic0 (= ${binary:Version})
+Description:  A desktop-agnostic library for GLib-based projects.
+ This library provides an extensible configuration API, a unified virtual file
+ system API, and a desktop item editor (all with pluggable backends) for
+ GLib-based projects. It is not tied to any one desktop environment, although
+ there are desktop-specific modules.
+ .
+ This package contains helper applications for libdesktop-agnostic, such as a
+ schema converter.
+
+Package: python-libdesktop-agnostic
+Section: python
+Architecture: any
+Depends:	${shlibs:Depends},
+		${misc:Depends},
+		libdesktop-agnostic0 (>= ${binary:Version}),
+		${python:Depends}
+Provides: ${python:Provides}
+XB-Python-Version: ${python:Versions}
+Description: A desktop-agnostic library for GLib-based projects.
+ This library provides an extensible configuration API, a unified virtual file
+ system API, and a desktop item editor (all with pluggable backends) for
+ GLib-based projects. It is not tied to any one desktop environment, although
+ there are desktop-specific modules.
+ .
+ This package contains the Python bindings for the core library.
 
 Package: vala-libdesktop-agnostic
 Architecture: all

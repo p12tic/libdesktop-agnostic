@@ -75,6 +75,9 @@ void value_array_to_string (Value src_value, out Value dest_value)
 
 int main (string[] args)
 {
+  unowned string? current_group = null;
+  unowned string? current_key = null;
+
   if (args.length < 2)
   {
     return 1;
@@ -97,6 +100,8 @@ int main (string[] args)
       string app_name;
       string path_prefix;
 
+      current_group = group;
+
       base_path = schema.get_metadata_option ("GConf.base_path").get_string ();
       app_name = schema.app_name;
 
@@ -114,6 +119,8 @@ int main (string[] args)
         Type type = option.option_type;
         Value default_value = Value (typeof (string));
         string? summary;
+
+        current_key = key;
 
         gconf.append ("    <schema>\n");
         gconf.append (Markup.printf_escaped ("      <key>/schemas%s/%s</key>\n",
@@ -165,7 +172,14 @@ int main (string[] args)
   }
   catch (GLib.Error err)
   {
-    critical ("Error: %s", err.message);
+    if (current_group == null || current_key == null)
+    {
+      critical ("Error: %s", err.message);
+    }
+    else
+    {
+      critical ("Error (%s/%s): %s", current_group, current_key, err.message);
+    }
     return 1;
   }
 

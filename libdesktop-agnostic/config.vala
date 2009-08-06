@@ -31,7 +31,8 @@ namespace DesktopAgnostic.Config
   {
     NO_SCHEMA,
     INVALID_TYPE,
-    KEY_NOT_FOUND
+    KEY_NOT_FOUND,
+    NOTIFY
   }
   /**
    * The placeholder used for the default group. In some backends, this
@@ -103,7 +104,7 @@ namespace DesktopAgnostic.Config
      * @param group the group the key is associated with
      * @param key the config key to associate the callback with
      */
-    public abstract void notify_add (string group, string key, NotifyFunc callback);
+    public abstract void notify_add (string group, string key, NotifyFunc callback) throws GLib.Error;
     /**
      * Manually executes all of the notification callbacks associated with the
      * specified key.

@@ -210,7 +210,7 @@ namespace DesktopAgnostic.Config
       this.get_backend (group, key).set_value (group, key, value);
     }
     public void
-    notify_add (string group, string key, NotifyFunc callback)
+    notify_add (string group, string key, NotifyFunc callback) throws GLib.Error
     {
       this.get_backend (group, key).notify_add (group, key, callback);
     }

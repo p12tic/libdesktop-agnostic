@@ -82,7 +82,7 @@ namespace DesktopAgnostic.Config
     }
 
     public override void
-    notify_add (string group, string key, NotifyFunc callback)
+    notify_add (string group, string key, NotifyFunc callback) throws GLib.Error
     {
       string full_key = "%s/%s".printf (group, key);
       unowned List<NotifyData>? funcs = this.notifiers.get_data (full_key);

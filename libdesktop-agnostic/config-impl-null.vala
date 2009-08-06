@@ -38,7 +38,7 @@ namespace DesktopAgnostic.Config
     }
 
     public override void
-    notify_add (string group, string key, NotifyFunc callback)
+    notify_add (string group, string key, NotifyFunc callback) throws GLib.Error
     {
     }
 

@@ -382,7 +382,7 @@ namespace DesktopAgnostic.Config
     }
 
     public override void
-    notify_add (string group, string key, NotifyFunc callback)
+    notify_add (string group, string key, NotifyFunc callback) throws GLib.Error
     {
       NotifyData notify;
       string full_key;
@@ -390,23 +390,16 @@ namespace DesktopAgnostic.Config
       unowned SList<NotifyData>? callbacks;
 
       notify = new NotifyData ();
+      notify.func_id = 0;
       notify.callback = callback;
       full_key = this.generate_key (group, key);
-      try
-      {
-        func_id = this.client.notify_add (full_key, this.notify_proxy);
-        if (func_id == 0)
-        {
-          warning ("Something went wrong when we tried to add a notification callback.");
-        }
-        notify.func_id = func_id;
-      }
-      catch (GLib.Error err)
-      {
-        warning ("Something went wrong when we tried to add a notification callback: %s", err.message);
-        notify.func_id = 0;
-      }
       callbacks = this.notify_funcs.get_data (full_key);
+      func_id = this.client.notify_add (full_key, this.notify_proxy);
+      if (func_id == 0)
+      {
+        throw new Error.NOTIFY ("Something went wrong when we tried to add a notification callback.");
+      }
+      notify.func_id = func_id;
       callbacks.append ((owned)notify);
       this.notify_funcs.set_data (full_key, callbacks);
     }

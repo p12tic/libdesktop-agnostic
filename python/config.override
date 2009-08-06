@@ -249,6 +249,7 @@ _wrap_desktop_agnostic_config_client_notify_add (PyGObject *self,
   PyObject *callback;
   PyObject *extra = NULL;
   PyObject *data;
+  GError *error = NULL;
 
   if (!PyArg_ParseTupleAndKeywords (args, kwargs,
                                     "ssO|O:desktopagnostic.config.Client.notify_add",
@@ -278,7 +279,12 @@ _wrap_desktop_agnostic_config_client_notify_add (PyGObject *self,
   desktop_agnostic_config_client_notify_add (DESKTOP_AGNOSTIC_CONFIG_CLIENT (self->obj),
                                              group, key,
                                              pydesktopagnostic_config_client_notify_add,
-                                             data);
+                                             data, &error);
+
+  if (pyg_error_check (&error))
+  {
+    return NULL;
+  }
 
   Py_INCREF (Py_None);
   return Py_None;

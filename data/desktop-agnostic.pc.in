@@ -2,6 +2,7 @@ prefix=@prefix@
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include
+defsdir=@datarootdir@/pygtk/2.0/defs
 vapidir=@datarootdir@/vala/vapi
 
 Name: libdesktop-agnostic

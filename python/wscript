@@ -79,7 +79,12 @@ def pyg_module(bld, module, dependencies, prefix=None):
     pyext.includes = '..'
     pyext.install_path = '${PYTHONDIR}/desktopagnostic'
 
-    bld.install_files('${DATADIR}/pygtk/2.0/defs', ['%s.defs' % module])
+    defs_dir = '${DATADIR}/pygtk/2.0/defs'
+
+    bld.install_files(defs_dir, ['%s.defs' % module])
+    if module != 'desktopagnostic':
+        bld.install_as('%s/desktopagnostic_%s.defs' % (defs_dir, module),
+                       '%s.defs' % module, env=pyext.env)
 
     return pyext
 

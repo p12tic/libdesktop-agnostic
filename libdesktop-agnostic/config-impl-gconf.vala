@@ -402,11 +402,11 @@ namespace DesktopAgnostic.Config
       notify.func_id = 0;
       notify.callback = callback;
       full_key = this.generate_key (group, key);
+      callbacks = this.notify_funcs.get_data (full_key);
       if (callbacks.find_custom (notify, (CompareFunc)compare_notify_data) != null)
       {
         throw new Error.NOTIFY ("The specified callback has already been added.");
       }
-      callbacks = this.notify_funcs.get_data (full_key);
       func_id = this.client.notify_add (full_key, this.notify_proxy);
       if (func_id == 0)
       {

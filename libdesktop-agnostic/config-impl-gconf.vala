@@ -381,6 +381,15 @@ namespace DesktopAgnostic.Config
       this.client.remove_dir (this.path);
     }
 
+    private static int
+    compare_notify_data (void* a, void* b)
+    {
+      unowned NotifyData nd_a = (NotifyData)a;
+      unowned NotifyData nd_b = (NotifyData)b;
+
+      return (nd_a.callback == nd_b.callback) ? 0 : 1;
+    }
+
     public override void
     notify_add (string group, string key, NotifyFunc callback) throws GLib.Error
     {
@@ -393,6 +402,10 @@ namespace DesktopAgnostic.Config
       notify.func_id = 0;
       notify.callback = callback;
       full_key = this.generate_key (group, key);
+      if (callbacks.find_custom (notify, (CompareFunc)compare_notify_data) != null)
+      {
+        throw new Error.NOTIFY ("The specified callback has already been added.");
+      }
       callbacks = this.notify_funcs.get_data (full_key);
       func_id = this.client.notify_add (full_key, this.notify_proxy);
       if (func_id == 0)

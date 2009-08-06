@@ -22,12 +22,12 @@
 
 using DesktopAgnostic;
 
-namespace DesktopAgnostic.DesktopEntry
+namespace DesktopAgnostic.FDO
 {
   /**
    * Flags used when launching an application from a desktop entry.
    */
-  public enum LaunchFlags
+  public enum DesktopEntryLaunchFlags
   {
     // use documents to fill argv instead of launching one app per document
     ONLY_ONE = 1 << 0,
@@ -40,7 +40,7 @@ namespace DesktopAgnostic.DesktopEntry
    * The kind of desktop entry.
    * @see http://standards.freedesktop.org/desktop-entry-spec/latest/ar01s05.html
    */
-  public enum Type
+  public enum DesktopEntryType
   {
     UNKNOWN = 0,
     APPLICATION,
@@ -50,29 +50,30 @@ namespace DesktopAgnostic.DesktopEntry
   /**
    * Generic, DesktopEntry-related errors.
    */
-  public errordomain Error
+  public errordomain DesktopEntryError
   {
     INVALID_FILE,
     NOT_LAUNCHABLE
   }
   /**
-   * Converts a DesktopEntry.Type to its string counterpart.
+   * Converts a DesktopEntryType to its string counterpart.
    */
-  public static string type_to_string (DesktopEntry.Type entry_type)
+  public static string
+  desktop_entry_type_to_string (DesktopEntryType entry_type)
   {
     switch (entry_type)
     {
-      case DesktopEntry.Type.APPLICATION:
+      case DesktopEntryType.APPLICATION:
         return "Application";
-      case DesktopEntry.Type.LINK:
+      case DesktopEntryType.LINK:
         return "Link";
-      case DesktopEntry.Type.DIRECTORY:
+      case DesktopEntryType.DIRECTORY:
         return "Directory";
       default:
         return "Unknown";
     }
   }
-  public interface Backend : Object
+  public interface DesktopEntry : Object
   {
     // construction
     /**
@@ -101,7 +102,7 @@ namespace DesktopAgnostic.DesktopEntry
     /**
      * The type of desktop entry, corresponding to the "Type" key.
      */
-    public abstract DesktopEntry.Type entry_type { get; set; }
+    public abstract DesktopEntryType entry_type { get; set; }
     public abstract string name { owned get; set; }
     public abstract string icon { owned get; set; }
     public abstract bool get_boolean (string key);
@@ -120,13 +121,13 @@ namespace DesktopAgnostic.DesktopEntry
      * "Application", also checks to see if it's launchable.
      */
     public abstract bool exists ();
-    public abstract Pid launch (LaunchFlags flags, SList<string>? documents) throws GLib.Error;
+    public abstract Pid launch (DesktopEntryLaunchFlags flags, SList<string>? documents) throws GLib.Error;
     public abstract void save (VFS.File? new_file) throws GLib.Error;
   }
 
-  private static GLib.Type? module_type = null;
+  private static Type? module_type = null;
 
-  public GLib.Type
+  public Type
   get_type () throws GLib.Error
   {
     if (module_type == null)
@@ -139,68 +140,68 @@ namespace DesktopAgnostic.DesktopEntry
   /**
    * Convenience method for creating a new desktop entry from scratch.
    */
-  public Backend?
-  @new () throws GLib.Error
+  public DesktopEntry?
+  desktop_entry_new () throws GLib.Error
   {
-    GLib.Type type = get_type ();
-    if (type == GLib.Type.INVALID)
+    Type type = get_type ();
+    if (type == Type.INVALID)
     {
       return null;
     }
     else
     {
-      return (Backend)Object.new (type);
+      return (DesktopEntry)Object.new (type);
     }
   }
 
   /**
    * Convenience method for loading a desktop entry via a VFS.File.
    */
-  public Backend?
-  new_for_file (VFS.File file) throws GLib.Error
+  public DesktopEntry?
+  desktop_entry_new_for_file (VFS.File file) throws GLib.Error
   {
-    GLib.Type type = get_type ();
-    if (type == GLib.Type.INVALID)
+    Type type = get_type ();
+    if (type == Type.INVALID)
     {
       return null;
     }
     else
     {
-      return (Backend)Object.new (type, "file", file);
+      return (DesktopEntry)Object.new (type, "file", file);
     }
   }
 
   /**
    * Convenience method for loading a desktop entry from a KeyFile object.
    */
-  public Backend?
-  new_for_keyfile (KeyFile keyfile) throws GLib.Error
+  public DesktopEntry?
+  desktop_entry_new_for_keyfile (KeyFile keyfile) throws GLib.Error
   {
-    GLib.Type type = get_type ();
-    if (type == GLib.Type.INVALID)
+    Type type = get_type ();
+    if (type == Type.INVALID)
     {
       return null;
     }
     else
     {
-      return (Backend)Object.new (type, "keyfile", keyfile);
+      return (DesktopEntry)Object.new (type, "keyfile", keyfile);
     }
   }
 
   /**
    * Convenience method for loading a desktop entry from a string of data.
    */
-  public Backend?
-  new_for_data (string data) throws GLib.Error
+  public DesktopEntry?
+  desktop_entry_new_for_data (string data) throws GLib.Error
   {
-    GLib.Type type = get_type ();
-    if (type == GLib.Type.INVALID)
+    Type type = get_type ();
+    if (type == Type.INVALID)
     {
       return null;
     }
     else
     {
-      return (Backend)Object.new (type, "data", data);
+      return (DesktopEntry)Object.new (type, "data", data);
     }
   }
 }

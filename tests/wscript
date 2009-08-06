@@ -17,7 +17,7 @@ def build_test_program(bld, name, suffix):
 def build(bld):
     [build_test_program(bld, 'test-' + name, 'cfg')
      for name in ['color', 'config', 'config-bridge']]
-    [build_test_program(bld, 'test-' + name, 'de')
+    [build_test_program(bld, 'test-' + name, 'fdo')
      for name in ['desktop-entry']]
     [build_test_program(bld, 'test-' + name, 'vfs')
      for name in ['vfs-bookmarks-gtk', 'vfs-file', 'vfs-file-monitor',

@@ -21,7 +21,7 @@
  */
 
 using DesktopAgnostic;
-using DesktopAgnostic.DesktopEntry;
+using DesktopAgnostic.FDO;
 
 int main (string[] args)
 {
@@ -40,7 +40,7 @@ int main (string[] args)
         }
 
         VFS.File file = VFS.file_new_for_path (arg);
-        Backend entry = new_for_file (file);
+        DesktopEntry entry = desktop_entry_new_for_file (file);
         message ("Entry: %s", entry.name);
         message ("Entry exec line: %s", entry.get_string ("Exec"));
         if (entry.exists ())
@@ -55,12 +55,12 @@ int main (string[] args)
     }
     else
     {
-      Backend entry;
+      DesktopEntry entry;
       VFS.File file;
 
-      entry = DesktopEntry.new ();
+      entry = FDO.desktop_entry_new ();
       entry.name = "hosts file";
-      entry.entry_type = DesktopEntry.Type.LINK;
+      entry.entry_type = DesktopEntryType.LINK;
       entry.set_string ("URL", "file:///etc/hosts");
       file = VFS.file_new_for_path ("/tmp/desktop-agnostic-test.desktop");
       entry.save (file);

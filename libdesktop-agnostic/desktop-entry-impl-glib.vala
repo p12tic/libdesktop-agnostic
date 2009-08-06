@@ -22,10 +22,10 @@
 
 using DesktopAgnostic;
 
-namespace DesktopAgnostic.DesktopEntry
+namespace DesktopAgnostic.FDO
 {
   private const string GROUP = "Desktop Entry";
-  public class GLibImplementation : Backend, Object
+  public class DesktopEntryGLib : DesktopEntry, Object
   {
     private KeyFile _keyfile = null;
     private bool loaded = false;
@@ -109,7 +109,7 @@ namespace DesktopAgnostic.DesktopEntry
       }
     }
 
-    public DesktopEntry.Type entry_type
+    public DesktopEntryType entry_type
     {
       get
       {
@@ -117,18 +117,18 @@ namespace DesktopAgnostic.DesktopEntry
         switch (type)
         {
           case "Application":
-            return DesktopEntry.Type.APPLICATION;
+            return DesktopEntryType.APPLICATION;
           case "Link":
-            return DesktopEntry.Type.LINK;
+            return DesktopEntryType.LINK;
           case "Directory":
-            return DesktopEntry.Type.DIRECTORY;
+            return DesktopEntryType.DIRECTORY;
           default:
-            return DesktopEntry.Type.UNKNOWN;
+            return DesktopEntryType.UNKNOWN;
         }
       }
       set
       {
-        this.set_string ("Type", type_to_string (value));
+        this.set_string ("Type", desktop_entry_type_to_string (value));
       }
     }
 
@@ -245,7 +245,7 @@ namespace DesktopAgnostic.DesktopEntry
     {
       switch (this.entry_type)
       {
-        case DesktopEntry.Type.APPLICATION:
+        case DesktopEntryType.APPLICATION:
           if (this._keyfile.has_key (GROUP, "TryExec"))
           {
             if (Environment.find_program_in_path (this.get_string ("TryExec")) != null)
@@ -261,7 +261,7 @@ namespace DesktopAgnostic.DesktopEntry
             return false;
           }
           return Environment.find_program_in_path (argv[0]) != null;
-        case DesktopEntry.Type.LINK:
+        case DesktopEntryType.LINK:
           if (this._keyfile.has_key (GROUP, "URL"))
           {
             string uri = this._keyfile.get_string (GROUP, "URL");
@@ -491,7 +491,7 @@ namespace DesktopAgnostic.DesktopEntry
 
       if (!Shell.parse_argv (this.parse_exec (documents), out argv))
       {
-        throw new DesktopEntry.Error.NOT_LAUNCHABLE ("Could not parse Exec key.");
+        throw new DesktopEntryError.NOT_LAUNCHABLE ("Could not parse Exec key.");
       }
 
       Process.spawn_async_with_pipes (working_dir, argv, null, flags, null, out pid);
@@ -503,20 +503,21 @@ namespace DesktopAgnostic.DesktopEntry
      * @return the PID of the last process launched.
      */
     public Pid
-    launch (LaunchFlags flags, SList<string>? documents) throws GLib.Error
+    launch (DesktopEntryLaunchFlags flags,
+            SList<string>? documents) throws GLib.Error
     {
       switch (this.entry_type)
       {
-        case DesktopEntry.Type.APPLICATION:
+        case DesktopEntryType.APPLICATION:
           SpawnFlags sflags = SpawnFlags.SEARCH_PATH;
           string working_dir;
           Pid pid;
 
-          if ((flags & LaunchFlags.DO_NOT_REAP_CHILD) != 0)
+          if ((flags & DesktopEntryLaunchFlags.DO_NOT_REAP_CHILD) != 0)
           {
             sflags |= SpawnFlags.DO_NOT_REAP_CHILD;
           }
-          if ((flags & LaunchFlags.USE_CWD) != 0)
+          if ((flags & DesktopEntryLaunchFlags.USE_CWD) != 0)
           {
             working_dir = Environment.get_current_dir ();
           }
@@ -525,7 +526,8 @@ namespace DesktopAgnostic.DesktopEntry
             working_dir = Environment.get_home_dir ();
           }
 
-          if ((flags & LaunchFlags.ONLY_ONE) == 0 && documents != null)
+          if ((flags & DesktopEntryLaunchFlags.ONLY_ONE) == 0 &&
+              documents != null)
           {
             pid = (Pid)0;
             foreach (unowned string doc in documents)
@@ -540,17 +542,17 @@ namespace DesktopAgnostic.DesktopEntry
             pid = this.do_app_launch (working_dir, sflags, documents);
           }
           return pid;
-        case DesktopEntry.Type.LINK:
+        case DesktopEntryType.LINK:
           if (documents != null)
           {
-            throw new DesktopEntry.Error.NOT_LAUNCHABLE ("Cannot pass documents to a 'Link' desktop entry.");
+            throw new DesktopEntryError.NOT_LAUNCHABLE ("Cannot pass documents to a 'Link' desktop entry.");
           }
           string uri = this._keyfile.get_string (GROUP, "URL");
           VFS.File file = VFS.file_new_for_uri (uri);
           file.launch ();
           return (Pid)0;
         default:
-          throw new DesktopEntry.Error.NOT_LAUNCHABLE ("The desktop entry is unlaunchable.");
+          throw new DesktopEntryError.NOT_LAUNCHABLE ("The desktop entry is unlaunchable.");
       }
     }
 
@@ -568,7 +570,7 @@ namespace DesktopAgnostic.DesktopEntry
       }
       else
       {
-        throw new DesktopEntry.Error.INVALID_FILE ("No filename specified.");
+        throw new DesktopEntryError.INVALID_FILE ("No filename specified.");
       }
       file.replace_contents (this._keyfile.to_data ());
     }
@@ -579,7 +581,7 @@ namespace DesktopAgnostic.DesktopEntry
 public Type
 register_plugin ()
 {
-  return typeof (DesktopAgnostic.DesktopEntry.GLibImplementation);
+  return typeof (DesktopAgnostic.FDO.DesktopEntryGLib);
 }
 
 // vim: set ts=2 sts=2 sw=2 et ai cindent :

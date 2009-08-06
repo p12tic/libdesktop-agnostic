@@ -26,7 +26,7 @@ deps = {
             'packages': 'gnome-vfs-2.0'
         }
     },
-    'de': {
+    'fdo': {
         'gnome': {
             'uselib': 'GNOME_DESKTOP',
             'packages': 'gnome-desktop-2.0'
@@ -139,17 +139,17 @@ def build(bld):
     cfg.includes='..'
     cfg.vapi_dirs = '.'
 
-    de = bld.new_task_gen('cc', 'shlib')
-    de.source = ' '.join([
+    fdo = bld.new_task_gen('cc', 'shlib')
+    fdo.source = ' '.join([
         'desktop-entry.vala',
         ])
-    de.packages = 'desktop-agnostic-vfs'
-    de.target = 'desktop-agnostic-de'
-    de.header = 'desktop-entry'
-    de.gir = 'DesktopAgnosticDesktopEntry-1.0'
-    de.uselib_local = 'desktop-agnostic-vfs'
-    de.vapi_dirs = '.'
-    de.includes='..'
+    fdo.packages = 'desktop-agnostic-vfs'
+    fdo.target = 'desktop-agnostic-fdo'
+    fdo.header = 'fdo'
+    fdo.gir = 'DesktopAgnosticFDO-1.0'
+    fdo.uselib_local = 'desktop-agnostic-vfs'
+    fdo.vapi_dirs = '.'
+    fdo.includes='..'
 
     [task_module('cfg', 'config-impl')(bld, name)
      for name in bld.env['BACKENDS_CFG']]
@@ -159,7 +159,7 @@ def build(bld):
                  'vfs-trash-impl', 'vfs-volume-impl']
     [task_module('vfs', ' '.join(vfs_types))(bld, name)
      for name in bld.env['BACKENDS_VFS']]
-    [task_module('de', 'desktop-entry-impl')(bld, name)
+    [task_module('fdo', 'desktop-entry-impl')(bld, name)
      for name in bld.env['BACKENDS_DE']]
 
     mod_guess = bld.new_task_gen('cc', 'shlib')

@@ -23,9 +23,9 @@
 using DesktopAgnostic.VFS;
 using Gnome;
 
-namespace DesktopAgnostic.DesktopEntry
+namespace DesktopAgnostic.FDO
 {
-  public class GNOMEImplementation : Backend, Object
+  public class DesktopEntryGNOME : DesktopEntry, Object
   {
     private DesktopItem item = null;
 
@@ -112,24 +112,24 @@ namespace DesktopAgnostic.DesktopEntry
       }
     }
 
-    public DesktopEntry.Type entry_type
+    public DesktopEntryType entry_type
     {
       get
       {
-        DesktopEntry.Type result;
+        DesktopEntryType result;
         switch (this.item.get_entry_type ())
         {
           case DesktopItemType.APPLICATION:
-            result = DesktopEntry.Type.APPLICATION;
+            result = DesktopEntryType.APPLICATION;
             break;
           case DesktopItemType.LINK:
-            result = DesktopEntry.Type.LINK;
+            result = DesktopEntryType.LINK;
             break;
           case DesktopItemType.DIRECTORY:
-            result = DesktopEntry.Type.DIRECTORY;
+            result = DesktopEntryType.DIRECTORY;
             break;
           default:
-            result = DesktopEntry.Type.UNKNOWN;
+            result = DesktopEntryType.UNKNOWN;
             break;
         }
 
@@ -139,16 +139,16 @@ namespace DesktopAgnostic.DesktopEntry
       {
         switch (value)
         {
-          case DesktopEntry.Type.UNKNOWN:
+          case DesktopEntryType.UNKNOWN:
             this.item.set_entry_type (DesktopItemType.OTHER);
             break;
-          case DesktopEntry.Type.APPLICATION:
+          case DesktopEntryType.APPLICATION:
             this.item.set_entry_type (DesktopItemType.APPLICATION);
             break;
-          case DesktopEntry.Type.LINK:
+          case DesktopEntryType.LINK:
             this.item.set_entry_type (DesktopItemType.LINK);
             break;
-          case DesktopEntry.Type.DIRECTORY:
+          case DesktopEntryType.DIRECTORY:
             this.item.set_entry_type (DesktopItemType.DIRECTORY);
             break;
         }
@@ -234,7 +234,7 @@ namespace DesktopAgnostic.DesktopEntry
     }
 
     public Pid
-    launch (LaunchFlags flags, SList<string>? documents) throws GLib.Error
+    launch (DesktopEntryLaunchFlags flags, SList<string>? documents) throws GLib.Error
     {
       List<string> file_list = new List<string> ();
       DesktopItemLaunchFlags lflags = 0;
@@ -243,15 +243,15 @@ namespace DesktopAgnostic.DesktopEntry
       {
         file_list.append (document);
       }
-      if ((flags & LaunchFlags.ONLY_ONE) != 0)
+      if ((flags & DesktopEntryLaunchFlags.ONLY_ONE) != 0)
       {
         lflags |= DesktopItemLaunchFlags.ONLY_ONE;
       }
-      if ((flags & LaunchFlags.USE_CWD) != 0)
+      if ((flags & DesktopEntryLaunchFlags.USE_CWD) != 0)
       {
         lflags |= DesktopItemLaunchFlags.USE_CURRENT_DIR;
       }
-      if ((flags & LaunchFlags.DO_NOT_REAP_CHILD) != 0)
+      if ((flags & DesktopEntryLaunchFlags.DO_NOT_REAP_CHILD) != 0)
       {
         lflags |= DesktopItemLaunchFlags.DO_NOT_REAP_CHILD;
       }
@@ -272,7 +272,7 @@ namespace DesktopAgnostic.DesktopEntry
       }
       else
       {
-        throw new DesktopEntry.Error.INVALID_FILE ("No filename specified.");
+        throw new DesktopEntryError.INVALID_FILE ("No filename specified.");
       }
       this.item.save (uri, false);
     }
@@ -283,7 +283,7 @@ namespace DesktopAgnostic.DesktopEntry
 public Type
 register_plugin ()
 {
-  return typeof (DesktopAgnostic.DesktopEntry.GNOMEImplementation);
+  return typeof (DesktopAgnostic.FDO.DesktopEntryGNOME);
 }
 
 // vim: set et ts=2 sts=2 sw=2 ai cindent :

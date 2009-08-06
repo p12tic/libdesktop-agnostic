@@ -132,7 +132,7 @@ namespace DesktopAgnostic.FDO
   {
     if (module_type == null)
     {
-      module_type = get_module_type ("de", "desktop-entry");
+      module_type = get_module_type ("fdo", "desktop-entry");
     }
     return module_type;
   }

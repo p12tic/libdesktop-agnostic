@@ -331,7 +331,7 @@ namespace DesktopAgnostic.Config
      * @param key the configuration key to retrieve metadata from
      * @return an object which contains the option metadata
      */
-    public SchemaOption
+    public unowned SchemaOption
     get_option (string group, string key)
     {
       string full_key = group + "/" + key;

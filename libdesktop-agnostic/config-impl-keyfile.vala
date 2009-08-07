@@ -1,5 +1,5 @@
 /*
- * A GKeyFile-based implemenation of the Config interface.
+ * A GKeyFile-based implementation of the Config interface.
  *
  * Copyright (C) 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>
  *

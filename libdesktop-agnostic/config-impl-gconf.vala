@@ -28,8 +28,12 @@ namespace DesktopAgnostic.Config
   [Compact]
   private class NotifyData
   {
-    public NotifyFunc callback;
+    public NotifyDelegate callback;
     public uint func_id;
+    public NotifyData (NotifyFunc callback)
+    {
+      this.callback = new NotifyDelegate (callback);
+    }
   }
   public class GConfBackend : Backend
   {
@@ -370,7 +374,7 @@ namespace DesktopAgnostic.Config
         this.notify_funcs.get_data (full_key);
       foreach (unowned NotifyData notify_func in notify_func_list)
       {
-        notify_func.callback (group, key, value);
+        notify_func.callback.execute (group, key, value);
       }
     }
 
@@ -387,7 +391,7 @@ namespace DesktopAgnostic.Config
       unowned NotifyData nd_a = (NotifyData)a;
       unowned NotifyData nd_b = (NotifyData)b;
 
-      return (nd_a.callback == nd_b.callback) ? 0 : 1;
+      return NotifyDelegate.compare (nd_a.callback, nd_b.callback);
     }
 
     public override void
@@ -398,15 +402,10 @@ namespace DesktopAgnostic.Config
       uint func_id;
       unowned SList<NotifyData>? callbacks;
 
-      notify = new NotifyData ();
+      notify = new NotifyData (callback);
       notify.func_id = 0;
-      notify.callback = callback;
       full_key = this.generate_key (group, key);
       callbacks = this.notify_funcs.get_data (full_key);
-      if (callbacks.find_custom (notify, (CompareFunc)compare_notify_data) != null)
-      {
-        throw new Error.NOTIFY ("The specified callback has already been added.");
-      }
       func_id = this.client.notify_add (full_key, this.notify_proxy);
       if (func_id == 0)
       {
@@ -428,7 +427,7 @@ namespace DesktopAgnostic.Config
       value = this.get_value (group, key);
       foreach (unowned NotifyData notify in notifications)
       {
-        notify.callback (group, key, value);
+        notify.callback.execute (group, key, value);
       }
     }
 
@@ -438,14 +437,14 @@ namespace DesktopAgnostic.Config
     {
       string full_key = this.generate_key (group, key);
       unowned SList<NotifyData> notifications = this.notify_funcs.get_data (full_key);
-      foreach (unowned NotifyData notify in notifications)
+      unowned SList<NotifyData>? node;
+      NotifyData ndata = new NotifyData (callback);
+
+      node = notifications.find_custom (ndata, (CompareFunc)compare_notify_data);
+      if (node != null)
       {
-        if (notify.callback == callback)
-        {
-          this.client.notify_remove (notify.func_id);
-          notifications.remove (notify);
-          break;
-        }
+        this.client.notify_remove (node.data.func_id);
+        notifications.delete_link (node);
       }
     }
 

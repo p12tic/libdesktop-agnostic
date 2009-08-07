@@ -22,20 +22,10 @@
 
 namespace DesktopAgnostic.Config
 {
-  [Compact]
-  private class
-  NotifyData
-  {
-    public NotifyFunc callback;
-    public NotifyData (NotifyFunc callback)
-    {
-      this.callback = callback;
-    }
-  }
   public class Memory : Backend
   {
     private Datalist<Value?> values;
-    private Datalist<List<NotifyData>> notifiers;
+    private Datalist<List<NotifyDelegate>> notifiers;
     public override string name
     {
       owned get
@@ -56,7 +46,7 @@ namespace DesktopAgnostic.Config
         {
           critical ("Error: %s", err.message);
         }
-        this.notifiers = Datalist<List<NotifyData>> ();
+        this.notifiers = Datalist<List<NotifyDelegate>> ();
       }
     }
 
@@ -85,11 +75,11 @@ namespace DesktopAgnostic.Config
     notify_add (string group, string key, NotifyFunc callback) throws GLib.Error
     {
       string full_key = "%s/%s".printf (group, key);
-      unowned List<NotifyData>? funcs = this.notifiers.get_data (full_key);
-      NotifyData data = new NotifyData (callback);
+      unowned List<NotifyDelegate>? funcs = this.notifiers.get_data (full_key);
+      NotifyDelegate data = new NotifyDelegate (callback);
       if (funcs == null)
       {
-        List<NotifyData> new_funcs = new List<NotifyData> ();
+        List<NotifyDelegate> new_funcs = new List<NotifyDelegate> ();
         new_funcs.append ((owned)data);
         this.notifiers.set_data (full_key, (owned)new_funcs);
       }
@@ -104,10 +94,10 @@ namespace DesktopAgnostic.Config
     {
       string full_key = "%s/%s".printf (group, key);
       Value value = this.get_value (group, key);
-      unowned List<NotifyData> funcs = this.notifiers.get_data (full_key);
-      foreach (unowned NotifyData data in funcs)
+      unowned List<NotifyDelegate> funcs = this.notifiers.get_data (full_key);
+      foreach (unowned NotifyDelegate data in funcs)
       {
-        data.callback (group, key, value);
+        data.execute (group, key, value);
       }
     }
 
@@ -115,16 +105,17 @@ namespace DesktopAgnostic.Config
     notify_remove (string group, string key, NotifyFunc callback) throws GLib.Error
     {
       string full_key = "%s/%s".printf (group, key);
-      unowned List<NotifyData>? funcs = this.notifiers.get_data (full_key);
+      unowned List<NotifyDelegate>? funcs = this.notifiers.get_data (full_key);
       if (funcs != null)
       {
-        foreach (unowned NotifyData data in funcs)
+        NotifyDelegate data;
+        unowned List<NotifyDelegate>? node;
+
+        data = new NotifyDelegate (callback);
+        node = funcs.find_custom (data, (CompareFunc)NotifyDelegate.compare);
+        if (node != null)
         {
-          if (data.callback == callback)
-          {
-            funcs.remove (data);
-            break;
-          }
+          funcs.delete_link (node);
         }
       }
     }

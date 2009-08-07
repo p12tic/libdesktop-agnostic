@@ -24,16 +24,6 @@ using DesktopAgnostic;
 
 namespace DesktopAgnostic.Config
 {
-  [Compact]
-  private class
-  NotifyData
-  {
-    public NotifyFunc callback;
-    public NotifyData (NotifyFunc callback)
-    {
-      this.callback = callback;
-    }
-  }
   public class GKeyFile : Backend
   {
     private KeyFile _data;
@@ -42,7 +32,7 @@ namespace DesktopAgnostic.Config
     private ulong _monitor_changed_id;
     private string _checksum;
     private bool _autosave;
-    private HashTable<string,List<NotifyData>> _notifiers;
+    private HashTable<string,List<NotifyDelegate>> _notifiers;
     public override string name
     {
       owned get
@@ -58,8 +48,8 @@ namespace DesktopAgnostic.Config
       if (this.schema != null)
       {
         this._data = new KeyFile ();
-        this._notifiers = new HashTable<string,List<NotifyData>> (str_hash,
-                                                                  str_equal);
+        this._notifiers = new HashTable<string,List<NotifyDelegate>> (str_hash,
+                                                                      str_equal);
       }
     }
 
@@ -392,11 +382,11 @@ namespace DesktopAgnostic.Config
     notify_add (string group, string key, NotifyFunc callback) throws GLib.Error
     {
       string full_key = "%s/%s".printf (group, key);
-      unowned List<NotifyData>? funcs = this._notifiers.lookup (full_key);
-      NotifyData data = new NotifyData (callback);
+      unowned List<NotifyDelegate>? funcs = this._notifiers.lookup (full_key);
+      NotifyDelegate data = new NotifyDelegate (callback);
       if (funcs == null)
       {
-        List<NotifyData> new_funcs = new List<NotifyData> ();
+        List<NotifyDelegate> new_funcs = new List<NotifyDelegate> ();
         new_funcs.append ((owned)data);
         this._notifiers.insert (full_key, (owned)new_funcs);
       }
@@ -411,37 +401,28 @@ namespace DesktopAgnostic.Config
     {
       string full_key = "%s/%s".printf (group, key);
       Value value = this.get_value (group, key);
-      unowned List<NotifyData> funcs = this._notifiers.lookup (full_key);
-      foreach (unowned NotifyData data in funcs)
+      unowned List<NotifyDelegate> funcs = this._notifiers.lookup (full_key);
+      foreach (unowned NotifyDelegate data in funcs)
       {
         if (data != null && data.callback != null)
         {
-          data.callback (group, key, value);
+          data.execute (group, key, value);
         }
       }
-    }
-
-    private static int
-    compare_notify_data (void* a, void* b)
-    {
-      unowned NotifyData nd_a = (NotifyData)a;
-      unowned NotifyData nd_b = (NotifyData)b;
-
-      return (nd_a.callback == nd_b.callback) ? 0 : 1;
     }
 
     public override void
     notify_remove (string group, string key, NotifyFunc callback) throws GLib.Error
     {
       string full_key = "%s/%s".printf (group, key);
-      unowned List<NotifyData>? funcs = this._notifiers.lookup (full_key);
+      unowned List<NotifyDelegate>? funcs = this._notifiers.lookup (full_key);
       if (funcs != null)
       {
-        NotifyData data;
-        unowned List<NotifyData>? node;
+        NotifyDelegate data;
+        unowned List<NotifyDelegate>? node;
 
-        data = new NotifyData (callback);
-        node = funcs.find_custom (data, (CompareFunc)compare_notify_data);
+        data = new NotifyDelegate (callback);
+        node = funcs.find_custom (data, (CompareFunc)NotifyDelegate.compare);
         if (node != null)
         {
           funcs.delete_link (node);

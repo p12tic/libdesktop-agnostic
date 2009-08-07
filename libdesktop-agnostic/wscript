@@ -9,7 +9,14 @@ deps = {
     'cfg': {
         'gconf': {
             'uselib': 'GCONF',
-            'packages': 'gconf-2.0'
+            'packages': 'gconf-2.0',
+            'packages_private': 'config-notify-delegate'
+        },
+        'keyfile': {
+            'packages_private': 'config-notify-delegate'
+        },
+        'memory': {
+            'packages_private': 'config-notify-delegate'
         }
     },
     'vfs': {
@@ -66,8 +73,9 @@ def task_module(type_name, src_prefix):
         module.source = ' '.join(['%s-%s.vala' % (prefix, name)
                                   for prefix in src_prefix.split()])
         if type_name in deps and name in deps[type_name]:
-            module.uselib = deps[type_name][name]['uselib']
-            module.packages = deps[type_name][name]['packages']
+            module.uselib = deps[type_name][name].get('uselib', '')
+            module.packages = deps[type_name][name].get('packages', '')
+            module.packages_private = deps[type_name][name].get('packages_private', '')
         ftype, sep, tail = type_name.partition('-')
         module.uselib_local = 'desktop-agnostic-%s' % ftype
         module.target = 'da-%s-%s' % (type_name, name)

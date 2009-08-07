@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 # encoding: utf-8
 
+import Utils
 import os
 
 API_VERSION = '1.0'
@@ -112,7 +113,11 @@ def configure(conf):
                    'version %d.%d.%d' % MIN_VALA_VERSION)
 
     # check for gobject-introspection
-    conf.find_program('g-ir-compiler', var='G_IR_COMPILER', mandatory=True)
+    conf.check_cfg(package='gobject-introspection-1.0',
+                   atleast_version='0.6.3', mandatory=True,
+                   args='--cflags --libs')
+    conf.env['G_IR_COMPILER'] = Utils.cmd_output('pkg-config --variable g_ir_compiler gobject-introspection-1.0',
+                                                 silent=1).strip()
 
     # manual Python bindings
     conf.sub_config('python')

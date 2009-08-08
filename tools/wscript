@@ -2,7 +2,7 @@
 # encoding: utf-8
 
 def build(bld):
-    if 'gconf' in bld.env['BACKENDS_CFG']
+    if 'gconf' in bld.env['BACKENDS_CFG']:
         schema = bld.new_task_gen('cc', 'program')
         schema.source = 'lda-schema-to-gconf.vala'
         schema.uselib_local = 'desktop-agnostic-cfg'

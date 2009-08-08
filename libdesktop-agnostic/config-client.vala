@@ -258,15 +258,24 @@ namespace DesktopAgnostic.Config
           bool read_only, BindMethod method) throws Error
     {
       unowned Bridge bridge = Bridge.get_default ();
+      unowned SchemaOption option = this._schema.get_option (group, key);
+
+      if (option == null)
+      {
+        warning ("Could not find the schema option for %s/%s, not binding.",
+                 group, key);
+        return;
+      }
 
       if (method == BindMethod.GLOBAL ||
           method == BindMethod.BOTH ||
-          (method == BindMethod.FALLBACK && this.instance == null))
+          (method == BindMethod.FALLBACK &&
+           (this.instance == null || !option.per_instance)))
       {
         bridge.bind (this.global, group, key, obj, property_name, read_only);
       }
 
-      if (this.instance != null &&
+      if (this.instance != null && option.per_instance &&
           (method == BindMethod.INSTANCE ||
            method == BindMethod.BOTH ||
            method == BindMethod.FALLBACK))
@@ -282,15 +291,24 @@ namespace DesktopAgnostic.Config
             bool read_only, BindMethod method) throws Error
     {
       unowned Bridge bridge = Bridge.get_default ();
+      unowned SchemaOption option = this._schema.get_option (group, key);
+
+      if (option == null)
+      {
+        warning ("Could not find the schema option for %s/%s, not binding.",
+                 group, key);
+        return;
+      }
 
       if (method == BindMethod.GLOBAL ||
           method == BindMethod.BOTH ||
-          (method == BindMethod.FALLBACK && this.instance == null))
+          (method == BindMethod.FALLBACK &&
+           (this.instance == null || !option.per_instance)))
       {
         bridge.remove (this.global, group, key, obj, property_name);
       }
 
-      if (this.instance != null &&
+      if (this.instance != null && option.per_instance &&
           (method == BindMethod.INSTANCE ||
            method == BindMethod.BOTH ||
            method == BindMethod.FALLBACK))

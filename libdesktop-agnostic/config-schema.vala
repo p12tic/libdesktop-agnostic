@@ -359,7 +359,8 @@ namespace DesktopAgnostic.Config
     private static uint
     type_hash (void* key)
     {
-      return (uint)key;
+      Type* t = (Type*)key;
+      return (uint)(*t);
     }
     /**
      * Used by HashTable to determine if GTypes are equal.
@@ -367,7 +368,7 @@ namespace DesktopAgnostic.Config
     private static bool
     type_equal (void* a, void* b)
     {
-      return (Type)a == (Type)b;
+      return (*(Type*)a) == (*(Type*)b);
     }
     /**
      * Registers a configuration schema type with the class. This is usually

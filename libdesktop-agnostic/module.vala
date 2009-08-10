@@ -20,6 +20,7 @@
  * Author : Mark Lee <libdesktop-agnostic@lazymalevolence.com>
  */
 
+[CCode (cheader_filename = "libdesktop-agnostic/desktop-agnostic.h")]
 namespace DesktopAgnostic
 {
   public errordomain ModuleError

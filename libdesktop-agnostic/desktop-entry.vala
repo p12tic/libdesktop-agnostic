@@ -22,6 +22,7 @@
 
 using DesktopAgnostic;
 
+[CCode (cheader_filename = "libdesktop-agnostic/fdo.h")]
 namespace DesktopAgnostic.FDO
 {
   /**

@@ -20,6 +20,7 @@
  * Author : Mark Lee <libdesktop-agnostic@lazymalevolence.com>
  */
 
+[CCode (cheader_filename = "libdesktop-agnostic/vfs.h")]
 namespace DesktopAgnostic.VFS
 {
   public interface Implementation : Object

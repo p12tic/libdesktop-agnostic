@@ -22,6 +22,7 @@
 
 using DesktopAgnostic;
 
+[CCode (cheader_filename = "libdesktop-agnostic/config.h")]
 namespace DesktopAgnostic.Config
 {
   /**

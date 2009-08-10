@@ -162,10 +162,17 @@ namespace DesktopAgnostic.Config
     generate_valuearray_from_keyfile (KeyFile keyfile, string group,
                                       string key) throws KeyFileError, GLib.Error
     {
-      SchemaOption option = this.schema.get_option (group, key);
-      Type list_type = option.list_type;
+      SchemaOption? option;
+      Type list_type;
       ValueArray arr;
 
+      option = this.schema.get_option (group, key);
+      if (option == null)
+      {
+        throw new Error.KEY_NOT_FOUND ("The key %s/%s is invalid.",
+                                       group, key);
+      }
+      list_type = option.list_type;
       if (list_type == typeof (bool))
       {
         bool[] list_data;

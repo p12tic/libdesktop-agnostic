@@ -495,7 +495,22 @@ namespace DesktopAgnostic.Config
     public override bool
     get_bool (string group, string key) throws GLib.Error
     {
-      return this._data.get_boolean (group, key);
+      try
+      {
+        return this._data.get_boolean (group, key);
+      }
+      catch (KeyFileError err)
+      {
+        if (err is KeyFileError.GROUP_NOT_FOUND ||
+            err is KeyFileError.KEY_NOT_FOUND)
+        {
+          throw new Error.KEY_NOT_FOUND (err.message);
+        }
+        else
+        {
+          throw err;
+        }
+      }
     }
 
     public override void
@@ -508,7 +523,22 @@ namespace DesktopAgnostic.Config
     public override float
     get_float (string group, string key) throws Error
     {
-      return (float)this._data.get_double (group, key);
+      try
+      {
+        return (float)this._data.get_double (group, key);
+      }
+      catch (KeyFileError err)
+      {
+        if (err is KeyFileError.GROUP_NOT_FOUND ||
+            err is KeyFileError.KEY_NOT_FOUND)
+        {
+          throw new Error.KEY_NOT_FOUND (err.message);
+        }
+        else
+        {
+          throw err;
+        }
+      }
     }
 
     public override void
@@ -521,7 +551,22 @@ namespace DesktopAgnostic.Config
     public override int
     get_int (string group, string key) throws GLib.Error
     {
-      return this._data.get_integer (group, key);
+      try
+      {
+        return this._data.get_integer (group, key);
+      }
+      catch (KeyFileError err)
+      {
+        if (err is KeyFileError.GROUP_NOT_FOUND ||
+            err is KeyFileError.KEY_NOT_FOUND)
+        {
+          throw new Error.KEY_NOT_FOUND (err.message);
+        }
+        else
+        {
+          throw err;
+        }
+      }
     }
 
     public override void
@@ -534,7 +579,22 @@ namespace DesktopAgnostic.Config
     public override string
     get_string (string group, string key) throws GLib.Error
     {
-      return this._data.get_string (group, key);
+      try
+      {
+        return this._data.get_string (group, key);
+      }
+      catch (KeyFileError err)
+      {
+        if (err is KeyFileError.GROUP_NOT_FOUND ||
+            err is KeyFileError.KEY_NOT_FOUND)
+        {
+          throw new Error.KEY_NOT_FOUND (err.message);
+        }
+        else
+        {
+          throw err;
+        }
+      }
     }
 
     public override void
@@ -547,7 +607,22 @@ namespace DesktopAgnostic.Config
     public override ValueArray
     get_list (string group, string key) throws GLib.Error
     {
-      return this.generate_valuearray_from_keyfile (this._data, group, key);
+      try
+      {
+        return this.generate_valuearray_from_keyfile (this._data, group, key);
+      }
+      catch (KeyFileError err)
+      {
+        if (err is KeyFileError.GROUP_NOT_FOUND ||
+            err is KeyFileError.KEY_NOT_FOUND)
+        {
+          throw new Error.KEY_NOT_FOUND (err.message);
+        }
+        else
+        {
+          throw err;
+        }
+      }
     }
 
     public override void

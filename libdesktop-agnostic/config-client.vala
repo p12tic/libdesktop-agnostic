@@ -64,7 +64,8 @@ namespace DesktopAgnostic.Config
           Value single_instance = this._schema.get_metadata_option ("single_instance");
           if ((bool)single_instance)
           {
-            critical ("The configuration schema has declared that there can only be a single configuration instance.");
+            warning ("The configuration schema has declared that there can only be a single configuration instance.");
+            warning ("Not creating an instance config object.");
           }
           else
           {

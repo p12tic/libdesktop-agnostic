@@ -20,10 +20,11 @@
  * Author : Mark Lee <libdesktop-agnostic@lazymalevolence.com>
  */
 
-[CCode (cheader_filename = "hashtable-gtype-key.c")]
 namespace DesktopAgnostic.Config
 {
+  [CCode (cheader_filename = "hashtable-gtype-key.c")]
   public static bool gtype_equal (void* v1, void* v2);
+  [CCode (cheader_filename = "hashtable-gtype-key.c")]
   public static uint gtype_hash (void* v);
 }
 

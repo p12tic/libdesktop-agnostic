@@ -45,8 +45,8 @@ namespace DesktopAgnostic.Config
   {
     // static code
     private static HashTable<Type,SchemaType> type_registry =
-      new HashTable<Type,SchemaType> ((HashFunc)type_hash,
-                                      (EqualFunc)type_equal);
+      new HashTable<Type,SchemaType> ((HashFunc)gtype_hash,
+                                      (EqualFunc)gtype_equal);
     private static HashTable<string,SchemaType> name_registry =
       new HashTable<string,SchemaType> (str_hash, str_equal);
     private static HashTable<string,Value?> common_metadata_keys =
@@ -352,23 +352,6 @@ namespace DesktopAgnostic.Config
       {
         return this.metadata_options.get_data (name);
       }
-    }
-    /**
-     * Used by HashTable to hash GTypes.
-     */
-    private static uint
-    type_hash (void* key)
-    {
-      Type* t = (Type*)key;
-      return (uint)(*t);
-    }
-    /**
-     * Used by HashTable to determine if GTypes are equal.
-     */
-    private static bool
-    type_equal (void* a, void* b)
-    {
-      return (*(Type*)a) == (*(Type*)b);
     }
     /**
      * Registers a configuration schema type with the class. This is usually

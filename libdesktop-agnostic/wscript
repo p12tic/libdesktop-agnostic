@@ -144,8 +144,9 @@ def build(bld):
     cfg.header = 'config'
     cfg.gir = 'DesktopAgnosticConfig-1.0'
     cfg.uselib_local = 'desktop-agnostic-vfs'
+    cfg.packages_private = 'hashtable-gtype-key'
     cfg.includes='..'
-    cfg.vapi_dirs = '.'
+    cfg.vapi_dirs = '../vapi .'
 
     fdo = bld.new_task_gen('cc', 'shlib')
     fdo.source = ' '.join([

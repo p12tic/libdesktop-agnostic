@@ -552,7 +552,7 @@ namespace DesktopAgnostic.Config
       if (type == typeof (bool) || type == typeof (float) ||
           type == typeof (int))
       {
-        SList<unowned GConf.Value> list;
+        SList<GConf.Value> list;
         GConf.Value val;
         GConf.ValueType gc_type = this.type_to_valuetype (type);
 

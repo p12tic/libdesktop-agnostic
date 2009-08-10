@@ -278,12 +278,14 @@ class TestCase
     assert (this.notify_counter == 8);
   }
 
+  private static delegate void GetCfgFunc (Config.Backend cfg, string group, string key) throws Error;
+
   void
-  test_invalid () throws AssertionError, Error
+  test_invalid_func (GetCfgFunc func) throws AssertionError, Error
   {
     try
     {
-      cfg.get_bool ("foo", "bar");
+      func (cfg, "foo", "bar");
       throw new AssertionError.NOT_REACHED ("Key should have been nonexistent.");
     }
     catch (Error err)
@@ -293,6 +295,17 @@ class TestCase
         throw err;
       }
     }
+  }
+
+  void
+  test_invalid () throws AssertionError, Error
+  {
+    this.test_invalid_func ((GetCfgFunc)cfg.get_bool);
+    this.test_invalid_func ((GetCfgFunc)cfg.get_float);
+    this.test_invalid_func ((GetCfgFunc)cfg.get_int);
+    this.test_invalid_func ((GetCfgFunc)cfg.get_string);
+    this.test_invalid_func ((GetCfgFunc)cfg.get_list);
+    this.test_invalid_func ((GetCfgFunc)cfg.get_value);
   }
 
   public static int

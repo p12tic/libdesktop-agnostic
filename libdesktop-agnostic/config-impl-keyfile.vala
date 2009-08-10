@@ -160,7 +160,7 @@ namespace DesktopAgnostic.Config
 
     private ValueArray
     generate_valuearray_from_keyfile (KeyFile keyfile, string group,
-                                      string key) throws GLib.Error
+                                      string key) throws KeyFileError, GLib.Error
     {
       SchemaOption option = this.schema.get_option (group, key);
       Type list_type = option.list_type;

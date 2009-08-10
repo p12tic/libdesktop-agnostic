@@ -163,7 +163,7 @@ int main (string[] args)
     gconf.append ("  </schemalist>\n</gconfschemafile>\n");
     if (args.length < 3)
     {
-      stdout.printf (gconf.str);
+      stdout.printf ("%s", gconf.str);
     }
     else
     {

@@ -305,7 +305,6 @@ class TestCase
     this.test_invalid_func ((GetCfgFunc)cfg.get_int);
     this.test_invalid_func ((GetCfgFunc)cfg.get_string);
     this.test_invalid_func ((GetCfgFunc)cfg.get_list);
-    this.test_invalid_func ((GetCfgFunc)cfg.get_value);
   }
 
   public static int

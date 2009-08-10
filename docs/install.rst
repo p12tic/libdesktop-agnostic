@@ -61,6 +61,7 @@ Config
 ~~~~~~
 
 * ``gconf`` (recommended)
+* ``keyfile`` (uses GLib's GKeyFile, which is a .ini-like format)
 * ``memory`` (useful for testing applications)
 * ``null`` (only useful for people developing libdesktop-agnostic)
 

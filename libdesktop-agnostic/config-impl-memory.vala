@@ -25,7 +25,7 @@ namespace DesktopAgnostic.Config
   public class Memory : Backend
   {
     private Datalist<Value?> values;
-    private Datalist<List<NotifyDelegate>> notifiers;
+    private Datalist<unowned SList<NotifyDelegate>> _notifiers;
     public override string name
     {
       owned get
@@ -46,7 +46,7 @@ namespace DesktopAgnostic.Config
         {
           critical ("Error: %s", err.message);
         }
-        this.notifiers = Datalist<List<NotifyDelegate>> ();
+        this._notifiers = Datalist<SList<NotifyDelegate>> ();
       }
     }
 
@@ -75,18 +75,10 @@ namespace DesktopAgnostic.Config
     notify_add (string group, string key, NotifyFunc callback) throws GLib.Error
     {
       string full_key = "%s/%s".printf (group, key);
-      unowned List<NotifyDelegate>? funcs = this.notifiers.get_data (full_key);
+      unowned SList<NotifyDelegate>? funcs = this._notifiers.get_data (full_key);
       NotifyDelegate data = new NotifyDelegate (callback);
-      if (funcs == null)
-      {
-        List<NotifyDelegate> new_funcs = new List<NotifyDelegate> ();
-        new_funcs.append ((owned)data);
-        this.notifiers.set_data (full_key, (owned)new_funcs);
-      }
-      else
-      {
-        funcs.append ((owned)data);
-      }
+      funcs.append ((owned)data);
+      this._notifiers.set_data (full_key, funcs);
     }
 
     public override void
@@ -94,10 +86,13 @@ namespace DesktopAgnostic.Config
     {
       string full_key = "%s/%s".printf (group, key);
       Value value = this.get_value (group, key);
-      unowned List<NotifyDelegate> funcs = this.notifiers.get_data (full_key);
+      unowned SList<NotifyDelegate> funcs = this._notifiers.get_data (full_key);
       foreach (unowned NotifyDelegate data in funcs)
       {
-        data.execute (group, key, value);
+        if (data != null && data.callback != null)
+        {
+          data.execute (group, key, value);
+        }
       }
     }
 
@@ -105,18 +100,16 @@ namespace DesktopAgnostic.Config
     notify_remove (string group, string key, NotifyFunc callback) throws GLib.Error
     {
       string full_key = "%s/%s".printf (group, key);
-      unowned List<NotifyDelegate>? funcs = this.notifiers.get_data (full_key);
-      if (funcs != null)
-      {
-        NotifyDelegate data;
-        unowned List<NotifyDelegate>? node;
+      unowned SList<NotifyDelegate> funcs = this._notifiers.get_data (full_key);
+      NotifyDelegate ndata = new NotifyDelegate (callback);
+      unowned SList<NotifyDelegate>? node;
 
-        data = new NotifyDelegate (callback);
-        node = funcs.find_custom (data, (CompareFunc)NotifyDelegate.compare);
-        if (node != null)
-        {
-          funcs.delete_link (node);
-        }
+      node = funcs.find_custom (ndata, (CompareFunc)NotifyDelegate.compare);
+      if (node != null)
+      {
+        node.data = null;
+        funcs.delete_link (node);
+        this._notifiers.set_data (full_key, funcs);
       }
     }
 

@@ -226,7 +226,7 @@ namespace DesktopAgnostic
         if (FileUtils.test (user_path, FileTest.EXISTS))
         {
           debug ("Loading module config from the user directory: '%s'",
-                 system_path);
+                 user_path);
           loaded_config |= module_config.load_from_file (user_path,
                                                          KeyFileFlags.NONE);
         }

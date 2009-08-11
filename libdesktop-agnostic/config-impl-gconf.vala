@@ -68,22 +68,7 @@ namespace DesktopAgnostic.Config
       this.schema_path = "/schemas%s/%s".printf (base_path, schema.app_name);
       if (this.instance_id == null)
       {
-        unowned SList<string> dirs;
-
         this.path = "%s/%s".printf (base_path, schema.app_name);
-        // make sure notifications work
-        dirs = this.client.all_dirs (this.path);
-        try
-        {
-          foreach (unowned string dir in dirs)
-          {
-            this.client.add_dir (dir, GConf.ClientPreloadType.NONE);
-          }
-        }
-        catch (GLib.Error err)
-        {
-          critical ("Config (GConf) error: %s", err.message);
-        }
       }
       else
       {
@@ -100,6 +85,17 @@ namespace DesktopAgnostic.Config
         {
           critical ("Error associating instance with schema: %s", err.message);
         }
+      }
+      // XXX gconf_client_add_dir is a bizarre API call that is needed for
+      // notification support. This should probably be looked at in greater
+      // detail. One thing's for sure: do not call it recursively.
+      try
+      {
+        this.client.add_dir (this.path, GConf.ClientPreloadType.NONE);
+      }
+      catch (GLib.Error err)
+      {
+        critical ("Config (GConf) error: %s", err.message);
       }
     }
 
@@ -127,8 +123,6 @@ namespace DesktopAgnostic.Config
 
         schema_key = entry.get_key ();
         key = "%s/%s".printf (pref_dir, Path.get_basename (schema_key));
-
-        this.client.add_dir (pref_dir, GConf.ClientPreloadType.NONE);
 
         /* Associating a schema is potentially expensive, so let's try
          * to avoid this by doing it only when needed. So we check if

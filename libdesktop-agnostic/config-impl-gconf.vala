@@ -25,22 +25,13 @@ using DesktopAgnostic.Config;
 namespace DesktopAgnostic.Config
 {
   private const string BACKEND_NAME = "GConf";
-  [Compact]
-  private class NotifyData
-  {
-    public NotifyDelegate callback;
-    public uint func_id;
-    public NotifyData (NotifyFunc callback)
-    {
-      this.callback = new NotifyDelegate (callback);
-    }
-  }
   public class GConfBackend : Backend
   {
     private string schema_path;
     private string path;
     private unowned GConf.Client client;
-    private Datalist<unowned SList<NotifyData>> _notifiers;
+    private Datalist<uint> _gconf_notify_funcs;
+    private Datalist<unowned SList<NotifyDelegate>> _notifiers;
 
     public override string name
     {
@@ -62,7 +53,8 @@ namespace DesktopAgnostic.Config
       string base_path;
       Schema schema = this.schema;
 
-      this._notifiers = Datalist<SList<NotifyData>> ();
+      this._gconf_notify_funcs = Datalist<uint> ();
+      this._notifiers = Datalist<SList<NotifyDelegate>> ();
       base_path = schema.get_metadata_option (opt_prefix +
                                               "base_path").get_string ();
       this.schema_path = "/schemas%s/%s".printf (base_path, schema.app_name);
@@ -364,11 +356,11 @@ namespace DesktopAgnostic.Config
 
       this.parse_group_and_key (full_key, out group, out key);
       value = this.gconfvalue_to_gvalue (group, key, entry.get_value ());
-      unowned SList<NotifyData> notify_func_list =
+      unowned SList<NotifyDelegate> notify_func_list =
         this._notifiers.get_data (full_key);
-      foreach (unowned NotifyData notify_func in notify_func_list)
+      foreach (unowned NotifyDelegate notify_func in notify_func_list)
       {
-        notify_func.callback.execute (group, key, value);
+        notify_func.execute (group, key, value);
       }
     }
 
@@ -379,33 +371,26 @@ namespace DesktopAgnostic.Config
       this.client.remove_dir (this.path);
     }
 
-    private static int
-    compare_notify_data (void* a, void* b)
-    {
-      unowned NotifyData nd_a = (NotifyData)a;
-      unowned NotifyData nd_b = (NotifyData)b;
-
-      return NotifyDelegate.compare (nd_a.callback, nd_b.callback);
-    }
-
     public override void
     notify_add (string group, string key, NotifyFunc callback) throws GLib.Error
     {
-      NotifyData notify;
+      NotifyDelegate notify;
       string full_key;
       uint func_id;
-      unowned SList<NotifyData>? callbacks;
+      unowned SList<NotifyDelegate>? callbacks;
 
-      notify = new NotifyData (callback);
-      notify.func_id = 0;
+      notify = new NotifyDelegate (callback);
       full_key = this.generate_key (group, key);
       callbacks = this._notifiers.get_data (full_key);
-      func_id = this.client.notify_add (full_key, this.notify_proxy);
-      if (func_id == 0)
+      if (callbacks.length () == 0)
       {
-        throw new Error.NOTIFY ("Something went wrong when we tried to add a notification callback.");
+        func_id = this.client.notify_add (full_key, this.notify_proxy);
+        if (func_id == 0)
+        {
+          throw new Error.NOTIFY ("Something went wrong when we tried to add a notification callback.");
+        }
+        this._gconf_notify_funcs.set_data (full_key, func_id);
       }
-      notify.func_id = func_id;
       callbacks.append ((owned)notify);
       this._notifiers.set_data (full_key, callbacks);
     }
@@ -414,14 +399,14 @@ namespace DesktopAgnostic.Config
     notify (string group, string key) throws GLib.Error
     {
       string full_key = this.generate_key (group, key);
-      unowned SList<NotifyData> notifications;
+      unowned SList<NotifyDelegate> notifications;
       Value value;
 
       notifications = this._notifiers.get_data (full_key);
       value = this.get_value (group, key);
-      foreach (unowned NotifyData notify in notifications)
+      foreach (unowned NotifyDelegate notify in notifications)
       {
-        notify.callback.execute (group, key, value);
+        notify.execute (group, key, value);
       }
     }
 
@@ -430,17 +415,21 @@ namespace DesktopAgnostic.Config
                    NotifyFunc callback) throws GLib.Error
     {
       string full_key = this.generate_key (group, key);
-      unowned SList<NotifyData> funcs = this._notifiers.get_data (full_key);
-      NotifyData ndata = new NotifyData (callback);
-      unowned SList<NotifyData>? node;
+      unowned SList<NotifyDelegate> funcs = this._notifiers.get_data (full_key);
+      NotifyDelegate ndata = new NotifyDelegate (callback);
+      unowned SList<NotifyDelegate>? node;
 
-      node = funcs.find_custom (ndata, (CompareFunc)compare_notify_data);
+      node = funcs.find_custom (ndata, (CompareFunc)NotifyDelegate.compare);
       if (node != null)
       {
-        this.client.notify_remove (node.data.func_id);
         node.data = null;
         funcs.delete_link (node);
         this._notifiers.set_data (full_key, funcs);
+        if (funcs.length () == 0)
+        {
+          uint func_id = this._gconf_notify_funcs.get_data (full_key);
+          this.client.notify_remove (func_id);
+        }
       }
     }
 

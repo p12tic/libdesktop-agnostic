@@ -33,12 +33,14 @@ class TestCase
 {
   Config.Backend cfg;
   uint notify_counter;
+  MainLoop ml;
 
   public TestCase ()
   {
     Config.Schema schema = new Config.Schema ("test-config.schema-ini");
     this.cfg = Config.new ((owned)schema);
     this.notify_counter = 0;
+    this.ml = new MainLoop (null, false);
   }
 
   void
@@ -121,21 +123,27 @@ class TestCase
 
     cfg.reset ();
 
+    message ("====  Defaults tests  ====");
+
     expected = true;
     assert_equals (expected, cfg.get_value ("numeric", "boolean"));
     assert ((bool)expected == cfg.get_bool ("numeric", "boolean"));
+    message (" Boolean:              OK");
 
     expected = 3;
     assert_equals (expected, cfg.get_value ("numeric", "integer"));
     assert ((int)expected == cfg.get_int ("numeric", "integer"));
+    message (" Integer:              OK");
 
     expected = 3.14f;
     assert_equals (expected, cfg.get_value ("numeric", "float"));
     assert ((float)expected == cfg.get_float ("numeric", "float"));
+    message (" Float:                OK");
 
     expected = "Foo bar";
     assert_equals (expected, cfg.get_value ("misc", "string"));
     assert ((string)expected == cfg.get_string ("misc", "string"));
+    message (" String:               OK");
 
     expected_array = new ValueArray (2);
     item_1 = true;
@@ -146,6 +154,7 @@ class TestCase
     assert_equals (expected, cfg.get_value ("list", "boolean"));
     assert (array_equals ((ValueArray)expected,
                           cfg.get_list ("list", "boolean")));
+    message (" List of booleans:     OK");
 
     expected_array = new ValueArray (3);
     item_1 = 1;
@@ -158,6 +167,7 @@ class TestCase
     assert_equals (expected, cfg.get_value ("list", "integer"));
     assert (array_equals ((ValueArray)expected,
                           cfg.get_list ("list", "integer")));
+    message (" List of integers:     OK");
 
     expected_array = new ValueArray (3);
     item_1 = 1.618f;
@@ -170,6 +180,7 @@ class TestCase
     assert_equals (expected, cfg.get_value ("list", "float"));
     assert (array_equals ((ValueArray)expected,
                           cfg.get_list ("list", "float")));
+    message (" List of floats:       OK");
 
     expected_array = new ValueArray (2);
     item_1 = "foo";
@@ -180,6 +191,7 @@ class TestCase
     assert_equals (expected, cfg.get_value ("list", "string"));
     assert (array_equals ((ValueArray)expected,
                           cfg.get_list ("list", "string")));
+    message (" List of strings:      OK");
   }
 
   void
@@ -188,25 +200,31 @@ class TestCase
     Value expected, item_1, item_2, item_3;
     ValueArray expected_array;
 
+    message ("==== Set & Get tests  ====");
+
     expected = false;
     cfg.set_bool ("numeric", "boolean", (bool)expected);
     assert_equals (expected, cfg.get_value ("numeric", "boolean"));
     assert ((bool)expected == cfg.get_bool ("numeric", "boolean"));
+    message (" Boolean:              OK");
 
     expected = 10;
     cfg.set_int ("numeric", "integer", (int)expected);
     assert_equals (expected, cfg.get_value ("numeric", "integer"));
     assert ((int)expected == cfg.get_int ("numeric", "integer"));
+    message (" Integer:              OK");
 
     expected = 2.718f;
     cfg.set_float ("numeric", "float", (float)expected);
     assert_equals (expected, cfg.get_value ("numeric", "float"));
     assert ((float)expected == cfg.get_float ("numeric", "float"));
+    message (" Float:                OK");
 
     expected = "Quux baz";
     cfg.set_string ("misc", "string", (string)expected);
     assert_equals (expected, cfg.get_value ("misc", "string"));
     assert ((string)expected == cfg.get_string ("misc", "string"));
+    message (" String:               OK");
 
     expected_array = new ValueArray (3);
     item_1 = false;
@@ -220,6 +238,7 @@ class TestCase
     assert_equals (expected, cfg.get_value ("list", "boolean"));
     assert (array_equals ((ValueArray)expected,
                           cfg.get_list ("list", "boolean")));
+    message (" List of booleans:     OK");
 
     expected_array = new ValueArray (3);
     item_1 = 10;
@@ -233,6 +252,7 @@ class TestCase
     assert_equals (expected, cfg.get_value ("list", "integer"));
     assert (array_equals ((ValueArray)expected,
                           cfg.get_list ("list", "integer")));
+    message (" List of integers:     OK");
 
     expected_array = new ValueArray (3);
     item_1 = 10.5f;
@@ -246,6 +266,7 @@ class TestCase
     assert_equals (expected, cfg.get_value ("list", "float"));
     assert (array_equals ((ValueArray)expected,
                           cfg.get_list ("list", "float")));
+    message (" List of floats:       OK");
 
     expected_array = new ValueArray (3);
     item_1 = "Quux";
@@ -259,23 +280,42 @@ class TestCase
     assert_equals (expected, cfg.get_value ("list", "string"));
     assert (array_equals ((ValueArray)expected,
                           cfg.get_list ("list", "string")));
+    message (" List of strings:      OK");
   }
 
   void
   test_notify () throws AssertionError, Error
   {
+    message ("====   Notify tests   ====");
+    unowned MainContext ctx = ml.get_context();
+
     cfg.notify_add ("misc", "string", this.on_string_changed);
     cfg.notify_add ("misc", "string", this.on_string_changed2);
     cfg.set_string ("misc", "string", "Bar foo");
+    Thread.usleep (250000);
+    while (ctx.pending ()) ctx.iteration (false);
     assert (this.notify_counter == 1);
+    message (" Notify test 1:        OK");
+
     cfg.set_string ("misc", "string", "Foo quux");
+    Thread.usleep (250000);
+    while (ctx.pending ()) ctx.iteration (false);
     assert (this.notify_counter == 5);
+    message (" Notify test 2:        OK");
+
     cfg.notify_remove ("misc", "string", this.on_string_changed);
     cfg.set_string ("misc", "string", "Bar quux");
+    Thread.usleep (250000);
+    while (ctx.pending ()) ctx.iteration (false);
     assert (this.notify_counter == 8);
+    message (" Notify test 3:        OK");
+
     cfg.notify_remove ("misc", "string", this.on_string_changed2);
     cfg.set_string ("misc", "string", "Baz foo");
+    Thread.usleep (250000);
+    while (ctx.pending ()) ctx.iteration (false);
     assert (this.notify_counter == 8);
+    message (" Notify test 4:        OK");
   }
 
   private static delegate void GetCfgFunc (Config.Backend cfg, string group, string key) throws Error;
@@ -310,13 +350,14 @@ class TestCase
   public static int
   main (string[] args)
   {
+    TestCase test = new TestCase ();
     try
     {
-      TestCase test = new TestCase ();
       test.test_defaults ();
       test.test_set ();
       test.test_notify ();
       test.test_invalid ();
+      print ("All tests finished successfully.\n");
     }
     catch (AssertionError assertion)
     {

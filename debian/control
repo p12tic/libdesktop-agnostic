@@ -12,7 +12,7 @@ Build-Depends: debhelper (>= 7),
                libglib2.0-dev (>= 2.16.0),
                libgtk2.0-dev,
 # python bindings
-               python-central (>= 0.5.6),
+               python-support (>= 0.6),
                python-dev,
                python-all-dev (>= 2.5),
                python-gobject-dev (>= 2.12),

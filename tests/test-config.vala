@@ -33,12 +33,16 @@ class TestCase
 {
   Config.Backend cfg;
   uint notify_counter;
+  MainLoop ml;
+  int retval;
 
   public TestCase ()
   {
     Config.Schema schema = new Config.Schema ("test-config.schema-ini");
     this.cfg = Config.new ((owned)schema);
     this.notify_counter = 0;
+    this.ml = new MainLoop (null, false);
+    this.retval = 0;
   }
 
   void
@@ -262,20 +266,31 @@ class TestCase
   }
 
   void
+  update_notify_value (MainContext ctx, string value,
+                       uint counter_expected) throws AssertionError, Error
+  {
+    cfg.set_string ("misc", "string", value);
+    Thread.usleep (250000);
+    while (ctx.pending ())
+    {
+      ctx.iteration (false);
+    }
+    assert (this.notify_counter == counter_expected);
+  }
+
+  void
   test_notify () throws AssertionError, Error
   {
+    unowned MainContext ctx = this.ml.get_context ();
+
     cfg.notify_add ("misc", "string", this.on_string_changed);
     cfg.notify_add ("misc", "string", this.on_string_changed2);
-    cfg.set_string ("misc", "string", "Bar foo");
-    assert (this.notify_counter == 1);
-    cfg.set_string ("misc", "string", "Foo quux");
-    assert (this.notify_counter == 5);
+    this.update_notify_value (ctx, "Bar foo", 1);
+    this.update_notify_value (ctx, "Foo quux", 5);
     cfg.notify_remove ("misc", "string", this.on_string_changed);
-    cfg.set_string ("misc", "string", "Bar quux");
-    assert (this.notify_counter == 8);
+    this.update_notify_value (ctx, "Bar quux", 8);
     cfg.notify_remove ("misc", "string", this.on_string_changed2);
-    cfg.set_string ("misc", "string", "Baz foo");
-    assert (this.notify_counter == 8);
+    this.update_notify_value (ctx, "Baz foo", 8);
   }
 
   private static delegate void GetCfgFunc (Config.Backend cfg, string group, string key) throws Error;
@@ -307,28 +322,40 @@ class TestCase
     this.test_invalid_func ((GetCfgFunc)cfg.get_list);
   }
 
-  public static int
-  main (string[] args)
+  bool
+  run ()
   {
     try
     {
-      TestCase test = new TestCase ();
-      test.test_defaults ();
-      test.test_set ();
-      test.test_notify ();
-      test.test_invalid ();
+      this.test_defaults ();
+      this.test_set ();
+      this.test_invalid ();
+      this.test_notify ();
     }
     catch (AssertionError assertion)
     {
       critical ("Assertion Error: %s", assertion.message);
-      return 1;
+      this.retval = 1;
     }
     catch (Error err)
     {
       critical ("Error: %s", err.message);
-      return 1;
+      this.retval = 2;
     }
-    return 0;
+    finally
+    {
+      this.ml.quit ();
+    }
+    return false;
+  }
+
+  public static int
+  main (string[] args)
+  {
+    TestCase test = new TestCase ();
+    Idle.add (test.run);
+    test.ml.run ();
+    return test.retval;
   }
 }
 

@@ -378,6 +378,16 @@ namespace DesktopAgnostic.Config
       }
     }
 
+    private void
+    _ensure_key_exists (string group, string key) throws Error
+    {
+      if (this.schema.get_option (group, key) == null)
+      {
+        throw new Error.KEY_NOT_FOUND ("The config key '%s/%s' does not exist in the schema.",
+                                       group, key);
+      }
+    }
+
     public override void
     remove () throws GLib.Error
     {
@@ -461,6 +471,8 @@ namespace DesktopAgnostic.Config
     get_bool (string group, string key) throws GLib.Error
     {
       string full_key;
+
+      this._ensure_key_exists (group, key);
       full_key = this.generate_key (group, key);
       return this.client.get_bool (full_key);
     }
@@ -468,6 +480,8 @@ namespace DesktopAgnostic.Config
     set_bool (string group, string key, bool value) throws GLib.Error
     {
       string full_key;
+
+      this._ensure_key_exists (group, key);
       full_key = this.generate_key (group, key);
       this.client.set_bool (full_key, value);
     }
@@ -475,6 +489,8 @@ namespace DesktopAgnostic.Config
     get_float (string group, string key) throws GLib.Error
     {
       string full_key;
+
+      this._ensure_key_exists (group, key);
       full_key = this.generate_key (group, key);
       return (float)this.client.get_float (full_key);
     }
@@ -482,6 +498,8 @@ namespace DesktopAgnostic.Config
     set_float (string group, string key, float value) throws GLib.Error
     {
       string full_key;
+
+      this._ensure_key_exists (group, key);
       full_key = this.generate_key (group, key);
       this.client.set_float (full_key, value);
     }
@@ -489,6 +507,8 @@ namespace DesktopAgnostic.Config
     get_int (string group, string key) throws GLib.Error
     {
       string full_key;
+
+      this._ensure_key_exists (group, key);
       full_key = this.generate_key (group, key);
       return this.client.get_int (full_key);
     }
@@ -496,6 +516,8 @@ namespace DesktopAgnostic.Config
     set_int (string group, string key, int value) throws GLib.Error
     {
       string full_key;
+
+      this._ensure_key_exists (group, key);
       full_key = this.generate_key (group, key);
       this.client.set_int (full_key, value);
     }
@@ -503,6 +525,8 @@ namespace DesktopAgnostic.Config
     get_string (string group, string key) throws GLib.Error
     {
       string full_key;
+
+      this._ensure_key_exists (group, key);
       full_key = this.generate_key (group, key);
       return this.client.get_string (full_key);
     }
@@ -510,6 +534,8 @@ namespace DesktopAgnostic.Config
     set_string (string group, string key, string value) throws GLib.Error
     {
       string full_key;
+
+      this._ensure_key_exists (group, key);
       full_key = this.generate_key (group, key);
       this.client.set_string (full_key, value);
     }
@@ -520,6 +546,7 @@ namespace DesktopAgnostic.Config
       Type list_type;
       unowned SList list;
 
+      this._ensure_key_exists (group, key);
       full_key = this.generate_key (group, key);
       list_type = this.schema.get_option (group, key).list_type;
       list = this.client.get (full_key).get_list ();
@@ -531,6 +558,7 @@ namespace DesktopAgnostic.Config
       string full_key;
       Type type;
 
+      this._ensure_key_exists (group, key);
       full_key = this.generate_key (group, key);
       type = this.schema.get_option (group, key).list_type;
       if (type == typeof (bool) || type == typeof (float) ||

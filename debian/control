@@ -23,7 +23,7 @@ Build-Depends: debhelper (>= 7),
                libdbus-glib-1-dev,
                libgnomevfs2-dev,
                libgnome-desktop-dev,
-Standards-Version: 3.8.0
+Standards-Version: 3.8.2
 Homepage: https://launchpad.net/libdesktop-agnostic
 
 Package: libdesktop-agnostic0

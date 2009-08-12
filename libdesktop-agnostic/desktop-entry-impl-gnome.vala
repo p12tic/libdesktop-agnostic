@@ -46,18 +46,17 @@ namespace DesktopAgnostic.FDO
           }
           else
           {
-            DesktopItemLoadFlags flags = DesktopItemLoadFlags.ONLY_IF_EXISTS;
             string? path;
 
             this._file = value;
             path = value.path;
             if (path == null)
             {
-              this.item = new DesktopItem.from_uri (value.uri, flags);
+              this.item = new DesktopItem.from_uri (value.uri, 0);
             }
             else
             {
-              this.item = new DesktopItem.from_file (path, flags);
+              this.item = new DesktopItem.from_file (path, 0);
             }
           }
         }
@@ -85,8 +84,7 @@ namespace DesktopAgnostic.FDO
           this._keyfile = value;
           data = value.to_data (out length);
           this.item =
-            new DesktopItem.from_string ("", data, (ssize_t)length,
-                                         DesktopItemLoadFlags.ONLY_IF_EXISTS);
+            new DesktopItem.from_string ("", data, (ssize_t)length, 0);
         }
         else
         {
@@ -102,8 +100,7 @@ namespace DesktopAgnostic.FDO
         if (this.item == null)
         {
           this.item =
-            new DesktopItem.from_string ("", value, value.len (),
-                                         DesktopItemLoadFlags.ONLY_IF_EXISTS);
+            new DesktopItem.from_string ("", value, value.len (), 0);
         }
         else
         {

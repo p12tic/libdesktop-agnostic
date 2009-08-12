@@ -28,10 +28,8 @@ Homepage: https://launchpad.net/libdesktop-agnostic
 
 Package: libdesktop-agnostic0
 Architecture: any
-Depends: 	${shlibs:Depends},
-		${misc:Depends},
-		libglib2.0-0,
-		libgtk2.0-0
+Depends:    ${shlibs:Depends},
+            ${misc:Depends}
 Suggests: libdesktop-agnostic-vfs, libdesktop-agnostic-cfg, libdesktop-agnostic-fdo
 Description: A desktop-agnostic library for GLib-based projects.
  This library provides an extensible configuration API, a unified virtual file
@@ -43,10 +41,9 @@ Description: A desktop-agnostic library for GLib-based projects.
 
 Package: libdesktop-agnostic-vfs-gnome
 Architecture: any
-Depends: 	${shlibs:Depends},
-		${misc:Depends},
-		libdesktop-agnostic0 (= ${binary:Version}),
-		libgnomevfs2-0
+Depends:    ${shlibs:Depends},
+            ${misc:Depends},
+            libdesktop-agnostic0 (= ${binary:Version})
 Provides: libdesktop-agnostic-vfs
 Description: GNOME VFS-based VFS module for libdesktop-agnostic.
  This library provides an extensible configuration API, a unified virtual file
@@ -58,11 +55,9 @@ Description: GNOME VFS-based VFS module for libdesktop-agnostic.
 
 Package: libdesktop-agnostic-vfs-thunar
 Architecture: any
-Depends: 	${shlibs:Depends},
-		${misc:Depends},
-		libdesktop-agnostic0 (= ${binary:Version}),
-		libthunar-vfs-1-2,
-		libdbus-glib-1-2
+Depends:    ${shlibs:Depends},
+            ${misc:Depends},
+            libdesktop-agnostic0 (= ${binary:Version}),
 Provides: libdesktop-agnostic-vfs
 Description: Thunar VFS-based VFS module for libdesktop-agnostic.
  This library provides an extensible configuration API, a unified virtual file
@@ -74,10 +69,9 @@ Description: Thunar VFS-based VFS module for libdesktop-agnostic.
 
 Package: libdesktop-agnostic-vfs-gio
 Architecture: any
-Depends: 	${shlibs:Depends},
-		${misc:Depends},
-		libdesktop-agnostic0 (= ${binary:Version}),
-		libglib2.0-0 (>= 2.16.0)
+Depends:    ${shlibs:Depends},
+            ${misc:Depends},
+            libdesktop-agnostic0 (= ${binary:Version})
 Provides: libdesktop-agnostic-vfs
 Description: GIO-based VFS module for libdesktop-agnostic.
  This library provides an extensible configuration API, a unified virtual file
@@ -89,10 +83,9 @@ Description: GIO-based VFS module for libdesktop-agnostic.
 
 Package: libdesktop-agnostic-cfg-gconf
 Architecture: any
-Depends: 	${shlibs:Depends},
-		${misc:Depends},
-		libdesktop-agnostic0 (= ${binary:Version}),
-		libgconf2-4
+Depends:    ${shlibs:Depends},
+            ${misc:Depends},
+            libdesktop-agnostic0 (= ${binary:Version})
 Provides: libdesktop-agnostic-cfg
 Description: GConf-based configuration module for libdesktop-agnostic.
  This library provides an extensible configuration API, a unified virtual file
@@ -104,9 +97,9 @@ Description: GConf-based configuration module for libdesktop-agnostic.
 
 Package: libdesktop-agnostic-cfg-keyfile
 Architecture: any
-Depends: 	${shlibs:Depends},
-		${misc:Depends},
-		libdesktop-agnostic0 (= ${binary:Version})
+Depends:    ${shlibs:Depends},
+            ${misc:Depends},
+            libdesktop-agnostic0 (= ${binary:Version})
 Provides: libdesktop-agnostic-cfg
 Description: Keyfile-based configuration module for libdesktop-agnostic.
  This library provides an extensible configuration API, a unified virtual file
@@ -119,9 +112,8 @@ Description: Keyfile-based configuration module for libdesktop-agnostic.
 Package: libdesktop-agnostic-fdo-gnome
 Architecture: any
 Depends: 	${shlibs:Depends},
-		${misc:Depends},
-		libdesktop-agnostic0 (= ${binary:Version}),
-		libgnome-desktop-2-11
+            ${misc:Depends},
+            libdesktop-agnostic0 (= ${binary:Version})
 Provides: libdesktop-agnostic-fdo
 Description: GNOME-based desktop entry/menu module for libdesktop-agnostic.
  This library provides an extensible configuration API, a unified virtual file
@@ -133,9 +125,9 @@ Description: GNOME-based desktop entry/menu module for libdesktop-agnostic.
 
 Package: libdesktop-agnostic-fdo-glib
 Architecture: any
-Depends: 	${shlibs:Depends},
-		${misc:Depends},
-		libdesktop-agnostic0 (= ${binary:Version}),
+Depends:    ${shlibs:Depends},
+            ${misc:Depends},
+            libdesktop-agnostic0 (= ${binary:Version}),
 Provides: libdesktop-agnostic-fdo
 Description: GLib-based desktop entry/menu module for libdesktop-agnostic.
  This library provides an extensible configuration API, a unified virtual file
@@ -149,8 +141,8 @@ Package: libdesktop-agnostic0-dbg
 Section: debug
 Architecture: any
 Depends: 	${shlibs:Depends},
-		${misc:Depends},
-		libdesktop-agnostic0 (= ${binary:Version})
+            ${misc:Depends},
+            libdesktop-agnostic0 (= ${binary:Version})
 Description: Debugging symbols for libdesktop-agnostic.
  This library provides an extensible configuration API, a unified virtual file
  system API, and a desktop item editor (all with pluggable backends) for
@@ -177,8 +169,8 @@ Description: Development files for libdesktop-agnostic.
 Package: gobject-introspection-libdesktop-agnostic
 Architecture: any
 Depends: 	${shlibs:Depends},
-		${misc:Depends},
-		libdesktop-agnostic0 (= ${binary:Version})
+            ${misc:Depends},
+            libdesktop-agnostic0 (= ${binary:Version})
 Recommends:	gobject-introspection, libdesktop-agnostic-dev
 Description:  GObject Introspection data for libdesktop-agnostic.
  This library provides an extensible configuration API, a unified virtual file
@@ -191,8 +183,8 @@ Description:  GObject Introspection data for libdesktop-agnostic.
 Package: libdesktop-agnostic-bin
 Architecture: any
 Depends: 	${shlibs:Depends},
-		${misc:Depends},
-		libdesktop-agnostic0 (= ${binary:Version})
+            ${misc:Depends},
+            libdesktop-agnostic0 (= ${binary:Version})
 Recommends:	libdesktop-agostic-cfg-gconf
 Description:  Helper applications for libdesktop-agnostic.
  This library provides an extensible configuration API, a unified virtual file
@@ -207,9 +199,9 @@ Package: python-libdesktop-agnostic
 Section: python
 Architecture: any
 Depends:	${shlibs:Depends},
-		${misc:Depends},
-		libdesktop-agnostic0 (>= ${binary:Version}),
-		${python:Depends}
+            ${misc:Depends},
+            libdesktop-agnostic0 (>= ${binary:Version}),
+            ${python:Depends}
 Provides: ${python:Provides}
 XB-Python-Version: ${python:Versions}
 Description: Python bindings for libdesktop-agnostic.
@@ -222,10 +214,9 @@ Description: Python bindings for libdesktop-agnostic.
 
 Package: vala-libdesktop-agnostic
 Architecture: all
-Depends: 	${shlibs:Depends},
-		${misc:Depends},
-		libdesktop-agnostic0 (>= ${source:Version}),
-		valac (>= 0.5.8)
+Depends:    ${shlibs:Depends},
+            ${misc:Depends},
+            libdesktop-agnostic0 (>= ${source:Version})
 Description: Vala bindings for libdesktop-agnostic.
  This library provides an extensible configuration API, a unified virtual file
  system API, and a desktop item editor (all with pluggable backends) for

@@ -21,6 +21,8 @@
 #include "build-config.h"
 #endif
 
+#include <libdesktop-agnostic/config.h>
+
 #include <pygobject.h>
 
 /* the following symbols are declared in config.c: */
@@ -42,6 +44,8 @@ initconfig (void)
 
   pydesktopagnostic_config_register_classes (d);
   pydesktopagnostic_config_add_constants (m, "DESKTOP_AGNOSTIC_CONFIG_");
+
+  PyModule_AddStringConstant (m, "GROUP_DEFAULT", DESKTOP_AGNOSTIC_CONFIG_GROUP_DEFAULT);
 
   if (PyErr_Occurred ())
   {

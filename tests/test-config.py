@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-# for some reason the gtk import is necessary for gconf notifications to work!
 import glib
 import time
 import desktopagnostic.config

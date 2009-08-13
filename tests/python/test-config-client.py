@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) 2009 Michal Hruby <michal.mhr@gmail.com>
+# Copyright (c) 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,7 +13,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import glib
 import time
@@ -23,7 +22,7 @@ class TestCase:
     def __init__(self):
         self.ml = glib.MainLoop()
         self.notify_counter = 0
-        self.client = desktopagnostic.config.Client("test-config.schema-ini")
+        self.client = desktopagnostic.config.Client("../test-config.schema-ini")
         self.client.reset(False)
 
     def test_defaults(self):

@@ -23,6 +23,9 @@
 
 #include <pygobject.h>
 
+/* the following symbols are declared in config.c: */
+void pydesktopagnostic_config_add_constants (PyObject *module,
+                                             const gchar *strip_prefix);
 void pydesktopagnostic_config_register_classes (PyObject *d);
 extern PyMethodDef pydesktopagnostic_config_functions[];
 

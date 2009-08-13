@@ -23,6 +23,9 @@
 
 #include <pygobject.h>
 
+/* the following symbols are declared in desktopagnostic.c: */
+void pydesktopagnostic_add_constants (PyObject *module,
+                                      const gchar *strip_prefix);
 void pydesktopagnostic_register_classes (PyObject *d);
 extern PyMethodDef pydesktopagnostic_functions[];
 

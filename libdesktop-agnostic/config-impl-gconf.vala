@@ -30,7 +30,7 @@ namespace DesktopAgnostic.Config
     private string schema_path;
     private string path;
     private unowned GConf.Client client;
-    private Datalist<uint> _gconf_notify_funcs;
+    private uint connection_id;
     private Datalist<unowned SList<NotifyDelegate>> _notifiers;
 
     public override string name
@@ -53,7 +53,7 @@ namespace DesktopAgnostic.Config
       string base_path;
       Schema schema = this.schema;
 
-      this._gconf_notify_funcs = Datalist<uint> ();
+      this.connection_id = 0;
       this._notifiers = Datalist<SList<NotifyDelegate>> ();
       base_path = schema.get_metadata_option (opt_prefix +
                                               "base_path").get_string ();
@@ -83,7 +83,21 @@ namespace DesktopAgnostic.Config
       // detail. One thing's for sure: do not call it recursively.
       try
       {
-        this.client.add_dir (this.path, GConf.ClientPreloadType.NONE);
+        this.client.add_dir (this.path, GConf.ClientPreloadType.RECURSIVE);
+        this.connection_id = this.client.notify_add (this.path, this.notify_proxy);
+      }
+      catch (GLib.Error err)
+      {
+        critical ("Config (GConf) error: %s", err.message);
+      }
+    }
+
+    ~GConfBackend ()
+    {
+      try
+      {
+        this.client.notify_remove (this.connection_id);
+        this.client.remove_dir (this.path);
       }
       catch (GLib.Error err)
       {
@@ -364,6 +378,16 @@ namespace DesktopAgnostic.Config
       }
     }
 
+    private void
+    _ensure_key_exists (string group, string key) throws Error
+    {
+      if (this.schema.get_option (group, key) == null)
+      {
+        throw new Error.KEY_NOT_FOUND ("The config key '%s/%s' does not exist in the schema.",
+                                       group, key);
+      }
+    }
+
     public override void
     remove () throws GLib.Error
     {
@@ -376,21 +400,11 @@ namespace DesktopAgnostic.Config
     {
       NotifyDelegate notify;
       string full_key;
-      uint func_id;
       unowned SList<NotifyDelegate>? callbacks;
 
       notify = new NotifyDelegate (callback);
       full_key = this.generate_key (group, key);
       callbacks = this._notifiers.get_data (full_key);
-      if (callbacks.length () == 0)
-      {
-        func_id = this.client.notify_add (full_key, this.notify_proxy);
-        if (func_id == 0)
-        {
-          throw new Error.NOTIFY ("Something went wrong when we tried to add a notification callback.");
-        }
-        this._gconf_notify_funcs.set_data (full_key, func_id);
-      }
       callbacks.append ((owned)notify);
       this._notifiers.set_data (full_key, callbacks);
     }
@@ -425,11 +439,6 @@ namespace DesktopAgnostic.Config
         node.data = null;
         funcs.delete_link (node);
         this._notifiers.set_data (full_key, funcs);
-        if (funcs.length () == 0)
-        {
-          uint func_id = this._gconf_notify_funcs.get_data (full_key);
-          this.client.notify_remove (func_id);
-        }
       }
     }
 
@@ -462,6 +471,8 @@ namespace DesktopAgnostic.Config
     get_bool (string group, string key) throws GLib.Error
     {
       string full_key;
+
+      this._ensure_key_exists (group, key);
       full_key = this.generate_key (group, key);
       return this.client.get_bool (full_key);
     }
@@ -469,6 +480,8 @@ namespace DesktopAgnostic.Config
     set_bool (string group, string key, bool value) throws GLib.Error
     {
       string full_key;
+
+      this._ensure_key_exists (group, key);
       full_key = this.generate_key (group, key);
       this.client.set_bool (full_key, value);
     }
@@ -476,6 +489,8 @@ namespace DesktopAgnostic.Config
     get_float (string group, string key) throws GLib.Error
     {
       string full_key;
+
+      this._ensure_key_exists (group, key);
       full_key = this.generate_key (group, key);
       return (float)this.client.get_float (full_key);
     }
@@ -483,6 +498,8 @@ namespace DesktopAgnostic.Config
     set_float (string group, string key, float value) throws GLib.Error
     {
       string full_key;
+
+      this._ensure_key_exists (group, key);
       full_key = this.generate_key (group, key);
       this.client.set_float (full_key, value);
     }
@@ -490,6 +507,8 @@ namespace DesktopAgnostic.Config
     get_int (string group, string key) throws GLib.Error
     {
       string full_key;
+
+      this._ensure_key_exists (group, key);
       full_key = this.generate_key (group, key);
       return this.client.get_int (full_key);
     }
@@ -497,6 +516,8 @@ namespace DesktopAgnostic.Config
     set_int (string group, string key, int value) throws GLib.Error
     {
       string full_key;
+
+      this._ensure_key_exists (group, key);
       full_key = this.generate_key (group, key);
       this.client.set_int (full_key, value);
     }
@@ -504,6 +525,8 @@ namespace DesktopAgnostic.Config
     get_string (string group, string key) throws GLib.Error
     {
       string full_key;
+
+      this._ensure_key_exists (group, key);
       full_key = this.generate_key (group, key);
       return this.client.get_string (full_key);
     }
@@ -511,6 +534,8 @@ namespace DesktopAgnostic.Config
     set_string (string group, string key, string value) throws GLib.Error
     {
       string full_key;
+
+      this._ensure_key_exists (group, key);
       full_key = this.generate_key (group, key);
       this.client.set_string (full_key, value);
     }
@@ -521,6 +546,7 @@ namespace DesktopAgnostic.Config
       Type list_type;
       unowned SList list;
 
+      this._ensure_key_exists (group, key);
       full_key = this.generate_key (group, key);
       list_type = this.schema.get_option (group, key).list_type;
       list = this.client.get (full_key).get_list ();
@@ -532,6 +558,7 @@ namespace DesktopAgnostic.Config
       string full_key;
       Type type;
 
+      this._ensure_key_exists (group, key);
       full_key = this.generate_key (group, key);
       type = this.schema.get_option (group, key).list_type;
       if (type == typeof (bool) || type == typeof (float) ||

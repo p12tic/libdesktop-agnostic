@@ -146,9 +146,22 @@ namespace DesktopAgnostic.FDO
 
     public string icon
     {
+      /**
+       * If a path is provided then return the given value. Otherwise,
+       * strip any extension (.xpm, .svg, .png).
+       */
       owned get
       {
-        return this.get_string ("Icon");
+        string icon_name = this.get_string ("Icon");
+
+        if (Path.get_basename (icon_name) == icon_name)
+        {
+          icon_name = icon_name.split (".png", 2)[0];
+          icon_name = icon_name.split (".svg", 2)[0];
+          icon_name = icon_name.split (".xpm", 2)[0];
+        }
+
+        return icon_name;
       }
       set
       {

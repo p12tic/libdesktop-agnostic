@@ -284,37 +284,39 @@ class TestCase
   }
 
   void
+  update_notify_value (MainContext ctx, string value,
+                       uint counter_expected) throws AssertionError, Error
+  {
+    cfg.set_string ("misc", "string", value);
+    Thread.usleep (250000);
+    while (ctx.pending ())
+    {
+      ctx.iteration (false);
+    }
+    assert (this.notify_counter == counter_expected);
+  }
+
+  void
   test_notify () throws AssertionError, Error
   {
     message ("====   Notify tests   ====");
-    unowned MainContext ctx = ml.get_context();
+    unowned MainContext ctx = this.ml.get_context ();
 
     cfg.notify_add ("misc", "string", this.on_string_changed);
     cfg.notify_add ("misc", "string", this.on_string_changed2);
-    cfg.set_string ("misc", "string", "Bar foo");
-    Thread.usleep (250000);
-    while (ctx.pending ()) ctx.iteration (false);
-    assert (this.notify_counter == 1);
+
+    this.update_notify_value (ctx, "Bar foo", 1);
     message (" Notify test 1:        OK");
 
-    cfg.set_string ("misc", "string", "Foo quux");
-    Thread.usleep (250000);
-    while (ctx.pending ()) ctx.iteration (false);
-    assert (this.notify_counter == 5);
+    this.update_notify_value (ctx, "Foo quux", 5);
     message (" Notify test 2:        OK");
 
     cfg.notify_remove ("misc", "string", this.on_string_changed);
-    cfg.set_string ("misc", "string", "Bar quux");
-    Thread.usleep (250000);
-    while (ctx.pending ()) ctx.iteration (false);
-    assert (this.notify_counter == 8);
+    this.update_notify_value (ctx, "Bar quux", 8);
     message (" Notify test 3:        OK");
 
     cfg.notify_remove ("misc", "string", this.on_string_changed2);
-    cfg.set_string ("misc", "string", "Baz foo");
-    Thread.usleep (250000);
-    while (ctx.pending ()) ctx.iteration (false);
-    assert (this.notify_counter == 8);
+    this.update_notify_value (ctx, "Baz foo", 8);
     message (" Notify test 4:        OK");
   }
 
@@ -340,11 +342,22 @@ class TestCase
   void
   test_invalid () throws AssertionError, Error
   {
+    message ("==== Invalid key test ====");
+
     this.test_invalid_func ((GetCfgFunc)cfg.get_bool);
+    message (" Boolean:              OK");
+
     this.test_invalid_func ((GetCfgFunc)cfg.get_float);
+    message (" Float:                OK");
+
     this.test_invalid_func ((GetCfgFunc)cfg.get_int);
+    message (" Integer:              OK");
+
     this.test_invalid_func ((GetCfgFunc)cfg.get_string);
+    message (" String:               OK");
+
     this.test_invalid_func ((GetCfgFunc)cfg.get_list);
+    message (" List:                 OK");
   }
 
   public static int
@@ -355,8 +368,8 @@ class TestCase
     {
       test.test_defaults ();
       test.test_set ();
-      test.test_notify ();
       test.test_invalid ();
+      test.test_notify ();
       print ("All tests finished successfully.\n");
     }
     catch (AssertionError assertion)
@@ -367,7 +380,7 @@ class TestCase
     catch (Error err)
     {
       critical ("Error: %s", err.message);
-      return 1;
+      return 2;
     }
     return 0;
   }

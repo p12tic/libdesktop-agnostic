@@ -96,11 +96,11 @@ class TestCase:
         assert expected == self.client.get_value ("list", "integer")
         assert expected == self.client.get_list ("list", "integer")
 
-        #expected = [10.5, 20.6, 30.7]
-        #expected = map (lambda x: round (x, 3), expected)
-        #self.client.set_list ("list", "float", expected)
-        #assert expected == map (lambda x: round (x, 3), self.client.get_value ("list", "float"))
-        #assert expected == map (lambda x: round (x, 3), self.client.get_list ("list", "float"))
+        expected = [10.5, 20.6, 30.7]
+        expected = map (lambda x: round (x, 3), expected)
+        self.client.set_list ("list", "float", expected)
+        assert expected == map (lambda x: round (x, 3), self.client.get_value ("list", "float"))
+        assert expected == map (lambda x: round (x, 3), self.client.get_list ("list", "float"))
 
         expected = ["Quux", "Baz", "Foo"]
         self.client.set_list ("list", "string", expected)
@@ -151,4 +151,3 @@ if __name__ == "__main__":
     t.test_defaults()
     t.test_set()
     t.test_notify()
-    print "All tests finished successfully."

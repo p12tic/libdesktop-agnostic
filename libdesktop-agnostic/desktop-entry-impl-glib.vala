@@ -231,6 +231,7 @@ namespace DesktopAgnostic.FDO
       this._keyfile.set_locale_string (GROUP, key, locale, value);
     }
 
+    [CCode (array_length = false, array_null_terminated = true)]
     public string[]
     get_string_list (string key)
     {
@@ -245,7 +246,7 @@ namespace DesktopAgnostic.FDO
     }
 
     public void
-    set_string_list (string key, string[] value)
+    set_string_list (string key, [CCode (array_length = false, array_null_terminated = true)] string[] value)
     {
       this._keyfile.set_string_list (GROUP, key, value);
     }

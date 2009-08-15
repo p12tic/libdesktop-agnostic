@@ -82,8 +82,15 @@ _wrap_desktop_agnostic_config_client_set_value (PyGObject *self, PyObject *args,
     return NULL;
   }
 
-  // FIXME: special case sequences and init the value to G_TYPE_VALUE_ARRAY
-  type = pyg_type_from_object ((PyObject *)obj->ob_type);
+  if (PySequence_Check (obj))
+  {
+    type = G_TYPE_VALUE_ARRAY;
+  }
+  else
+  {
+    type = pyg_type_from_object ((PyObject *)obj->ob_type);
+  }
+
   if (type == G_TYPE_INVALID)
   {
     return NULL;

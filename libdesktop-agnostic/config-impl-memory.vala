@@ -211,7 +211,8 @@ namespace DesktopAgnostic.Config
     public override ValueArray
     get_list (string group, string key) throws GLib.Error
     {
-      return (ValueArray)this.get_value (group, key).dup_boxed ();
+      Value val = this.get_value (group, key);
+      return ((ValueArray)val).copy ();
     }
 
     public override void

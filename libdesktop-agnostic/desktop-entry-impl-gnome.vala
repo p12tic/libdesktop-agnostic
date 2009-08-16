@@ -212,6 +212,7 @@ namespace DesktopAgnostic.FDO
       this.item.set_localestring_lang (key, locale, value);
     }
 
+    [CCode (array_length = false, array_null_terminated = true)]
     public string[]
     get_string_list (string key)
     {
@@ -219,7 +220,7 @@ namespace DesktopAgnostic.FDO
     }
 
     public void
-    set_string_list (string key, string[] value)
+    set_string_list (string key, [CCode (array_length = false, array_null_terminated = true)] string[] value)
     {
       this.item.set_strings (key, value);
     }

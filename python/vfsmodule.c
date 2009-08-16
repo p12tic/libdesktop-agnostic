@@ -21,34 +21,26 @@
 #include "build-config.h"
 #endif
 
-#include <libdesktop-agnostic/config.h>
-
 #include <pygobject.h>
 
-/* the following symbols are declared in config.c: */
-void pydesktopagnostic_config_add_constants (PyObject *module,
-                                             const gchar *strip_prefix);
-void pydesktopagnostic_config_register_classes (PyObject *d);
-extern PyMethodDef pydesktopagnostic_config_functions[];
+/* the following symbols are declared in vfs.c: */
+void pydesktopagnostic_vfs_register_classes (PyObject *d);
+extern PyMethodDef pydesktopagnostic_vfs_functions[];
 
 DL_EXPORT (void)
-initconfig (void)
+initvfs (void)
 {
   PyObject *m, *d;
 
   init_pygobject ();
 
-  m = Py_InitModule ("desktopagnostic.config",
-                     pydesktopagnostic_config_functions);
+  m = Py_InitModule ("desktopagnostic.vfs", pydesktopagnostic_vfs_functions);
   d = PyModule_GetDict (m);
 
-  pydesktopagnostic_config_register_classes (d);
-  pydesktopagnostic_config_add_constants (m, "DESKTOP_AGNOSTIC_CONFIG_");
-
-  PyModule_AddStringConstant (m, "GROUP_DEFAULT", DESKTOP_AGNOSTIC_CONFIG_GROUP_DEFAULT);
+  pydesktopagnostic_vfs_register_classes (d);
 
   if (PyErr_Occurred ())
   {
-    Py_FatalError ("Unable to initialise the desktopagnostic.config module");
+    Py_FatalError ("Unable to initialise the desktopagnostic module");
   }
 }

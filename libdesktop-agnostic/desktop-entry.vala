@@ -112,10 +112,9 @@ namespace DesktopAgnostic.FDO
     public abstract void set_string (string key, string value);
     public abstract string get_localestring (string key, string locale);
     public abstract void set_localestring (string key, string locale, string value);
+    [CCode (array_length = false, array_null_terminated = true)]
     public abstract string[] get_string_list (string key);
-    public abstract void set_string_list (string key, string[] value);
-    //public abstract string[] get_localestring_list (string key, string locale);
-    //public abstract void set_localestring_list (string key, string locale, string[] value);
+    public abstract void set_string_list (string key, [CCode (array_length = false, array_null_terminated = true)] string[] value);
     // miscellaneous
     /**
      * Whether the path specified in the "Exec" key exists. if the entry type is

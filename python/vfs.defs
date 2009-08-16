@@ -1,0 +1,33 @@
+;; -*- scheme -*-
+; boxed definitions ...
+
+; interface definitions ...
+
+
+; object definitions ...
+
+
+; pointer definitions ...
+
+;; Enumerations and Flags ...
+
+
+
+;; From vfs.h
+
+(define-function init
+  (c-name "desktop_agnostic_vfs_init")
+  (return-type "none")
+  (parameters
+    '("GError**" "error")
+  )
+)
+
+(define-function shutdown
+  (c-name "desktop_agnostic_vfs_shutdown")
+  (return-type "none")
+  (parameters
+    '("GError**" "error")
+  )
+)
+

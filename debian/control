@@ -185,8 +185,8 @@ Package: libdesktop-agnostic-bin
 Architecture: any
 Depends: 	${shlibs:Depends},
             ${misc:Depends},
-            libdesktop-agnostic0 (= ${binary:Version})
-Recommends:	libdesktop-agostic-cfg-gconf
+            libdesktop-agnostic0 (= ${binary:Version}),
+			libdesktop-agnostic-cfg-gconf
 Description:  Helper applications for libdesktop-agnostic
  This library provides an extensible configuration API, a unified virtual file
  system API, and a desktop item editor (all with pluggable backends) for

@@ -171,6 +171,10 @@ namespace DesktopAgnostic.Config
         throw new Error.KEY_NOT_FOUND ("The key %s/%s is invalid.",
                                        group, key);
       }
+      else if (keyfile == this._data && !keyfile.has_key (group, key))
+      {
+        return new ValueArray (0);
+      }
       list_type = option.list_type;
       if (list_type == typeof (bool))
       {
@@ -627,7 +631,15 @@ namespace DesktopAgnostic.Config
       SchemaOption option = this.schema.get_option (group, key);
       Type list_type = option.list_type;
 
-      if (list_type == typeof (bool))
+      if (value.n_values == 0)
+      {
+        if (this._data.has_key (group, key))
+        {
+          // set_*_list() doesn't like NULL lists, so just unset the key.
+          this._data.remove_key (group, key);
+        }
+      }
+      else if (list_type == typeof (bool))
       {
         bool[value.n_values] list = new bool[value.n_values];
         for (uint i = 0; i < value.n_values; i++)

@@ -10,6 +10,7 @@ build:
 	dh $@ --before configure
 	LINKFLAGS="${LDFLAGS} -Wl,--as-needed" ./waf --nocache configure --prefix=/usr --enable-debug --config-backends=gconf,keyfile --vfs-backends=gio,gnome-vfs,thunar-vfs --desktop-entry-backends=glib,gnome
 	./waf --nocache build
+	sed -i -e 's:<\(vfs.h>\):<libdesktop-agnostic/\1:g' build/default/libdesktop-agnostic/fdo.h
 	dh $@ --remaining
 
 install: build

@@ -133,7 +133,7 @@ namespace DesktopAgnostic.VFS
       }
       catch (DBus.Error err)
       {
-        critical (err.message);
+        critical ("VFS Trash Error (Thunar VFS): %s", err.message);
       }
     }
   }

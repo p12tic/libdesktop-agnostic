@@ -111,7 +111,7 @@ namespace DesktopAgnostic.VFS
       }
       catch (Error err)
       {
-        critical (err.message);
+        critical ("VFS File Error (Thunar VFS): %s", err.message);
       }
     }
     public override bool exists ()

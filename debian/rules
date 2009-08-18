@@ -1,5 +1,11 @@
 #!/usr/bin/make -f
 
+ifeq (amd64,$(shell dpkg-architecture -qDEB_HOST_ARCH))
+	CFLAGS += -O0
+else
+	CFLAGS += -O2
+endif
+
 build:
 	dh $@ --before configure
 	LINKFLAGS="${LDFLAGS} -Wl,--as-needed" ./waf --nocache configure --prefix=/usr --enable-debug --config-backends=gconf,keyfile --vfs-backends=gio,gnome-vfs,thunar-vfs --desktop-entry-backends=glib,gnome

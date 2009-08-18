@@ -8,6 +8,7 @@ API_VERSION = '1.0'
 
 # the following two variables are used by the target "waf dist"
 VERSION = '0.0.1'
+VNUM = '0.4.0'
 if os.path.exists('.bzr'):
     try:
         from bzrlib.branch import Branch
@@ -68,6 +69,7 @@ def configure(conf):
     conf.env['DEBUG'] = Options.options.debug
     conf.env['EXTRA_WARNINGS'] = Options.options.extra_warnings
     conf.env['PROFILING'] = Options.options.profiling
+    conf.env['VNUM'] = str(VNUM)
 
     conf.check_tool('compiler_cc misc vala python')
 

@@ -188,7 +188,7 @@ namespace DesktopAgnostic.FDO
       this.item.set_boolean (key, value);
     }
 
-    public string
+    public string?
     get_string (string key)
     {
       return this.item.get_string (key);
@@ -200,7 +200,7 @@ namespace DesktopAgnostic.FDO
       this.item.set_string (key, value);
     }
 
-    public string
+    public string?
     get_localestring (string key, string locale)
     {
       return this.item.get_localestring_lang (key, locale);
@@ -213,7 +213,7 @@ namespace DesktopAgnostic.FDO
     }
 
     [CCode (array_length = false, array_null_terminated = true)]
-    public string[]
+    public string[]?
     get_string_list (string key)
     {
       return (string[])this.item.get_strings (key);

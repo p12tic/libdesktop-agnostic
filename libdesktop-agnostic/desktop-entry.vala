@@ -108,12 +108,12 @@ namespace DesktopAgnostic.FDO
     public abstract string icon { owned get; set; }
     public abstract bool get_boolean (string key);
     public abstract void set_boolean (string key, bool value);
-    public abstract string get_string (string key);
+    public abstract string? get_string (string key);
     public abstract void set_string (string key, string value);
-    public abstract string get_localestring (string key, string locale);
+    public abstract string? get_localestring (string key, string locale);
     public abstract void set_localestring (string key, string locale, string value);
     [CCode (array_length = false, array_null_terminated = true)]
-    public abstract string[] get_string_list (string key);
+    public abstract string[]? get_string_list (string key);
     public abstract void set_string_list (string key, [CCode (array_length = false, array_null_terminated = true)] string[] value);
     // miscellaneous
     /**

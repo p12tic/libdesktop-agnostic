@@ -193,7 +193,7 @@ namespace DesktopAgnostic.FDO
       this._keyfile.set_boolean (GROUP, key, value);
     }
 
-    public string
+    public string?
     get_string (string key)
     {
       try
@@ -212,7 +212,7 @@ namespace DesktopAgnostic.FDO
       this._keyfile.set_string (GROUP, key, value);
     }
 
-    public string
+    public string?
     get_localestring (string key, string locale)
     {
       try
@@ -232,7 +232,7 @@ namespace DesktopAgnostic.FDO
     }
 
     [CCode (array_length = false, array_null_terminated = true)]
-    public string[]
+    public string[]?
     get_string_list (string key)
     {
       try

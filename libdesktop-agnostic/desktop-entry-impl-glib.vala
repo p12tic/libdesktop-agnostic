@@ -144,7 +144,7 @@ namespace DesktopAgnostic.FDO
       }
     }
 
-    public string icon
+    public string? icon
     {
       /**
        * If a path is provided then return the given value. Otherwise,
@@ -152,9 +152,9 @@ namespace DesktopAgnostic.FDO
        */
       owned get
       {
-        string icon_name = this.get_string ("Icon");
+        string? icon_name = this.get_string ("Icon");
 
-        if (Path.get_basename (icon_name) == icon_name)
+        if (icon_name != null && Path.get_basename (icon_name) == icon_name)
         {
           icon_name = icon_name.split (".png", 2)[0];
           icon_name = icon_name.split (".svg", 2)[0];
@@ -165,7 +165,14 @@ namespace DesktopAgnostic.FDO
       }
       set
       {
-        this.set_string ("Icon", value);
+        if (value == null)
+        {
+          warning ("Cannot set a NULL value for 'Icon'.");
+        }
+        else
+        {
+          this.set_string ("Icon", value);
+        }
       }
     }
 

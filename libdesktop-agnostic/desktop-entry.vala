@@ -105,7 +105,7 @@ namespace DesktopAgnostic.FDO
      */
     public abstract DesktopEntryType entry_type { get; set; }
     public abstract string name { owned get; set; }
-    public abstract string icon { owned get; set; }
+    public abstract string? icon { owned get; set; }
     public abstract bool get_boolean (string key);
     public abstract void set_boolean (string key, bool value);
     public abstract string? get_string (string key);

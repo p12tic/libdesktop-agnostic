@@ -164,7 +164,7 @@ namespace DesktopAgnostic.FDO
       }
     }
 
-    public string icon
+    public string? icon
     {
       owned get
       {
@@ -172,7 +172,14 @@ namespace DesktopAgnostic.FDO
       }
       set
       {
-        this.item.set_string (DESKTOP_ITEM_ICON, value);
+        if (value == null)
+        {
+          warning ("Cannot set a NULL value for 'Icon'.");
+        }
+        else
+        {
+          this.item.set_string (DESKTOP_ITEM_ICON, value);
+        }
       }
     }
 

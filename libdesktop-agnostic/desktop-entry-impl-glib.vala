@@ -202,7 +202,8 @@ namespace DesktopAgnostic.FDO
       }
       catch (KeyFileError err)
       {
-        assert_not_reached ();
+        warning ("Error trying to retrieve '%s': %s", key, err.message);
+        return null;
       }
     }
 
@@ -221,7 +222,9 @@ namespace DesktopAgnostic.FDO
       }
       catch (KeyFileError err)
       {
-        assert_not_reached ();
+        warning ("Error trying to retrieve '%s[%s]': %s", key, locale,
+                 err.message);
+        return null;
       }
     }
 
@@ -241,7 +244,8 @@ namespace DesktopAgnostic.FDO
       }
       catch (KeyFileError err)
       {
-        assert_not_reached ();
+        warning ("Error trying to retrieve '%s': %s", key, err.message);
+        return null;
       }
     }
 

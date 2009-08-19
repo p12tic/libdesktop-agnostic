@@ -79,6 +79,7 @@ def task_module(type_name, src_prefix):
         ftype, sep, tail = type_name.partition('-')
         module.uselib_local = 'desktop-agnostic-%s' % ftype
         module.target = 'da-%s-%s' % (type_name, name)
+        module.vnum = bld.env['VNUM']
         module.vapi_dirs = '../vapi'
         module.includes = '..'
         module.install_path = None
@@ -110,6 +111,7 @@ def build(bld):
     lib.packages_private = 'build'
     lib.includes='..'
     lib.vapi_dirs = '../vapi'
+    lib.vnum = bld.env['VNUM']
 
     vfs = bld.new_task_gen('cc', 'shlib')
     vfs.source = ' '.join([
@@ -129,6 +131,7 @@ def build(bld):
     vfs.packages_private = 'posix-glob'
     vfs.includes='..'
     vfs.vapi_dirs = '../vapi .'
+    vfs.vnum = bld.env['VNUM']
 
     cfg = bld.new_task_gen('cc', 'shlib')
     cfg.source = ' '.join([
@@ -147,6 +150,7 @@ def build(bld):
     cfg.packages_private = 'hashtable-gtype-key'
     cfg.includes='..'
     cfg.vapi_dirs = '../vapi .'
+    cfg.vnum = bld.env['VNUM']
 
     fdo = bld.new_task_gen('cc', 'shlib')
     fdo.source = ' '.join([
@@ -159,6 +163,7 @@ def build(bld):
     fdo.uselib_local = 'desktop-agnostic-vfs'
     fdo.vapi_dirs = '.'
     fdo.includes='..'
+    fdo.vnum = bld.env['VNUM']
 
     [task_module('cfg', 'config-impl')(bld, name)
      for name in bld.env['BACKENDS_CFG']]
@@ -178,5 +183,6 @@ def build(bld):
     mod_guess.vapi_dirs = '../vapi'
     mod_guess.includes = '..'
     mod_guess.install_path = None
+    mod_guess.vnum = bld.env['VNUM']
     bld.install_files('${LIBDIR}/desktop-agnostic/modules',
                       bld.env['shlib_PATTERN'] % mod_guess.target)

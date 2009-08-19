@@ -38,4 +38,29 @@ type = list-string
 default = foo;bar;
 description = Test string list key
 
+[empty/string]
+type = string
+default =
+description = Test string key (default blank, should be "")
+
+[empty/list-boolean]
+type = list-boolean
+default =
+description = Test boolean list key (default blank, should be NULL)
+
+[empty/list-integer]
+type = list-integer
+default =
+description = Test integer list key (default blank, should be NULL)
+
+[empty/list-float]
+type = list-float
+default =
+description = Test float list key (default blank, should be NULL)
+
+[empty/list-string]
+type = list-string
+default =
+description = Test string list key (default blank, should be NULL)
+
 ; vim: set ft=dosini :

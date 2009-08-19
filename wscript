@@ -8,6 +8,7 @@ API_VERSION = '1.0'
 
 # the following two variables are used by the target "waf dist"
 VERSION = '0.0.1'
+VNUM = '0.4.0'
 if os.path.exists('.bzr'):
     try:
         from bzrlib.branch import Branch
@@ -43,6 +44,9 @@ def set_options(opt):
     opt.add_option('--enable-debug', action='store_true',
                    dest='debug', default=False,
                    help='Enables the library to be built with debug symbols.')
+    opt.add_option('--enable-extra-warnings', action='store_true',
+                   dest='extra_warnings', default=False,
+                   help='Shows extra warnings during compilation.')
     opt.add_option('--enable-profiling', action='store_true',
                    dest='profiling', default=False,
                    help='Enables the library to be built so that it is '
@@ -63,7 +67,9 @@ def configure(conf):
     conf.env['BACKENDS_DE'] = Options.options.de_backends.split(',')
 
     conf.env['DEBUG'] = Options.options.debug
+    conf.env['EXTRA_WARNINGS'] = Options.options.extra_warnings
     conf.env['PROFILING'] = Options.options.profiling
+    conf.env['VNUM'] = str(VNUM)
 
     conf.check_tool('compiler_cc misc vala python')
 
@@ -134,6 +140,10 @@ def configure(conf):
     if conf.env['DEBUG']:
         conf.env.append_value('VALAFLAGS', '-g')
         conf.env.append_value('CCFLAGS', '-ggdb')
+    if conf.env['EXTRA_WARNINGS']:
+        conf.env.append_value('CCFLAGS', '-Wall')
+        conf.env.append_value('CCFLAGS', '-Wno-return-type')
+        conf.env.append_value('CCFLAGS', '-Wno-unused')
     if conf.env['PROFILING']:
         conf.env.append_value('CCFLAGS', '-pg')
         conf.env.append_value('LINKFLAGS', '-pg')

@@ -164,7 +164,7 @@ namespace DesktopAgnostic.FDO
       }
     }
 
-    public string icon
+    public string? icon
     {
       owned get
       {
@@ -172,8 +172,21 @@ namespace DesktopAgnostic.FDO
       }
       set
       {
-        this.item.set_string (DESKTOP_ITEM_ICON, value);
+        if (value == null)
+        {
+          warning ("Cannot set a NULL value for 'Icon'.");
+        }
+        else
+        {
+          this.item.set_string (DESKTOP_ITEM_ICON, value);
+        }
       }
+    }
+
+    public bool
+    key_exists (string key)
+    {
+      return this.item.attr_exists (key);
     }
 
     public bool
@@ -188,7 +201,7 @@ namespace DesktopAgnostic.FDO
       this.item.set_boolean (key, value);
     }
 
-    public string
+    public string?
     get_string (string key)
     {
       return this.item.get_string (key);
@@ -200,7 +213,7 @@ namespace DesktopAgnostic.FDO
       this.item.set_string (key, value);
     }
 
-    public string
+    public string?
     get_localestring (string key, string locale)
     {
       return this.item.get_localestring_lang (key, locale);
@@ -213,7 +226,7 @@ namespace DesktopAgnostic.FDO
     }
 
     [CCode (array_length = false, array_null_terminated = true)]
-    public string[]
+    public string[]?
     get_string_list (string key)
     {
       return (string[])this.item.get_strings (key);

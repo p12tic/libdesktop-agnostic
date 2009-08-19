@@ -242,7 +242,12 @@ namespace DesktopAgnostic.Config
           else if (this.option_type == typeof (ValueArray))
           {
             ValueArray array = null;
-            if (this.list_type == typeof (bool))
+            if (schema.get_value (group, key) == "")
+            {
+              // special case for empty arrays
+              array = new ValueArray (0);
+            }
+            else if (this.list_type == typeof (bool))
             {
               bool[] list = schema.get_boolean_list (group, key);
               array = new ValueArray (list.length);

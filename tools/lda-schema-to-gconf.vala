@@ -87,9 +87,20 @@ int main (string[] args)
                                  value_array_to_string);
   try
   {
-    DesktopAgnostic.ModuleLoader.get_default ().load ("libda-cfg-gconf");
-    Schema schema = new Schema (args[1]);
+    Type ct;
+    Schema schema;
     StringBuilder gconf;
+
+    ct = DesktopAgnostic.ModuleLoader.get_default ().load ("libda-cfg-gconf");
+
+    if (ct == Type.INVALID)
+    {
+      critical ("The GConf configuration module needs to be installed for %s to function correctly.",
+                args[0]);
+      return 1;
+    }
+
+    schema = new Schema (args[1]);
 
     gconf = new StringBuilder ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
     gconf.append ("<gconfschemafile>\n  <schemalist>\n");

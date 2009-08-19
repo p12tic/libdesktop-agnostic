@@ -144,7 +144,7 @@ namespace DesktopAgnostic.FDO
       }
     }
 
-    public string icon
+    public string? icon
     {
       /**
        * If a path is provided then return the given value. Otherwise,
@@ -152,9 +152,9 @@ namespace DesktopAgnostic.FDO
        */
       owned get
       {
-        string icon_name = this.get_string ("Icon");
+        string? icon_name = this.get_string ("Icon");
 
-        if (Path.get_basename (icon_name) == icon_name)
+        if (icon_name != null && Path.get_basename (icon_name) == icon_name)
         {
           icon_name = icon_name.split (".png", 2)[0];
           icon_name = icon_name.split (".svg", 2)[0];
@@ -165,13 +165,26 @@ namespace DesktopAgnostic.FDO
       }
       set
       {
-        this.set_string ("Icon", value);
+        if (value == null)
+        {
+          warning ("Cannot set a NULL value for 'Icon'.");
+        }
+        else
+        {
+          this.set_string ("Icon", value);
+        }
       }
     }
 
     construct
     {
       this._keyfile = new KeyFile ();
+    }
+
+    public bool
+    key_exists (string key)
+    {
+      return this._keyfile.has_key (GROUP, key);
     }
 
     public bool
@@ -183,7 +196,8 @@ namespace DesktopAgnostic.FDO
       }
       catch (KeyFileError err)
       {
-        assert_not_reached ();
+        warning ("Error trying to retrieve '%s': %s", key, err.message);
+        return false;
       }
     }
 
@@ -193,7 +207,7 @@ namespace DesktopAgnostic.FDO
       this._keyfile.set_boolean (GROUP, key, value);
     }
 
-    public string
+    public string?
     get_string (string key)
     {
       try
@@ -202,7 +216,8 @@ namespace DesktopAgnostic.FDO
       }
       catch (KeyFileError err)
       {
-        assert_not_reached ();
+        warning ("Error trying to retrieve '%s': %s", key, err.message);
+        return null;
       }
     }
 
@@ -212,7 +227,7 @@ namespace DesktopAgnostic.FDO
       this._keyfile.set_string (GROUP, key, value);
     }
 
-    public string
+    public string?
     get_localestring (string key, string locale)
     {
       try
@@ -221,7 +236,9 @@ namespace DesktopAgnostic.FDO
       }
       catch (KeyFileError err)
       {
-        assert_not_reached ();
+        warning ("Error trying to retrieve '%s[%s]': %s", key, locale,
+                 err.message);
+        return null;
       }
     }
 
@@ -232,7 +249,7 @@ namespace DesktopAgnostic.FDO
     }
 
     [CCode (array_length = false, array_null_terminated = true)]
-    public string[]
+    public string[]?
     get_string_list (string key)
     {
       try
@@ -241,7 +258,8 @@ namespace DesktopAgnostic.FDO
       }
       catch (KeyFileError err)
       {
-        assert_not_reached ();
+        warning ("Error trying to retrieve '%s': %s", key, err.message);
+        return null;
       }
     }
 

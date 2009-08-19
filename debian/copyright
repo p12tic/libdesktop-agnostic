@@ -1,30 +1,18 @@
-This package was debianized by Julien Lavergne <julien.lavergne@gmail.com> on
-Tue, 24 Mar 2009 02:40:32 +0100.
+X-Format-Specification: http://wiki.debian.org/Proposals/CopyrightFormat
+X-Debianized-By: Julien Lavergne <julien.lavergne@gmail.com>
+X-Debianized-Date: Tue, 24 Mar 2009 02:40:32 +0100.
+X-Source-Downloaded-From: https://launchpad.net/libdesktop-agnostic
+X-Upstream-Author: Mark Lee <libdesktop-agnostic@lazymalevolence.com>
 
-It was downloaded from
-https://launchpad.net/libdesktop-agnostic
+Files: 	*
+Copyright: 2008-2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>
+Licence: LGPL 2+ (See /usr/share/common-licenses/LGPL-2.1 for complete licence)
 
-Copyright:
+Files: 	test/*
+Copyright: 2008-2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>
+Licence: GPL 2+ (See /usr/share/common-licenses/GPL-2 for complete licence)
 
-Copyright (C) 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>
-
-License:
-
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-This packaging is licensed under the GNU General Public License (version 2).
-On Debian systems, the complete text of the GNU General Public License
-can be found in `/usr/share/common-licenses/GPL-2'.
-
+Files: 	debian/*
+Copyright: 	2008-2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>,
+			2008-2009 Julien Lavergne <julien.lavergne@gmail.com>
+Licence: GPL 2+ (See /usr/share/common-licenses/GPL-2 for complete licence)

@@ -29,11 +29,16 @@ errordomain AssertionError
   NOT_REACHED
 }
 
+const int EXIT_SUCCESS = 0;
+const int EXIT_ASSERTION = 1;
+const int EXIT_EXCEPTION = 2;
+
 class TestCase
 {
   Config.Backend cfg;
   uint notify_counter;
   MainLoop ml;
+  int retval;
 
   public TestCase ()
   {
@@ -41,6 +46,7 @@ class TestCase
     this.cfg = Config.new ((owned)schema);
     this.notify_counter = 0;
     this.ml = new MainLoop (null, false);
+    this.retval = 0;
   }
 
   void
@@ -116,6 +122,21 @@ class TestCase
   }
 
   void
+  test_default_empty_list (string suffix) throws AssertionError, Error
+  {
+    ValueArray expected_array;
+    Value expected;
+    string key;
+
+    expected_array = new ValueArray (0);
+    expected = expected_array;
+    key = "list-%s".printf (suffix);
+    assert_equals (expected, cfg.get_value ("empty", key));
+    assert (array_equals (expected_array,
+                          cfg.get_list ("empty", key)));
+  }
+
+  void
   test_defaults () throws AssertionError, Error
   {
     Value expected, item_1, item_2, item_3;
@@ -138,6 +159,10 @@ class TestCase
     expected = "Foo bar";
     assert_equals (expected, cfg.get_value ("misc", "string"));
     assert ((string)expected == cfg.get_string ("misc", "string"));
+
+    expected = "";
+    assert_equals (expected, cfg.get_value ("empty", "string"));
+    assert ((string)expected == cfg.get_string ("empty", "string"));
 
     expected_array = new ValueArray (2);
     item_1 = true;
@@ -182,6 +207,40 @@ class TestCase
     assert_equals (expected, cfg.get_value ("list", "string"));
     assert (array_equals ((ValueArray)expected,
                           cfg.get_list ("list", "string")));
+
+    this.test_default_empty_list ("boolean");
+    this.test_default_empty_list ("integer");
+    this.test_default_empty_list ("float");
+    this.test_default_empty_list ("string");
+  }
+
+  void
+  test_set_empty_list (string key) throws AssertionError, Error
+  {
+    ValueArray old_value;
+    ValueArray expected_array;
+    Value expected;
+
+    old_value = cfg.get_list ("list", key);
+    expected_array = new ValueArray (0);
+    expected = expected_array;
+
+    // test setting via set_list ()
+    cfg.set_list ("list", key, expected_array);
+    assert_equals (expected, cfg.get_value ("list", key));
+    assert (array_equals (expected_array,
+                          cfg.get_list ("list", key)));
+
+    // reset to old value
+    cfg.set_list ("list", key, old_value);
+    assert (array_equals (old_value,
+                          cfg.get_list ("list", key)));
+
+    // test setting via set_value ()
+    cfg.set_value ("list", key, expected);
+    assert_equals (expected, cfg.get_value ("list", key));
+    assert (array_equals (expected_array,
+                          cfg.get_list ("list", key)));
   }
 
   void
@@ -261,6 +320,11 @@ class TestCase
     assert_equals (expected, cfg.get_value ("list", "string"));
     assert (array_equals ((ValueArray)expected,
                           cfg.get_list ("list", "string")));
+
+    this.test_set_empty_list ("boolean");
+    this.test_set_empty_list ("integer");
+    this.test_set_empty_list ("float");
+    this.test_set_empty_list ("string");
   }
 
   void
@@ -283,14 +347,10 @@ class TestCase
 
     cfg.notify_add ("misc", "string", this.on_string_changed);
     cfg.notify_add ("misc", "string", this.on_string_changed2);
-
     this.update_notify_value (ctx, "Bar foo", 1);
-
     this.update_notify_value (ctx, "Foo quux", 5);
-
     cfg.notify_remove ("misc", "string", this.on_string_changed);
     this.update_notify_value (ctx, "Bar quux", 8);
-
     cfg.notify_remove ("misc", "string", this.on_string_changed2);
     this.update_notify_value (ctx, "Baz foo", 8);
   }
@@ -318,13 +378,9 @@ class TestCase
   test_invalid () throws AssertionError, Error
   {
     this.test_invalid_func ((GetCfgFunc)cfg.get_bool);
-
     this.test_invalid_func ((GetCfgFunc)cfg.get_float);
-
     this.test_invalid_func ((GetCfgFunc)cfg.get_int);
-
     this.test_invalid_func ((GetCfgFunc)cfg.get_string);
-
     this.test_invalid_func ((GetCfgFunc)cfg.get_list);
   }
 
@@ -342,14 +398,14 @@ class TestCase
     catch (AssertionError assertion)
     {
       critical ("Assertion Error: %s", assertion.message);
-      return 1;
+      return EXIT_ASSERTION;
     }
     catch (Error err)
     {
       critical ("Error: %s", err.message);
-      return 2;
+      return EXIT_EXCEPTION;
     }
-    return 0;
+    return EXIT_SUCCESS;
   }
 }
 

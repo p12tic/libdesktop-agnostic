@@ -184,6 +184,12 @@ namespace DesktopAgnostic.FDO
     }
 
     public bool
+    key_exists (string key)
+    {
+      return this.item.attr_exists (key);
+    }
+
+    public bool
     get_boolean (string key)
     {
       return this.item.get_boolean (key);

@@ -182,6 +182,12 @@ namespace DesktopAgnostic.FDO
     }
 
     public bool
+    key_exists (string key)
+    {
+      return this._keyfile.has_key (GROUP, key);
+    }
+
+    public bool
     get_boolean (string key)
     {
       try

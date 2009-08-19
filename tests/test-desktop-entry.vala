@@ -25,6 +25,7 @@ using DesktopAgnostic.FDO;
 
 int main (string[] args)
 {
+  Gdk.init (ref args);
   try
   {
     VFS.init ();

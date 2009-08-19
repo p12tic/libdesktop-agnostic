@@ -1,15 +1,19 @@
 #!/usr/bin/python
 # encoding: utf-8
 
+NEEDS_GDK = ['test-desktop-entry']
+
 def build_test_program(bld, name, suffix):
     test = bld.new_task_gen('cc', 'program')
     test.source = name + '.vala'
+    if name in NEEDS_GDK:
+        test.packages = 'gdk-2.0'
+        test.uselib = 'GDK'
     if suffix == '':
         test.uselib_local = 'desktop-agnostic'
     else:
         test.uselib_local = 'desktop-agnostic-%s' % suffix
     test.vapi_dirs = '../libdesktop-agnostic'
-    #test.threading = True
     test.includes = '..'
     test.target = name
     test.install_path = ''

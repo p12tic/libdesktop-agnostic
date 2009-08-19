@@ -29,6 +29,10 @@ errordomain AssertionError
   NOT_REACHED
 }
 
+const int EXIT_SUCCESS = 0;
+const int EXIT_ASSERTION = 1;
+const int EXIT_EXCEPTION = 2;
+
 class TestCase
 {
   Config.Backend cfg;
@@ -380,40 +384,28 @@ class TestCase
     this.test_invalid_func ((GetCfgFunc)cfg.get_list);
   }
 
-  bool
-  run ()
-  {
-    try
-    {
-      this.test_defaults ();
-      this.test_set ();
-      this.test_invalid ();
-      this.test_notify ();
-    }
-    catch (AssertionError assertion)
-    {
-      critical ("Assertion Error: %s", assertion.message);
-      this.retval = 1;
-    }
-    catch (Error err)
-    {
-      critical ("Error: %s", err.message);
-      this.retval = 2;
-    }
-    finally
-    {
-      this.ml.quit ();
-    }
-    return false;
-  }
-
   public static int
   main (string[] args)
   {
     TestCase test = new TestCase ();
-    Idle.add (test.run);
-    test.ml.run ();
-    return test.retval;
+    try
+    {
+      test.test_defaults ();
+      test.test_set ();
+      test.test_invalid ();
+      test.test_notify ();
+    }
+    catch (AssertionError assertion)
+    {
+      critical ("Assertion Error: %s", assertion.message);
+      return EXIT_ASSERTION;
+    }
+    catch (Error err)
+    {
+      critical ("Error: %s", err.message);
+      return EXIT_EXCEPTION;
+    }
+    return EXIT_SUCCESS;
   }
 }
 

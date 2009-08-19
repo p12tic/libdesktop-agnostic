@@ -79,7 +79,6 @@ def task_module(type_name, src_prefix):
         ftype, sep, tail = type_name.partition('-')
         module.uselib_local = 'desktop-agnostic-%s' % ftype
         module.target = 'da-%s-%s' % (type_name, name)
-        module.vnum = bld.env['VNUM']
         module.vapi_dirs = '../vapi'
         module.includes = '..'
         module.install_path = None
@@ -183,6 +182,5 @@ def build(bld):
     mod_guess.vapi_dirs = '../vapi'
     mod_guess.includes = '..'
     mod_guess.install_path = None
-    mod_guess.vnum = bld.env['VNUM']
     bld.install_files('${LIBDIR}/desktop-agnostic/modules',
                       bld.env['shlib_PATTERN'] % mod_guess.target)

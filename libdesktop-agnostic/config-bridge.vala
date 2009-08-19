@@ -23,17 +23,12 @@
 
 namespace DesktopAgnostic.Config
 {
-  /**
-   * Note: trying to get this working as a struct seems to be more trouble than
-   * it's worth.
-   */
-  [Compact]
-  private class Binding
+  private class Binding : Object
   {
-    public Backend cfg;
+    public unowned Backend cfg;
     public string group;
     public string key;
-    public Object obj;
+    public unowned Object obj;
     public string property_name;
     public ulong notify_id;
     public bool read_only;
@@ -46,14 +41,14 @@ namespace DesktopAgnostic.Config
   public class Bridge : Object
   {
     private Datalist<List<Binding>> bindings;
-    private HashTable<Object,List<string>> bindings_by_obj;
+    private HashTable<unowned Object,List<string>> bindings_by_obj;
     private static Bridge bridge = null;
 
     private Bridge ()
     {
       this.bindings = Datalist<List<Binding>> ();
       this.bindings_by_obj =
-        new HashTable<Object,List<string>> (direct_hash, direct_equal);
+        new HashTable<unowned Object,List<string>> (direct_hash, direct_equal);
     }
 
     /**
@@ -221,11 +216,17 @@ namespace DesktopAgnostic.Config
               config.notify_remove (group, key, this.on_serialized_object_changed);
             }
           }
-          if (!binding.read_only)
+          if (!binding.read_only &&
+              SignalHandler.is_connected (obj, binding.notify_id))
           {
             SignalHandler.disconnect (obj, binding.notify_id);
           }
           bindings_list.remove (binding);
+          binding.unref ();
+          if (bindings_list.length () == 0)
+          {
+            this.bindings.remove_data (binding_key);
+          }
         }
       }
     }

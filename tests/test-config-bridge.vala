@@ -35,6 +35,21 @@ private class Test : Object
   }
 }
 
+private class TestDestruct : Test
+{
+  private Config.Backend cfg;
+  TestDestruct (Config.Backend cfg)
+  {
+    this.cfg = cfg;
+  }
+
+  ~TestDestruct ()
+  {
+    unowned Config.Bridge bridge = Config.Bridge.get_default ();
+    bridge.remove_all_for_object (this.cfg, this);
+  }
+}
+
 int main (string[] args)
 {
   try
@@ -42,15 +57,34 @@ int main (string[] args)
     Config.Schema schema = new Config.Schema ("test-config-bridge.schema-ini");
     Config.Backend cfg = Config.new (schema);
     Config.Bridge bridge = Config.Bridge.get_default ();
+
+    cfg.reset ();
+
     Test t = new Test ();
     bridge.bind (cfg, "group", "string", t, "str", false);
     bridge.bind (cfg, "group", "number", t, "num", true);
-    message ("Backend: '%s'; String: '%s'; Integer: %d", cfg.name, t.str, t.num);
+    assert (t.str == "foo");
+    assert (t.num == 10);
     t.str = "Some new string";
     t.num = 100;
-    message ("String: '%s'; Integer: %d", cfg.get_string ("group", "string"),
-             cfg.get_int ("group", "number"));
+    assert (cfg.get_string ("group", "string") == t.str);
+    assert (cfg.get_int ("group", "number") != t.num);
     bridge.remove_all_for_object (cfg, t);
+
+    cfg.reset ();
+
+    assert (cfg.get_string ("group", "string") == "foo");
+
+    TestDestruct td = new TestDestruct (cfg);
+    bridge.bind (cfg, "group", "string", td, "str", false);
+    bridge.bind (cfg, "group", "number", td, "num", true);
+    assert (td.str == "foo");
+    assert (td.num == 10);
+    td.str = "Some new string";
+    td.num = 100;
+    assert (cfg.get_string ("group", "string") == td.str);
+    assert (cfg.get_int ("group", "number") != td.num);
+    td = null;
   }
   catch (Error err)
   {

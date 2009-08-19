@@ -391,8 +391,7 @@ namespace DesktopAgnostic.Config
     public override void
     remove () throws GLib.Error
     {
-      // TODO determine when to remove a directory?
-      this.client.remove_dir (this.path);
+      this.client.recursive_unset (this.path, 0);
     }
 
     public override void
@@ -445,7 +444,20 @@ namespace DesktopAgnostic.Config
     public override void
     reset () throws GLib.Error
     {
-      Process.spawn_command_line_async ("killall -HUP gconfd-2");
+      Schema schema = this.schema;
+
+      foreach (unowned string group in schema.get_groups ())
+      {
+        foreach (unowned string key in schema.get_keys (group))
+        {
+          string full_key;
+          unowned GConf.Value val;
+
+          full_key = this.generate_key (group, key);
+          val = this.client.get_default_from_schema (full_key);
+          this.client.set (full_key, val);
+        }
+      }
     }
     public override GLib.Value
     get_value (string group, string key) throws GLib.Error

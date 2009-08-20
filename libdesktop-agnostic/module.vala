@@ -27,6 +27,14 @@ namespace DesktopAgnostic
   {
     NO_GMODULE
   }
+  private void
+  debug_msg (string message)
+  {
+    if (Environment.get_variable ("DESKTOP_AGNOSTIC_MODULE_DEBUG") != null)
+    {
+      debug (message);
+    }
+  }
   private static Datalist<Module> modules;
   /**
    * Based on the PluginRegistrar class in
@@ -84,7 +92,7 @@ namespace DesktopAgnostic
       Module module = null;
       void* function;
       RegisterModuleFunction register_plugin;
-      debug ("Loading plugin with path: '%s'", path);
+      debug_msg ("Loading plugin with path: '%s'".printf (path));
       module = Module.open (path, ModuleFlags.BIND_LAZY);
       if (module == null)
       {
@@ -113,7 +121,7 @@ namespace DesktopAgnostic
                                                        Path.get_dirname (name)),
                                   Path.get_basename (name));
         module_type = this.load_from_path (name, path);
-        debug ("Plugin type: %s", module_type.name ());
+        debug_msg ("Plugin type: %s".printf (module_type.name ()));
         if (module_type != Type.INVALID)
         {
           break;
@@ -211,7 +219,7 @@ namespace DesktopAgnostic
       {
         if (FileUtils.test (system_path, FileTest.EXISTS))
         {
-          debug ("Loading module config from the system: '%s'", system_path);
+          debug_msg ("Loading module config from the system: '%s'".printf (system_path));
           loaded_config = module_config.load_from_file (system_path,
                                                         KeyFileFlags.NONE);
         }
@@ -226,8 +234,7 @@ namespace DesktopAgnostic
       {
         if (FileUtils.test (user_path, FileTest.EXISTS))
         {
-          debug ("Loading module config from the user directory: '%s'",
-                 user_path);
+          debug_msg ("Loading module config from the user directory: '%s'".printf (user_path));
           loaded_config |= module_config.load_from_file (user_path,
                                                          KeyFileFlags.NONE);
         }
@@ -246,7 +253,7 @@ namespace DesktopAgnostic
     }
     else
     {
-      debug ("No module config files found, falling back to guessing.");
+      debug_msg ("No module config files found, falling back to guessing.");
       string library_prefix = "libda-%s-".printf (prefix);
       return loader.guess_module (library_prefix);
     }

@@ -40,7 +40,7 @@ class TestCase
   MainLoop ml;
   int retval;
 
-  public TestCase ()
+  public TestCase () throws Error
   {
     Config.Schema schema = new Config.Schema ("test-config.schema-ini");
     this.cfg = Config.new ((owned)schema);
@@ -387,9 +387,9 @@ class TestCase
   public static int
   main (string[] args)
   {
-    TestCase test = new TestCase ();
     try
     {
+      TestCase test = new TestCase ();
       test.test_defaults ();
       test.test_set ();
       test.test_invalid ();

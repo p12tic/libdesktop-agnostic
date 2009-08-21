@@ -594,11 +594,11 @@ namespace DesktopAgnostic.Config
           }
           else if (type == typeof (float))
           {
-            gc_val.set_float (list_val.get_float ());
+            gc_val.set_float (get_float_from_value (list_val));
           }
           else if (type == typeof (int))
           {
-            gc_val.set_int (list_val.get_int ());
+            gc_val.set_int (get_int_from_value (list_val));
           }
           else
           {

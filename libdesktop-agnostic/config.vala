@@ -150,39 +150,11 @@ namespace DesktopAgnostic.Config
       }
       else if (option_type == typeof (float))
       {
-        if (value.type () == typeof (float))
-        {
-          this.set_float (group, key, (float)value);
-        }
-        else if (Value.type_transformable (value.type (), typeof (float)))
-        {
-          Value converted = Value (typeof (float));
-          value.transform (ref converted);
-          this.set_float (group, key, (float)converted);
-        }
-        else
-        {
-          throw new Error.INVALID_TYPE ("Value given cannot be converted to a float: %s.",
-                                        value.type ().name ());
-        }
+        this.set_float (group, key, get_float_from_value (value));
       }
       else if (option_type == typeof (int))
       {
-        if (value.type () == typeof (int))
-        {
-          this.set_int (group, key, (int)value);
-        }
-        else if (Value.type_transformable (value.type (), typeof (int)))
-        {
-          Value converted = Value (typeof (int));
-          value.transform (ref converted);
-          this.set_int (group, key, (int)converted);
-        }
-        else
-        {
-          throw new Error.INVALID_TYPE ("Value given cannot be converted to an integer: %s.",
-                                        value.type ().name ());
-        }
+        this.set_int (group, key, get_int_from_value (value));
       }
       else if (option_type == typeof (string))
       {
@@ -215,6 +187,46 @@ namespace DesktopAgnostic.Config
     public abstract void set_string (string group, string key, string value) throws GLib.Error;
     public abstract ValueArray get_list (string group, string key) throws GLib.Error;
     public abstract void set_list (string group, string key, ValueArray value) throws GLib.Error;
+
+    public static float
+    get_float_from_value (Value value) throws Error
+    {
+      if (value.holds (typeof (float)))
+      {
+        return (float)value;
+      }
+      else if (Value.type_transformable (value.type (), typeof (float)))
+      {
+        Value converted = Value (typeof (float));
+        value.transform (ref converted);
+        return (float)converted;
+      }
+      else
+      {
+        throw new Error.INVALID_TYPE ("Value given cannot be converted to a float: %s.",
+                                      value.type ().name ());
+      }
+    }
+
+    public static int
+    get_int_from_value (Value value) throws Error
+    {
+      if (value.holds (typeof (int)))
+      {
+        return (int)value;
+      }
+      else if (Value.type_transformable (value.type (), typeof (int)))
+      {
+        Value converted = Value (typeof (int));
+        value.transform (ref converted);
+        return (int)converted;
+      }
+      else
+      {
+        throw new Error.INVALID_TYPE ("Value given cannot be converted to an integer: %s.",
+                                      value.type ().name ());
+      }
+    }
   }
 
   private static Type? module_type = null;

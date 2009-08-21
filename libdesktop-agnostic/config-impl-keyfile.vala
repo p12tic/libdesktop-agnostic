@@ -706,7 +706,7 @@ namespace DesktopAgnostic.Config
         {
           unowned Value val = value.get_nth (i);
 
-          list[i] = (int)val;
+          list[i] = get_int_from_value (val);
         }
 
         this._data.set_integer_list (group, key, list);
@@ -718,7 +718,7 @@ namespace DesktopAgnostic.Config
         {
           unowned Value val = value.get_nth (i);
 
-          list[i] = (float)val;
+          list[i] = get_float_from_value (val);
         }
 
         this._data.set_double_list (group, key, list);

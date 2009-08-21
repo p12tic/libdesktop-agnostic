@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#
 # Copyright(c) 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -16,107 +17,72 @@
 
 import glib
 import time
-import desktopagnostic.config
+from desktopagnostic import config
 
 
 class TestCase:
 
     def __init__(self):
-        SCHEMA_FILE = '../test-config.schema-ini'
         self.ml = glib.MainLoop()
         self.notify_counter = 0
-        self.client = desktopagnostic.config.Client(SCHEMA_FILE)
+        self.client = config.Client('../test-config.schema-ini')
         self.client.reset(False)
 
-    def check_values(self, expected, actual, value):
+    def check_values(self, group, key, expected, get_func):
+        actual = get_func(group, key)
+        actual_value = self.client.get_value(group, key)
+        if isinstance(expected, float):
+            expected = round(expected, 3)
+            actual = round(actual, 3)
+            actual_value = round(actual_value, 3)
+        elif isinstance(expected, list) and isinstance(expected[0], float):
+            expected = [round(x, 3) for x in expected]
+            actual = [round(x, 3) for x in actual]
+            actual_value = [round(x, 3) for x in actual_value]
         ERROR_MSG = 'Fail! Expected value: %s, actual: %s'
         assert expected == actual, ERROR_MSG % (str(expected), str(actual))
-        assert actual == value
+        assert actual == actual_value
+
+    def check_values_list(self, group, key, expected):
+        self.check_values(group, key, expected, self.client.get_list)
 
     def test_defaults(self):
-        group, key = ('numeric', 'boolean')
-        self.check_values(True,
-                          self.client.get_bool(group, key),
-                          self.client.get_value(group, key))
+        self.check_values('numeric', 'boolean', True, self.client.get_bool)
+        self.check_values('numeric', 'integer', 3, self.client.get_int)
+        self.check_values('numeric', 'float', 3.14, self.client.get_float)
+        self.check_values('misc', 'string', 'Foo bar', self.client.get_string)
+        self.check_values_list('list', 'boolean', [True, False])
+        self.check_values_list('list', 'integer', [1, 2, 3])
+        self.check_values_list('list', 'float', [1.618, 2.718, 3.141])
+        self.check_values_list('list', 'string', ['foo', 'bar'])
 
-        group, key = ('numeric', 'integer')
-        self.check_values(3,
-                          self.client.get_int(group, key),
-                          self.client.get_value(group, key))
+    def check_set_values(self, group, key, expected, type_name, set_value):
+        get_func = getattr(self.client, 'get_%s' % type_name)
+        if set_value:
+            set_func = self.client.set_value
+        else:
+            set_func = getattr(self.client, 'set_%s' % type_name)
+        set_func(group, key, expected)
+        self.check_values(group, key, expected, get_func)
 
-        group, key = ('numeric', 'float')
-        self.check_values(round(3.14, 3),
-                          round(self.client.get_float(group, key), 3),
-                          round(self.client.get_value(group, key), 3))
-
-        group, key = ('misc', 'string')
-        self.check_values('Foo bar',
-                          self.client.get_string(group, key),
-                          self.client.get_value(group, key))
-
-        group, key = ('list', 'boolean')
-        self.check_values([True, False],
-                          self.client.get_list(group, key),
-                          self.client.get_value(group, key))
-
-        group, key = ('list', 'integer')
-        self.check_values([1, 2, 3],
-                          self.client.get_list(group, key),
-                          self.client.get_value(group, key))
-
-        group, key = ('list', 'float')
-        actual = [round(x, 3) for x in self.client.get_list(group, key)]
-        values = [round(x, 3) for x in self.client.get_value(group, key)]
-        self.check_values([round(x, 3) for x in [1.618, 2.718, 3.141]],
-                          actual, values)
-
-        group, key = ('list', 'string')
-        self.check_values(['foo', 'bar'],
-                          self.client.get_list(group, key),
-                          self.client.get_value(group, key))
+    def check_set_all_types(self, set_value):
+        self.check_set_values('numeric', 'boolean', False, 'bool', set_value)
+        self.check_set_values('numeric', 'integer', 10, 'int', set_value)
+        self.check_set_values('numeric', 'float', 2.718, 'float', set_value)
+        self.check_set_values('misc', 'string', 'Quux baz', 'string', set_value)
+        expected_lists = [
+            ([False, True, False], 'boolean'),
+            ([10, 20, 30], 'integer'),
+            ([10.5, 20.6, 30.7], 'float'),
+            (['Quux', 'Baz', 'Foo'], 'string')]
+        for expected, key in expected_lists:
+            self.check_set_values('list', key, expected, 'list', set_value)
 
     def test_set(self):
-        expected = False
-        self.client.set_bool('numeric', 'boolean', expected)
-        assert expected == self.client.get_value('numeric', 'boolean')
-        assert expected == self.client.get_bool('numeric', 'boolean')
-
-        expected = 10
-        self.client.set_int('numeric', 'integer', expected)
-        assert expected == self.client.get_value('numeric', 'integer')
-        assert expected == self.client.get_int('numeric', 'integer')
-
-        expected = round(2.718, 3)
-        self.client.set_float('numeric', 'float', expected)
-        assert expected == round(self.client.get_value('numeric', 'float'), 3)
-        assert expected == round(self.client.get_float('numeric', 'float'), 3)
-
-        expected = 'Quux baz'
-        self.client.set_string('misc', 'string', expected)
-        assert expected == self.client.get_value('misc', 'string')
-        assert expected == self.client.get_string('misc', 'string')
-
-        expected = [False, True, False]
-        self.client.set_list('list', 'boolean', expected)
-        assert expected == self.client.get_value('list', 'boolean')
-        assert expected == self.client.get_list('list', 'boolean')
-
-        expected = [10, 20, 30]
-        self.client.set_list('list', 'integer', expected)
-        assert expected == self.client.get_value('list', 'integer')
-        assert expected == self.client.get_list('list', 'integer')
-
-        expected = [round(x, 3) for x in [10.5, 20.6, 30.7]]
-        self.client.set_list('list', 'float', expected)
-        list1 = [round(x, 3) for x in self.client.get_value('list', 'float')]
-        list2 = [round(x, 3) for x in self.client.get_list('list', 'float')]
-        assert expected == list1
-        assert expected == list2
-
-        expected = ['Quux', 'Baz', 'Foo']
-        self.client.set_list('list', 'string', expected)
-        assert expected == self.client.get_value('list', 'string')
-        assert expected == self.client.get_list('list', 'string')
+        self.check_set_all_types(False)
+        self.client.reset(False)
+        self.test_defaults()
+        self.check_set_all_types(True)
 
     def string_changed(self, group, key, value):
         self.notify_counter += 1

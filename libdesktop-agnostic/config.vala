@@ -150,11 +150,39 @@ namespace DesktopAgnostic.Config
       }
       else if (option_type == typeof (float))
       {
-        this.set_float (group, key, (float)value);
+        if (value.type () == typeof (float))
+        {
+          this.set_float (group, key, (float)value);
+        }
+        else if (Value.type_transformable (value.type (), typeof (float)))
+        {
+          Value converted = Value (typeof (float));
+          value.transform (ref converted);
+          this.set_float (group, key, (float)converted);
+        }
+        else
+        {
+          throw new Error.INVALID_TYPE ("Value given cannot be converted to a float: %s.",
+                                        value.type ().name ());
+        }
       }
       else if (option_type == typeof (int))
       {
-        this.set_int (group, key, (int)value);
+        if (value.type () == typeof (int))
+        {
+          this.set_int (group, key, (int)value);
+        }
+        else if (Value.type_transformable (value.type (), typeof (int)))
+        {
+          Value converted = Value (typeof (int));
+          value.transform (ref converted);
+          this.set_int (group, key, (int)converted);
+        }
+        else
+        {
+          throw new Error.INVALID_TYPE ("Value given cannot be converted to an integer: %s.",
+                                        value.type ().name ());
+        }
       }
       else if (option_type == typeof (string))
       {

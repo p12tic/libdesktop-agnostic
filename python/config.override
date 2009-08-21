@@ -432,7 +432,7 @@ _wrap_desktop_agnostic_config_client_notify_remove (PyGObject *self,
 
   g_free (ndata->group);
   g_free (ndata->key);
-  Py_DECREF (ndata->data_tuple);
+  Py_DECREF ((PyObject *)ndata->data_tuple);
 
   g_lda_notifications = g_list_remove (g_lda_notifications, ndata);
   g_slice_free (NotifyData, ndata);

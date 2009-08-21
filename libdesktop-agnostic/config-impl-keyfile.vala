@@ -345,7 +345,6 @@ namespace DesktopAgnostic.Config
         else
         {
           this.reset ();
-          this.save_config ();
         }
       }
       catch (GLib.Error err)

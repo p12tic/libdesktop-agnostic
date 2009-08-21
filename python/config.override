@@ -82,7 +82,8 @@ _wrap_desktop_agnostic_config_client_set_value (PyGObject *self, PyObject *args,
     return NULL;
   }
 
-  if (PySequence_Check (obj))
+  if (PySequence_Check (obj) && !PyString_Check (obj) &&
+      !PyUnicode_Check (obj))
   {
     type = G_TYPE_VALUE_ARRAY;
   }

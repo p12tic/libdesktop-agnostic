@@ -110,7 +110,8 @@ namespace DesktopAgnostic.Config
           SchemaType st = Schema.find_type (spec.value_type);
           if (st == null)
           {
-            throw new Error.INVALID_TYPE ("Invalid property type to bind.");
+            throw new Error.INVALID_TYPE ("Invalid property type to bind: %s.",
+                                          spec.value_type.name ());
           }
           else
           {

@@ -82,8 +82,15 @@ _wrap_desktop_agnostic_config_client_set_value (PyGObject *self, PyObject *args,
     return NULL;
   }
 
-  // FIXME: special case sequences and init the value to G_TYPE_VALUE_ARRAY
-  type = pyg_type_from_object ((PyObject *)obj->ob_type);
+  if (PySequence_Check (obj))
+  {
+    type = G_TYPE_VALUE_ARRAY;
+  }
+  else
+  {
+    type = pyg_type_from_object ((PyObject *)obj->ob_type);
+  }
+
   if (type == G_TYPE_INVALID)
   {
     return NULL;
@@ -188,10 +195,97 @@ _wrap_desktop_agnostic_config_client_set_list (PyGObject *self, PyObject *args,
 }
 %%
 override desktop_agnostic_config_client_notify_add kwargs
+
+typedef struct _NotifyData
+{
+  gchar *group;
+  gchar *key;
+  gpointer data_tuple;
+} NotifyData;
+
+static GList *g_lda_notifications = NULL;
+
+NotifyData *
+pydesktopagnostic_notifications_find (const gchar *group,
+                                      const gchar *key,
+                                      PyObject *callback,
+                                      PyObject *extra)
+{
+  GList *it;
+  for (it = g_lda_notifications; it; it = it->next)
+  {
+    NotifyData *data;
+    PyObject *tuple;
+
+    data = it->data;
+    tuple = data->data_tuple;
+    if (strcmp (group, data->group) || strcmp (key, data->key))
+    {
+      continue;
+    }
+
+    if (extra)
+    {
+      PyObject *t_cb, *t_extra;
+      int comp_result;
+
+      if (PyTuple_Size (tuple) <= 1)
+      {
+        continue;
+      }
+
+      t_cb = PyTuple_GetItem (tuple, 0);
+      t_extra = PyTuple_GetItem (tuple, 1);
+
+      if (PyObject_Cmp (t_cb, callback, &comp_result) == -1)
+      {
+        continue;
+      }
+      if (comp_result != 0)
+      {
+        continue;
+      }
+
+      // if we're here the callback is ok
+      if (PyObject_Cmp (t_extra, extra, &comp_result) == -1)
+      {
+        continue;
+      }
+      if (comp_result == 0)
+      {
+        return data;
+      }
+    }
+    else // no extra param
+    {
+      PyObject *t_cb;
+      int comp_result;
+
+      if (PyTuple_Size (tuple) != 1)
+      {
+        continue;
+      }
+
+      t_cb = PyTuple_GetItem (tuple, 0);
+
+      if (PyObject_Cmp (t_cb, callback, &comp_result) == -1)
+      {
+        continue;
+      }
+      if (comp_result == 0)
+      {
+        return data;
+      }
+    }
+  }
+
+  return NULL;
+}
+
 void
-pydesktopagnostic_config_client_notify_add (const gchar* group,
-                                            const gchar* key,
-                                            const GValue* value,
+pydesktopagnostic_config_client_notify_add (const gchar *group,
+                                            const gchar *key,
+                                            const GValue *value,
                                             gpointer user_data)
 {
   PyObject *tuple;
@@ -250,6 +344,7 @@ _wrap_desktop_agnostic_config_client_notify_add (PyGObject *self,
   PyObject *extra = NULL;
   PyObject *data;
   GError *error = NULL;
+  NotifyData *ndata;
 
   if (!PyArg_ParseTupleAndKeywords (args, kwargs,
                                     "ssO|O:desktopagnostic.config.Client.notify_add",
@@ -263,9 +358,6 @@ _wrap_desktop_agnostic_config_client_notify_add (PyGObject *self,
     PyErr_SetString (PyExc_TypeError, "Third argument not callable");
     return NULL;
   }
-
-  // FIXME: to support notify_remove we need to save these 'data' vars
-  //        to a global list/array
 
   if (extra)
   {
@@ -285,6 +377,65 @@ _wrap_desktop_agnostic_config_client_notify_add (PyGObject *self,
   {
     return NULL;
   }
+
+  // to properly support notify_remove we need a global list of all
+  //  added notifications
+  
+  ndata = g_slice_new0 (NotifyData);
+  ndata->group = g_strdup (group);
+  ndata->key = g_strdup (key);
+  ndata->data_tuple = data;
+  g_lda_notifications = g_list_append (g_lda_notifications, ndata);
+
+  Py_INCREF (Py_None);
+  return Py_None;
+}
+%%
+override desktop_agnostic_config_client_notify_remove kwargs
+static PyObject *
+_wrap_desktop_agnostic_config_client_notify_remove (PyGObject *self,
+                                                    PyObject *args,
+                                                    PyObject *kwargs)
+{
+  static char *kwlist[] = { "group", "key", "func", "user_data", NULL };
+  gchar *group;
+  gchar *key;
+  PyObject *callback;
+  PyObject *extra = NULL;
+  GError *error = NULL;
+  NotifyData *ndata = NULL;
+
+  if (!PyArg_ParseTupleAndKeywords (args, kwargs,
+                                    "ssO|O:desktopagnostic.config.Client.notify_remove",
+                                    kwlist, &group, &key, &callback, &extra))
+  {
+    return NULL;
+  }
+
+  ndata = pydesktopagnostic_notifications_find (group, key, callback, extra);
+  if (ndata == NULL)
+  {
+    PyErr_SetString (PyExc_TypeError,
+                     "Unable to remove this callback and data pair!");
+    return NULL;
+  }
+
+  desktop_agnostic_config_client_notify_remove (DESKTOP_AGNOSTIC_CONFIG_CLIENT (self->obj),
+                                                group, key,
+                                                pydesktopagnostic_config_client_notify_add,
+                                                ndata->data_tuple, &error);
+
+  if (pyg_error_check (&error))
+  {
+    return NULL;
+  }
+
+  g_free (ndata->group);
+  g_free (ndata->key);
+  Py_DECREF (ndata->data_tuple);
+
+  g_lda_notifications = g_list_remove (g_lda_notifications, ndata);
+  g_slice_free (NotifyData, ndata);
 
   Py_INCREF (Py_None);
   return Py_None;

@@ -517,8 +517,12 @@ namespace DesktopAgnostic.Config
     public override void
     set_bool (string group, string key, bool value) throws GLib.Error
     {
-      this._data.set_boolean (group, key, value);
-      this.update_config (group, key);
+      if (!this._data.has_group (group) || !this._data.has_key (group, key) ||
+          this.get_bool (group, key) != value)
+      {
+        this._data.set_boolean (group, key, value);
+        this.update_config (group, key);
+      }
     }
 
     public override float
@@ -545,8 +549,12 @@ namespace DesktopAgnostic.Config
     public override void
     set_float (string group, string key, float value) throws GLib.Error
     {
-      this._data.set_double (group, key, value);
-      this.update_config (group, key);
+      if (!this._data.has_group (group) || !this._data.has_key (group, key) ||
+          this.get_float (group, key) != value)
+      {
+        this._data.set_double (group, key, value);
+        this.update_config (group, key);
+      }
     }
 
     public override int
@@ -573,8 +581,12 @@ namespace DesktopAgnostic.Config
     public override void
     set_int (string group, string key, int value) throws GLib.Error
     {
-      this._data.set_integer (group, key, value);
-      this.update_config (group, key);
+      if (!this._data.has_group (group) || !this._data.has_key (group, key) ||
+          this.get_int (group, key) != value)
+      {
+        this._data.set_integer (group, key, value);
+        this.update_config (group, key);
+      }
     }
 
     public override string
@@ -601,8 +613,12 @@ namespace DesktopAgnostic.Config
     public override void
     set_string (string group, string key, string value) throws GLib.Error
     {
-      this._data.set_string (group, key, value);
-      this.update_config (group, key);
+      if (!this._data.has_group (group) || !this._data.has_key (group, key) ||
+          this.get_string (group, key) != value)
+      {
+        this._data.set_string (group, key, value);
+        this.update_config (group, key);
+      }
     }
 
     public override ValueArray
@@ -631,6 +647,37 @@ namespace DesktopAgnostic.Config
     {
       SchemaOption option = this.schema.get_option (group, key);
       Type list_type = option.list_type;
+
+      if (this._data.has_group (group) && this._data.has_key (group, key))
+      {
+        ValueArray old_value;
+
+        old_value = this.get_list (group, key);
+        if (old_value.n_values == value.n_values)
+        {
+          bool is_equal = true;
+          for (uint i = 0; i < value.n_values; i++)
+          {
+            // FIXME ridiculously unreliable Value.equals algorithm
+            unowned Value old_val;
+            unowned Value new_val;
+
+            old_val = old_value.get_nth (i);
+            new_val = value.get_nth (i);
+
+            if (old_val.type () != new_val.type () ||
+                old_val.strdup_contents () != new_val.strdup_contents ())
+            {
+              is_equal = false;
+              break;
+            }
+          }
+          if (is_equal)
+          {
+            return;
+          }
+        }
+      }
 
       if (value.n_values == 0)
       {

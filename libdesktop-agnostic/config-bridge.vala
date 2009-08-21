@@ -121,12 +121,12 @@ namespace DesktopAgnostic.Config
         }
         if (!read_only)
         {
-          binding.notify_id = Signal.connect (obj, "notify::" + spec.name,
+          binding.notify_id = Signal.connect (obj, "notify::%s".printf (spec.name),
                                               (Callback)this.on_property_changed,
                                               binding);
         }
         binding.read_only = read_only;
-        binding_key = group + "/" + key;
+        binding_key = "%s/%s".printf (group, key);
         unowned List<Binding>? bindings_list = this.bindings.get_data (binding_key);
         if (bindings_list == null)
         {
@@ -140,7 +140,7 @@ namespace DesktopAgnostic.Config
         {
           bindings_list.append ((owned)binding);
         }
-        full_key = binding_key + ":" + property_name;
+        full_key = "%s:%s".printf (binding_key, property_name);
         unowned List<string>? key_list = this.bindings_by_obj.lookup (obj);
         if (key_list == null)
         {
@@ -184,7 +184,7 @@ namespace DesktopAgnostic.Config
       string binding_key;
       unowned ParamSpec spec;
 
-      binding_key = group + "/" + key;
+      binding_key = "%s/%s".printf (group, key);
       bindings_list = this.bindings.get_data (binding_key);
       foreach (unowned Binding binding in bindings_list)
       {

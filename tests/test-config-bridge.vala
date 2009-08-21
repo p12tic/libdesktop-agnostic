@@ -23,22 +23,32 @@
 using GLib;
 using DesktopAgnostic;
 
+/**
+ * Note: array test disabled until the following Vala bug is fixed:
+ * http://bugzilla.gnome.org/show_bug.cgi?id=592493
+ */
 private class Test : Object
 {
   public string str { get; set; }
   public int num { get; set; }
+  public float dec { get; set; }
+  public bool tf { get; set; }
+  //public unowned ValueArray arr { get; set; }
 
   construct
   {
     this.str = "Not expected string";
     this.num = 1;
+    this.dec = 2.71f;
+    this.tf = false;
+    //this.arr = new ValueArray (0);
   }
 }
 
 private class TestDestruct : Test
 {
   private Config.Backend cfg;
-  TestDestruct (Config.Backend cfg)
+  public TestDestruct (Config.Backend cfg)
   {
     this.cfg = cfg;
   }
@@ -50,40 +60,57 @@ private class TestDestruct : Test
   }
 }
 
+private void
+bridge_assertions (Config.Backend cfg, Config.Bridge bridge, Test obj)// throws Error
+{
+  /*ValueArray new_array;
+  Value array_item;*/
+  cfg.reset ();
+
+  assert (cfg.get_string ("group", "string") == "foo");
+
+  bridge.bind (cfg, "group", "string", obj, "str", false);
+  bridge.bind (cfg, "group", "number", obj, "num", true);
+  bridge.bind (cfg, "group", "decimal", obj, "dec", false);
+  bridge.bind (cfg, "group", "tf", obj, "tf", true);
+  //bridge.bind (cfg, "group", "array", obj, "arr", false);
+  assert (obj.str == "foo");
+  assert (obj.num == 10);
+  assert (obj.dec == 3.14f);
+  assert (obj.tf == true);
+  //assert (obj.arr.n_values == 3);
+  obj.str = "Some new string";
+  obj.num = 100;
+  obj.dec = 1.618f;
+  obj.tf = false;
+  /*new_array = new ValueArray (2);
+  array_item = "z";
+  new_array.append (array_item);
+  array_item = "y";
+  new_array.append (array_item);
+  obj.arr = new_array;*/
+  assert (cfg.get_string ("group", "string") == obj.str);
+  assert (cfg.get_int ("group", "number") != obj.num);
+  assert (cfg.get_float ("group", "decimal") == obj.dec);
+  assert (cfg.get_bool ("group", "tf") != obj.tf);
+  //assert (cfg.get_list ("group", "array").n_values == obj.arr.n_values);
+}
+
 int main (string[] args)
 {
   try
   {
     Config.Schema schema = new Config.Schema ("test-config-bridge.schema-ini");
     Config.Backend cfg = Config.new (schema);
-    Config.Bridge bridge = Config.Bridge.get_default ();
-
-    cfg.reset ();
+    unowned Config.Bridge bridge = Config.Bridge.get_default ();
 
     Test t = new Test ();
-    bridge.bind (cfg, "group", "string", t, "str", false);
-    bridge.bind (cfg, "group", "number", t, "num", true);
-    assert (t.str == "foo");
-    assert (t.num == 10);
-    t.str = "Some new string";
-    t.num = 100;
-    assert (cfg.get_string ("group", "string") == t.str);
-    assert (cfg.get_int ("group", "number") != t.num);
+    bridge_assertions (cfg, bridge, t);
     bridge.remove_all_for_object (cfg, t);
-
     cfg.reset ();
 
-    assert (cfg.get_string ("group", "string") == "foo");
-
     TestDestruct td = new TestDestruct (cfg);
-    bridge.bind (cfg, "group", "string", td, "str", false);
-    bridge.bind (cfg, "group", "number", td, "num", true);
-    assert (td.str == "foo");
-    assert (td.num == 10);
-    td.str = "Some new string";
-    td.num = 100;
-    assert (cfg.get_string ("group", "string") == td.str);
-    assert (cfg.get_int ("group", "number") != td.num);
+    bridge_assertions (cfg, bridge, td);
     td = null;
   }
   catch (Error err)

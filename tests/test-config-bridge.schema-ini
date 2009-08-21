@@ -8,4 +8,19 @@ type = integer
 default = 10
 description = some number.
 
-; vim: set ft=dosini :
+[group/decimal]
+type = float
+default = 3.14
+description = some decimal.
+
+[group/tf]
+type = boolean
+default = true
+description = some boolean.
+
+[group/array]
+type = list-string
+default = [a,b,c]
+description = some array.
+
+# vim: set ft=cfg :

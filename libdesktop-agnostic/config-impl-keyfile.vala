@@ -275,6 +275,7 @@ namespace DesktopAgnostic.Config
 
             new_data.load_from_data (data, length, KeyFileFlags.NONE);
 
+            this._autosave = false;
             foreach (unowned string group in schema.get_groups ())
             {
               foreach (unowned string key in schema.get_keys (group))
@@ -285,6 +286,7 @@ namespace DesktopAgnostic.Config
                 }
               }
             }
+            this._autosave = true;
           }
           break;
         case VFS.FileMonitorEvent.DELETED:

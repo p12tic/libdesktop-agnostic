@@ -31,12 +31,10 @@ namespace DesktopAgnostic.Config
     public unowned Object obj;
     public string property_name;
     public ulong notify_id;
-    public NotifyFunc cfg_notify_func;
     public bool read_only;
 
     ~Binding ()
     {
-      this.cfg.notify_remove (this.group, this.key, this.cfg_notify_func);
       if (!this.read_only && SignalHandler.is_connected (obj, this.notify_id))
       {
         SignalHandler.disconnect (obj, this.notify_id);
@@ -75,7 +73,7 @@ namespace DesktopAgnostic.Config
       return bridge;
     }
 
-    static unowned ParamSpec?
+    private unowned ParamSpec?
     get_property_spec (Object obj, string property_name)
     {
       unowned ObjectClass obj_cls = (ObjectClass)(obj.get_type ().class_peek ());
@@ -92,6 +90,7 @@ namespace DesktopAgnostic.Config
       Binding binding;
       string binding_key, full_key;
       unowned ParamSpec spec;
+      NotifyFunc notify_func;
       unowned List<Binding>? bindings_list;
 
       binding = new Binding ();
@@ -110,12 +109,12 @@ namespace DesktopAgnostic.Config
             spec.value_type == typeof (string))
         {
           obj.set_property (property_name, config.get_value (group, key));
-          binding.cfg_notify_func = this.on_simple_value_changed;
+          notify_func = this.on_simple_value_changed;
         }
         else if (spec.value_type == typeof (ValueArray))
         {
           obj.set (property_name, config.get_list (group, key));
-          binding.cfg_notify_func = this.on_list_changed;
+          notify_func = this.on_list_changed;
         }
         else
         {
@@ -128,10 +127,9 @@ namespace DesktopAgnostic.Config
           else
           {
             obj.set_property (binding.property_name, config.get_value (group, key));
-            binding.cfg_notify_func = this.on_serialized_object_changed;
+            notify_func = this.on_serialized_object_changed;
           }
         }
-        config.notify_add (group, key, binding.cfg_notify_func);
         if (!read_only)
         {
           binding.notify_id = Signal.connect (obj, "notify::%s".printf (spec.name),
@@ -153,6 +151,7 @@ namespace DesktopAgnostic.Config
           this.bindings.set_data_full (binding_key, (owned)new_bindings_list,
                                        (DestroyNotify)g_list_free);
           */
+          config.notify_add (group, key, notify_func);
         }
         else
         {
@@ -197,7 +196,7 @@ namespace DesktopAgnostic.Config
      */
     public void
     remove (Backend config, string group, string key, Object obj,
-            string property_name) throws Error
+            string property_name) throws GLib.Error
     {
       unowned List<Binding> bindings_list;
       SList<uint> bindings_to_remove;
@@ -225,6 +224,30 @@ namespace DesktopAgnostic.Config
       }
       if (bindings_list.length () == 0)
       {
+        unowned ParamSpec spec;
+        NotifyFunc notify_func;
+
+        spec = this.get_property_spec (obj, property_name);
+        if (spec != null)
+        {
+          if (spec.value_type == typeof (bool) ||
+              spec.value_type == typeof (float) ||
+              spec.value_type == typeof (double) ||
+              spec.value_type == typeof (int) ||
+              spec.value_type == typeof (string))
+          {
+            notify_func = this.on_simple_value_changed;
+          }
+          else if (spec.value_type == typeof (ValueArray))
+          {
+            notify_func = this.on_list_changed;
+          }
+          else
+          {
+            notify_func = this.on_serialized_object_changed;
+          }
+          config.notify_remove (group, key, notify_func);
+        }
         this.bindings.remove_data (binding_key);
       }
       else

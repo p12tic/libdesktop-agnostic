@@ -61,7 +61,7 @@ private class TestDestruct : Test
 }
 
 private void
-bridge_assertions (Config.Backend cfg, Config.Bridge bridge, Test obj)// throws Error
+bridge_assertions (Config.Backend cfg, Config.Bridge bridge, Test obj) throws Error
 {
   /*ValueArray new_array;
   Value array_item;*/

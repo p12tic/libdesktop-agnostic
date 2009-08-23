@@ -307,9 +307,11 @@ namespace DesktopAgnostic.Config
       bindings_list = this.bindings.get_data (full_key);
       foreach (unowned Binding binding in bindings_list)
       {
-        ParamSpec spec = this.get_property_spec (binding.obj,
-                                                 binding.property_name);
-        SchemaType? st = Schema.find_type (spec.value_type);
+        ParamSpec spec;
+        SchemaType? st;
+
+        spec = this.get_property_spec (binding.obj, binding.property_name);
+        st = Schema.find_type (spec.value_type);
         if (st != null)
         {
           if (!binding.read_only)

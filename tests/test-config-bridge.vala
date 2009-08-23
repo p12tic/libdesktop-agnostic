@@ -48,15 +48,18 @@ private class Test : Object
 private class TestDestruct : Test
 {
   private Config.Backend cfg;
+  public static bool instance_exists = false;
   public TestDestruct (Config.Backend cfg)
   {
     this.cfg = cfg;
+    instance_exists = true;
   }
 
   ~TestDestruct ()
   {
     unowned Config.Bridge bridge = Config.Bridge.get_default ();
     bridge.remove_all_for_object (this.cfg, this);
+    instance_exists = false;
   }
 }
 
@@ -103,15 +106,28 @@ int main (string[] args)
     Config.Schema schema = new Config.Schema ("test-config-bridge.schema-ini");
     Config.Backend cfg = Config.new (schema);
     unowned Config.Bridge bridge = Config.Bridge.get_default ();
+    Test t;
+    TestDestruct td;
 
-    Test t = new Test ();
+    t = new Test ();
     bridge_assertions (cfg, bridge, t);
     bridge.remove_all_for_object (cfg, t);
     cfg.reset ();
 
-    TestDestruct td = new TestDestruct (cfg);
+    td = new TestDestruct (cfg);
     bridge_assertions (cfg, bridge, td);
     td = null;
+    assert (!TestDestruct.instance_exists);
+
+    t = new Test ();
+    bridge_assertions (cfg, bridge, t);
+
+    td = new TestDestruct (cfg);
+    bridge_assertions (cfg, bridge, td);
+    td = null;
+    assert (!TestDestruct.instance_exists);
+
+    bridge.remove_all_for_object (cfg, t);
   }
   catch (Error err)
   {

@@ -31,7 +31,18 @@ namespace DesktopAgnostic.Config
     public unowned Object obj;
     public string property_name;
     public ulong notify_id;
+    public NotifyFunc cfg_notify_func;
     public bool read_only;
+
+    ~Binding ()
+    {
+      this.cfg.notify_remove (this.group, this.key, this.cfg_notify_func);
+      if (!this.read_only && SignalHandler.is_connected (obj, this.notify_id))
+      {
+        SignalHandler.disconnect (obj, this.notify_id);
+      }
+      this.obj = null;
+    }
   }
 
   /**
@@ -64,7 +75,7 @@ namespace DesktopAgnostic.Config
       return bridge;
     }
 
-    private unowned ParamSpec?
+    static unowned ParamSpec?
     get_property_spec (Object obj, string property_name)
     {
       unowned ObjectClass obj_cls = (ObjectClass)(obj.get_type ().class_peek ());
@@ -76,11 +87,12 @@ namespace DesktopAgnostic.Config
      */
     public void
     bind (Backend config, string group, string key, Object obj,
-          string property_name, bool read_only) throws Error
+          string property_name, bool read_only) throws GLib.Error
     {
       Binding binding;
       string binding_key, full_key;
       unowned ParamSpec spec;
+      unowned List<Binding>? bindings_list;
 
       binding = new Binding ();
       binding.cfg = config;
@@ -98,12 +110,12 @@ namespace DesktopAgnostic.Config
             spec.value_type == typeof (string))
         {
           obj.set_property (property_name, config.get_value (group, key));
-          config.notify_add (group, key, this.on_simple_value_changed);
+          binding.cfg_notify_func = this.on_simple_value_changed;
         }
         else if (spec.value_type == typeof (ValueArray))
         {
           obj.set (property_name, config.get_list (group, key));
-          config.notify_add (group, key, this.on_list_changed);
+          binding.cfg_notify_func = this.on_list_changed;
         }
         else
         {
@@ -116,9 +128,10 @@ namespace DesktopAgnostic.Config
           else
           {
             obj.set_property (binding.property_name, config.get_value (group, key));
-            config.notify_add (group, key, this.on_serialized_object_changed);
+            binding.cfg_notify_func = this.on_serialized_object_changed;
           }
         }
+        config.notify_add (group, key, binding.cfg_notify_func);
         if (!read_only)
         {
           binding.notify_id = Signal.connect (obj, "notify::%s".printf (spec.name),
@@ -127,7 +140,8 @@ namespace DesktopAgnostic.Config
         }
         binding.read_only = read_only;
         binding_key = "%s/%s".printf (group, key);
-        unowned List<Binding>? bindings_list = this.bindings.get_data (binding_key);
+
+        bindings_list = this.bindings.get_data (binding_key);
         if (bindings_list == null)
         {
           List<Binding> new_bindings_list;
@@ -135,11 +149,16 @@ namespace DesktopAgnostic.Config
           new_bindings_list = new List<Binding> ();
           new_bindings_list.append ((owned)binding);
           this.bindings.set_data (binding_key, (owned)new_bindings_list);
+          /* Using the following call will cause bizarre segfaults:
+          this.bindings.set_data_full (binding_key, (owned)new_bindings_list,
+                                       (DestroyNotify)g_list_free);
+          */
         }
         else
         {
           bindings_list.append ((owned)binding);
         }
+
         full_key = "%s:%s".printf (binding_key, property_name);
         unowned List<string>? key_list = this.bindings_by_obj.lookup (obj);
         if (key_list == null)
@@ -181,54 +200,43 @@ namespace DesktopAgnostic.Config
             string property_name) throws Error
     {
       unowned List<Binding> bindings_list;
+      SList<uint> bindings_to_remove;
+      uint pos = -1;
       string binding_key;
-      unowned ParamSpec spec;
 
       binding_key = "%s/%s".printf (group, key);
       bindings_list = this.bindings.get_data (binding_key);
+      bindings_to_remove = new SList<uint> ();
       foreach (unowned Binding binding in bindings_list)
       {
+        pos++;
         if (binding.obj == obj)
         {
-          binding.obj = null;
-          spec = this.get_property_spec (obj, property_name);
-          if (spec.value_type == typeof (bool) ||
-              spec.value_type == typeof (float) ||
-              spec.value_type == typeof (double) ||
-              spec.value_type == typeof (int) ||
-              spec.value_type == typeof (string))
-          {
-            config.notify_remove (group, key, this.on_simple_value_changed);
-          }
-          else if (spec.value_type == typeof (ValueArray))
-          {
-            config.notify_remove (group, key, this.on_list_changed);
-
-          }
-          else
-          {
-            SchemaType st = Schema.find_type (spec.value_type);
-            if (st == null)
-            {
-              throw new Error.INVALID_TYPE ("Invalid property type to remove a binding from.");
-            }
-            else
-            {
-              config.notify_remove (group, key, this.on_serialized_object_changed);
-            }
-          }
-          if (!binding.read_only &&
-              SignalHandler.is_connected (obj, binding.notify_id))
-          {
-            SignalHandler.disconnect (obj, binding.notify_id);
-          }
-          bindings_list.remove (binding);
-          binding.unref ();
-          if (bindings_list.length () == 0)
-          {
-            this.bindings.remove_data (binding_key);
-          }
+          bindings_to_remove.append (pos);
         }
+      }
+      foreach (uint binding_pos in bindings_to_remove)
+      {
+        unowned List<Binding> node;
+
+        node = bindings_list.nth (binding_pos);
+        node.data = null;
+        bindings_list.delete_link (node);
+      }
+      if (bindings_list.length () == 0)
+      {
+        this.bindings.remove_data (binding_key);
+      }
+      else
+      {
+        List<Binding> new_list;
+
+        new_list = bindings_list.copy ();
+        this.bindings.set_data (binding_key, (owned)new_list);
+        /* Using the following call will cause bizarre segfaults:
+        this.bindings.set_data_full (binding_key, (owned)new_list,
+                                     (DestroyNotify)g_list_free);
+        */
       }
     }
 

@@ -212,7 +212,7 @@ namespace DesktopAgnostic.Config
         pos++;
         if (binding.obj == obj)
         {
-          bindings_to_remove.append (pos);
+          bindings_to_remove.prepend (pos);
         }
       }
       foreach (uint binding_pos in bindings_to_remove)

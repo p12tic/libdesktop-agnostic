@@ -48,9 +48,11 @@ private class Test : Object
 private class TestDestruct : Test
 {
   private Config.Backend cfg;
+  public int num2 { get; set; }
   public static bool instance_exists = false;
   public TestDestruct (Config.Backend cfg)
   {
+    this.num2 = 1;
     this.cfg = cfg;
     instance_exists = true;
   }
@@ -74,11 +76,19 @@ bridge_assertions (Config.Backend cfg, Config.Bridge bridge, Test obj) throws Er
 
   bridge.bind (cfg, "group", "string", obj, "str", false);
   bridge.bind (cfg, "group", "number", obj, "num", true);
+  if (obj is TestDestruct)
+  {
+    bridge.bind (cfg, "group", "number", obj, "num2", true);
+  }
   bridge.bind (cfg, "group", "decimal", obj, "dec", false);
   bridge.bind (cfg, "group", "tf", obj, "tf", true);
   //bridge.bind (cfg, "group", "array", obj, "arr", false);
   assert (obj.str == "foo");
   assert (obj.num == 10);
+  if (obj is TestDestruct)
+  {
+    assert ((obj as TestDestruct).num2 == 10);
+  }
   assert (obj.dec == 3.14f);
   assert (obj.tf == true);
   //assert (obj.arr.n_values == 3);

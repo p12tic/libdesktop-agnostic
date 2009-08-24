@@ -73,11 +73,62 @@ namespace DesktopAgnostic.Config
       return bridge;
     }
 
-    private unowned ParamSpec?
+    private static unowned ParamSpec?
     get_property_spec (Object obj, string property_name)
     {
       unowned ObjectClass obj_cls = (ObjectClass)(obj.get_type ().class_peek ());
       return obj_cls.find_property (property_name);
+    }
+
+    private static delegate void NotifyFuncHandler (Config.Backend config,
+                                                    string group, string key,
+                                                    NotifyFunc func) throws GLib.Error;
+
+    private void
+    handle_notify_func (Config.Backend config, string group, string key,
+                        Object obj, string property_name,
+                        NotifyFuncHandler func) throws GLib.Error
+    {
+      unowned ParamSpec? spec;
+
+      spec = get_property_spec (obj, property_name);
+      if (spec != null)
+      {
+        this.handle_notify_func_with_param_spec (config, group, key, spec,
+                                                 func);
+      }
+    }
+
+    private void
+    handle_notify_func_with_param_spec (Config.Backend config, string group,
+                                        string key, ParamSpec spec,
+                                        NotifyFuncHandler func) throws GLib.Error
+    {
+      if (spec.value_type == typeof (bool) ||
+          spec.value_type == typeof (float) ||
+          spec.value_type == typeof (double) ||
+          spec.value_type == typeof (int) ||
+          spec.value_type == typeof (string))
+      {
+        func (config, group, key, this.on_simple_value_changed);
+      }
+      else if (spec.value_type == typeof (ValueArray))
+      {
+        func (config, group, key, this.on_list_changed);
+      }
+      else
+      {
+        SchemaType st = Schema.find_type (spec.value_type);
+        if (st == null)
+        {
+          throw new Error.INVALID_TYPE ("Invalid property type to bind: %s.",
+                                        spec.value_type.name ());
+        }
+        else
+        {
+          func (config, group, key, this.on_serialized_object_changed);
+        }
+      }
     }
 
     /**
@@ -88,10 +139,7 @@ namespace DesktopAgnostic.Config
           string property_name, bool read_only) throws GLib.Error
     {
       Binding binding;
-      string binding_key, full_key;
-      unowned ParamSpec spec;
-      NotifyFunc notify_func;
-      unowned List<Binding>? bindings_list;
+      unowned ParamSpec? spec;
 
       binding = new Binding ();
       binding.cfg = config;
@@ -99,37 +147,16 @@ namespace DesktopAgnostic.Config
       binding.key = key;
       binding.obj = obj;
       binding.property_name = property_name;
-      spec = this.get_property_spec (obj, property_name);
+
+      spec = get_property_spec (obj, property_name);
       if (spec != null)
       {
-        if (spec.value_type == typeof (bool) ||
-            spec.value_type == typeof (float) ||
-            spec.value_type == typeof (double) ||
-            spec.value_type == typeof (int) ||
-            spec.value_type == typeof (string))
-        {
-          obj.set_property (property_name, config.get_value (group, key));
-          notify_func = this.on_simple_value_changed;
-        }
-        else if (spec.value_type == typeof (ValueArray))
-        {
-          obj.set (property_name, config.get_list (group, key));
-          notify_func = this.on_list_changed;
-        }
-        else
-        {
-          SchemaType st = Schema.find_type (spec.value_type);
-          if (st == null)
-          {
-            throw new Error.INVALID_TYPE ("Invalid property type to bind: %s.",
-                                          spec.value_type.name ());
-          }
-          else
-          {
-            obj.set_property (binding.property_name, config.get_value (group, key));
-            notify_func = this.on_serialized_object_changed;
-          }
-        }
+        string binding_key;
+        unowned List<Binding>? bindings_list;
+        string full_key;
+        unowned List<string>? key_list;
+
+        obj.set_property (binding.property_name, config.get_value (group, key));
         if (!read_only)
         {
           binding.notify_id = Signal.connect (obj, "notify::%s".printf (spec.name),
@@ -151,7 +178,8 @@ namespace DesktopAgnostic.Config
           this.bindings.set_data_full (binding_key, (owned)new_bindings_list,
                                        (DestroyNotify)g_list_free);
           */
-          config.notify_add (group, key, notify_func);
+          this.handle_notify_func_with_param_spec (config, group, key, spec,
+                                                   config.notify_add);
         }
         else
         {
@@ -159,7 +187,7 @@ namespace DesktopAgnostic.Config
         }
 
         full_key = "%s:%s".printf (binding_key, property_name);
-        unowned List<string>? key_list = this.bindings_by_obj.lookup (obj);
+        key_list = this.bindings_by_obj.lookup (obj);
         if (key_list == null)
         {
           List<string> new_key_list = new List<string> ();
@@ -224,30 +252,8 @@ namespace DesktopAgnostic.Config
       }
       if (bindings_list.length () == 0)
       {
-        unowned ParamSpec spec;
-        NotifyFunc notify_func;
-
-        spec = this.get_property_spec (obj, property_name);
-        if (spec != null)
-        {
-          if (spec.value_type == typeof (bool) ||
-              spec.value_type == typeof (float) ||
-              spec.value_type == typeof (double) ||
-              spec.value_type == typeof (int) ||
-              spec.value_type == typeof (string))
-          {
-            notify_func = this.on_simple_value_changed;
-          }
-          else if (spec.value_type == typeof (ValueArray))
-          {
-            notify_func = this.on_list_changed;
-          }
-          else
-          {
-            notify_func = this.on_serialized_object_changed;
-          }
-          config.notify_remove (group, key, notify_func);
-        }
+        this.handle_notify_func (config, group, key, obj, property_name,
+                                 config.notify_remove);
         this.bindings.remove_data (binding_key);
       }
       else

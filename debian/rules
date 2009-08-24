@@ -10,7 +10,9 @@ build:
 	dh $@ --before configure
 	LINKFLAGS="${LDFLAGS} -Wl,--as-needed" ./waf --nocache configure --prefix=/usr --enable-debug --config-backends=gconf,keyfile --vfs-backends=gio,gnome-vfs,thunar-vfs --desktop-entry-backends=glib,gnome
 	./waf --nocache build
+	# needed for Vala < 0.7.6.
 	sed -i -e 's:<\(vfs.h>\):<libdesktop-agnostic/\1:g' build/default/libdesktop-agnostic/fdo.h
+	sed -i -e 's@\(cheader_filename = "\)\([^/]*\?"\)@\1libdesktop-agnostic/\2@g' build/default/libdesktop-agnostic/desktop-agnostic*.vapi
 	dh $@ --remaining
 
 install: build

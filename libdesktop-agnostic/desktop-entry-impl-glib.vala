@@ -27,7 +27,7 @@ namespace DesktopAgnostic.FDO
   private const string GROUP = "Desktop Entry";
   public class DesktopEntryGLib : DesktopEntry, Object
   {
-    private KeyFile _keyfile = null;
+    private KeyFile _keyfile = new KeyFile ();
     private bool loaded = false;
     private VFS.File _file = null;
 
@@ -37,32 +37,35 @@ namespace DesktopAgnostic.FDO
       {
         return this._file;
       }
-      set
+      set construct
       {
-        if (this.loaded)
+        if (value != null)
         {
-          warning ("The desktop entry has already been initialized.");
-        }
-        else
-        {
-          string? path;
-
-          this._file = value;
-          path = value.path;
-          if (path == null)
+          if (this.loaded)
           {
-            string data;
-            size_t data_len;
-
-            this._file.load_contents (out data, out data_len);
-            this._keyfile.load_from_data (data, data_len,
-                                          KeyFileFlags.KEEP_TRANSLATIONS);
+            warning ("The desktop entry has already been initialized.");
           }
           else
           {
-            this._keyfile.load_from_file (path, KeyFileFlags.KEEP_TRANSLATIONS);
+            string? path;
+
+            this._file = value;
+            path = value.path;
+            if (path == null)
+            {
+              string data;
+              size_t data_len;
+
+              this._file.load_contents (out data, out data_len);
+              this._keyfile.load_from_data (data, data_len,
+                                            KeyFileFlags.KEEP_TRANSLATIONS);
+            }
+            else
+            {
+              this._keyfile.load_from_file (path, KeyFileFlags.KEEP_TRANSLATIONS);
+            }
+            this.loaded = true;
           }
-          this.loaded = true;
         }
       }
     }
@@ -73,38 +76,44 @@ namespace DesktopAgnostic.FDO
       {
         return this._keyfile;
       }
-      set
+      set construct
       {
-        if (this.loaded)
+        if (value != null)
         {
-          warning ("The desktop entry has already been initialized.");
-        }
-        else
-        {
-          string data;
-          size_t length;
+          if (this.loaded)
+          {
+            warning ("The desktop entry has already been initialized.");
+          }
+          else
+          {
+            string data;
+            size_t length;
 
-          data = value.to_data (out length);
-          this._keyfile.load_from_data (data, length,
-                                        KeyFileFlags.KEEP_TRANSLATIONS);
-          this.loaded = true;
+            data = value.to_data (out length);
+            this._keyfile.load_from_data (data, length,
+                                          KeyFileFlags.KEEP_TRANSLATIONS);
+            this.loaded = true;
+          }
         }
       }
     }
 
     public string data
     {
-      set
+      set construct
       {
-        if (this.loaded)
+        if (value != null && value != "")
         {
-          warning ("The desktop entry has already been initialized.");
-        }
-        else
-        {
-          this._keyfile.load_from_data (value, value.len (),
-                                        KeyFileFlags.KEEP_TRANSLATIONS);
-          this.loaded = true;
+          if (this.loaded)
+          {
+            warning ("The desktop entry has already been initialized.");
+          }
+          else
+          {
+            this._keyfile.load_from_data (value, value.len (),
+                                          KeyFileFlags.KEEP_TRANSLATIONS);
+            this.loaded = true;
+          }
         }
       }
     }
@@ -174,11 +183,6 @@ namespace DesktopAgnostic.FDO
           this.set_string ("Icon", value);
         }
       }
-    }
-
-    construct
-    {
-      this._keyfile = new KeyFile ();
     }
 
     public bool

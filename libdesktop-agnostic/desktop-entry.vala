@@ -83,14 +83,14 @@ namespace DesktopAgnostic.FDO
      * Note: these are really construct-only, but construct-only properties
      * don't work with GModules.
      */
-    public abstract VFS.File? file { get; set; }
+    public abstract VFS.File? file { get; set construct; }
     /**
      * The URI of the desktop entry. Cannot be constructed with either file
      * or data.
      * Note: these are really construct-only, but construct-only properties
      * don't work with GModules.
      */
-    public abstract KeyFile keyfile { get; set; }
+    public abstract KeyFile keyfile { get; set construct; }
     /**
      * The raw data that is formatted according to the desktop entry
      * specification. Cannot be constructed in conjunction with either file or
@@ -98,7 +98,7 @@ namespace DesktopAgnostic.FDO
      * Note: these are really construct-only, but construct-only properties
      * don't work with GModules.
      */
-    public abstract string data { set; }
+    public abstract string data { set construct; }
     // manipulation
     /**
      * The type of desktop entry, corresponding to the "Type" key.

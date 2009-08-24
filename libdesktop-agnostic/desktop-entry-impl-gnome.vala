@@ -36,15 +36,11 @@ namespace DesktopAgnostic.FDO
       {
         return this._file;
       }
-      set
+      set construct
       {
-        if (this.item == null)
+        if (value != null)
         {
-          if (value == null)
-          {
-            this.item = new DesktopItem ();
-          }
-          else
+          if (this.item == null)
           {
             string? path;
 
@@ -59,10 +55,10 @@ namespace DesktopAgnostic.FDO
               this.item = new DesktopItem.from_file (path, 0);
             }
           }
-        }
-        else
-        {
-          warning ("The desktop entry has already been initialized.");
+          else
+          {
+            warning ("The desktop entry has already been initialized.");
+          }
         }
       }
     }
@@ -74,37 +70,43 @@ namespace DesktopAgnostic.FDO
       {
         return this._keyfile;
       }
-      set
+      set construct
       {
-        if (this.item == null)
+        if (value != null)
         {
-          string data;
-          size_t length;
+          if (this.item == null)
+          {
+            string data;
+            size_t length;
 
-          this._keyfile = value;
-          data = value.to_data (out length);
-          this.item =
-            new DesktopItem.from_string ("", data, (ssize_t)length, 0);
-        }
-        else
-        {
-          warning ("The desktop entry has already been initialized.");
+            this._keyfile = value;
+            data = value.to_data (out length);
+            this.item =
+              new DesktopItem.from_string ("", data, (ssize_t)length, 0);
+          }
+          else
+          {
+            warning ("The desktop entry has already been initialized.");
+          }
         }
       }
     }
 
     public string data
     {
-      set
+      set construct
       {
-        if (this.item == null)
+        if (value != null && value != "")
         {
-          this.item =
-            new DesktopItem.from_string ("", value, value.len (), 0);
-        }
-        else
-        {
-          warning ("The desktop entry has already been initialized.");
+          if (this.item == null)
+          {
+              this.item =
+                new DesktopItem.from_string ("", value, value.len (), 0);
+          }
+          else
+          {
+            warning ("The desktop entry has already been initialized.");
+          }
         }
       }
     }
@@ -180,6 +182,15 @@ namespace DesktopAgnostic.FDO
         {
           this.item.set_string (DESKTOP_ITEM_ICON, value);
         }
+      }
+    }
+
+    private override void
+    constructed ()
+    {
+      if (this.item == null)
+      {
+        this.item = new DesktopItem ();
       }
     }
 

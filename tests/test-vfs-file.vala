@@ -26,6 +26,7 @@ const string CONTENT = "Desktop Agnostic Library";
 
 int main (string[] args)
 {
+  Gdk.init (ref args);
   try
   {
     VFS.init ();

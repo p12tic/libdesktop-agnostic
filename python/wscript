@@ -46,10 +46,10 @@ def defs_hook(self, node):
     if getattr(self, 'py_ssize_t_clean', True):
         rule += [' --py_ssize_t-clean']
     for load in getattr(self, 'local_load_types', ()):
-        sources += [node.find_resource(load)]
+        sources += [node.parent.find_resource(load)]
         rule += ['--load-types', '${SRC[%i].abspath(env)}' % (len(sources) - 1)]
     for reg in getattr(self, 'local_register', ()):
-        source += [node.find_resource(reg)]
+        sources += [node.parent.find_resource(reg)]
         rule += ['--register', '${SRC[%i].abspath(env)}' % (len(sources) - 1)]
     for reg in getattr(self, 'register', ()):
         rule += ['--register', reg]

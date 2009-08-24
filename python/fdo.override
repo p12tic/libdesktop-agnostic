@@ -22,11 +22,11 @@ headers
 #ifdef HAVE_BUILD_CONFIG_H
 #include "build-config.h"
 #endif
+#ifdef HAVE_PYGLIB
 #include <pyglib.h>
+#endif
 #include <pygobject.h>
 #include <libdesktop-agnostic/fdo.h>
-
-PYGLIB_DEFINE_TYPE("desktopagnostic.fdo.Pid", PyGPid_Type, PyIntObject)
 
 /* Taken from PyGObject 2.19.0 <gobject/pygobject.h> (LGPL 2.1+). */
 #ifndef PYLIST_ASGLIBLIST
@@ -117,6 +117,28 @@ G_STMT_END
         PYLIST_ASGLIBLIST(GSList,g_slist,py_list,list,check_func,convert_func,\
                           child_free_func,errormsg,errorreturn)
 #endif
+#ifndef PYGLIB_DEFINE_TYPE
+#define PYGLIB_DEFINE_TYPE(typename, symbol, csymbol)   \
+    PyTypeObject symbol = {                             \
+            PyObject_HEAD_INIT(NULL)                    \
+            0,                                          \
+            typename,                                   \
+            sizeof(csymbol),                            \
+            0,                                          \
+    };
+#endif
+ifndef PYGLIB_REGISTER_TYPE
+#define PYGLIB_REGISTER_TYPE(d, type, name)             \
+    if (!type.tp_alloc)                                 \
+        type.tp_alloc = PyType_GenericAlloc;            \
+    if (!type.tp_new)                                   \
+        type.tp_new = PyType_GenericNew;                \
+    if (PyType_Ready(&type))                            \
+        return;                                         \
+    PyDict_SetItemString(d, name, (PyObject *)&type);
+#endif
+
+PYGLIB_DEFINE_TYPE("desktopagnostic.fdo.Pid", PyGPid_Type, PyIntObject)
 
 /* Modified from the function in PyGObject 2.19.0 <glib/gspawn.c>
  * (LGPL 2.1+).

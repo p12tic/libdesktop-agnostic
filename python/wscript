@@ -24,6 +24,8 @@ def configure(conf):
             conf.fatal('Could not find the PyGObject/PyGTK code generator script')
     conf.env['PYGTK_DEFSDIR'] = Utils.cmd_output('pkg-config --variable defsdir pygtk-2.0',
                                                  silent=1).strip()
+    conf.check_cfg(package='pygobject-2.0', uselib_store='PYGLIB',
+                   atleast_version='2.15.2')
 
 def run_pyg_codegen(self):
     # stolen from TaskGen.exec_rule

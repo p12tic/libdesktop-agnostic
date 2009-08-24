@@ -68,7 +68,7 @@ def defs_hook(self, node):
 
     self.allnodes.append(c_node)
 
-def pyg_module(bld, module, dependencies, prefix=None):
+def pyg_module(bld, module, dependencies, prefix=None, local_register=None):
     pyext = bld.new_task_gen('cc', 'shlib', 'pyext')
     pyext.source = '%s.defs %smodule.c' % (module, module)
     pyext.target = module
@@ -76,6 +76,8 @@ def pyg_module(bld, module, dependencies, prefix=None):
         pyext.prefix = prefix
     pyext.uselib = 'PYEXT PYGOBJECT'
     pyext.uselib_local = dependencies
+    if local_register is not None:
+        pyext.local_register = local_register
     pyext.includes = '..'
     pyext.install_path = '${PYTHONDIR}/desktopagnostic'
 
@@ -97,9 +99,10 @@ def build(bld):
     pyda.register = [GDK_DEFS(bld)]
     pyda.uselib += ' GDK'
 
-    for module, dep in (('config', 'cfg'), ('vfs', 'vfs')):
+    for module, dep, lr in (('config', 'cfg', None), ('vfs', 'vfs', None),
+                            ('fdo', 'fdo', ['vfs.defs'])):
         pyext = bld.pyg_module(module, 'desktop-agnostic-%s' % dep,
-                               'pydesktopagnostic_%s' % module)
+                               'pydesktopagnostic_%s' % module, lr)
 
     init = bld.new_task_gen('subst')
     init.source = '__init__.py.in'

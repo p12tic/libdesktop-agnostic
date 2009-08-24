@@ -3,17 +3,176 @@
 
 ; interface definitions ...
 
+(define-interface FileMonitor
+  (in-module "DesktopAgnosticVFS")
+  (c-name "DesktopAgnosticVFSFileMonitor")
+  (gtype-id "DESKTOP_AGNOSTIC_VFS_TYPE_FILE_MONITOR")
+  (prerequisite "GObject")
+)
+
 
 ; object definitions ...
+
+(define-object File
+  (in-module "DesktopAgnosticVFS")
+  (parent "GObject")
+  (c-name "DesktopAgnosticVFSFile")
+  (gtype-id "DESKTOP_AGNOSTIC_VFS_TYPE_FILE")
+)
 
 
 ; pointer definitions ...
 
 ;; Enumerations and Flags ...
 
+(define-enum FileMonitorEvent
+  (in-module "DesktopAgnosticVFS")
+  (c-name "DesktopAgnosticVFSFileMonitorEvent")
+  (gtype-id "DESKTOP_AGNOSTIC_VFS_TYPE_FILE_MONITOR_EVENT")
+  (values
+    '("unknown" "DESKTOP_AGNOSTIC_VFS_FILE_MONITOR_EVENT_UNKNOWN")
+    '("changed" "DESKTOP_AGNOSTIC_VFS_FILE_MONITOR_EVENT_CHANGED")
+    '("created" "DESKTOP_AGNOSTIC_VFS_FILE_MONITOR_EVENT_CREATED")
+    '("deleted" "DESKTOP_AGNOSTIC_VFS_FILE_MONITOR_EVENT_DELETED")
+    '("attribute-changed" "DESKTOP_AGNOSTIC_VFS_FILE_MONITOR_EVENT_ATTRIBUTE_CHANGED")
+  )
+)
+
+(define-enum FileType
+  (in-module "DesktopAgnosticVFS")
+  (c-name "DesktopAgnosticVFSFileType")
+  (gtype-id "DESKTOP_AGNOSTIC_VFS_TYPE_FILE_TYPE")
+  (values
+    '("unknown" "DESKTOP_AGNOSTIC_VFS_FILE_TYPE_UNKNOWN")
+    '("regular" "DESKTOP_AGNOSTIC_VFS_FILE_TYPE_REGULAR")
+    '("directory" "DESKTOP_AGNOSTIC_VFS_FILE_TYPE_DIRECTORY")
+    '("symbolic-link" "DESKTOP_AGNOSTIC_VFS_FILE_TYPE_SYMBOLIC_LINK")
+    '("special" "DESKTOP_AGNOSTIC_VFS_FILE_TYPE_SPECIAL")
+  )
+)
+
+;; Untyped enumerations and flags ...
+
+(define-enum FileError
+  (in-module "DesktopAgnosticVFS")
+  (c-name "DesktopAgnosticVFSFileError")
+  (values
+    '("found" "DESKTOP_AGNOSTIC_VFS_FILE_ERROR_FILE_NOT_FOUND")
+  )
+)
 
 
 ;; From vfs.h
+
+(define-function file_get_type
+  (c-name "desktop_agnostic_vfs_file_get_type")
+  (return-type "GType")
+)
+
+(define-function file_error_quark
+  (c-name "desktop_agnostic_vfs_file_error_quark")
+  (return-type "GQuark")
+)
+
+(define-function file_type_get_type
+  (c-name "desktop_agnostic_vfs_file_type_get_type")
+  (return-type "GType")
+)
+
+(define-function file_monitor_event_get_type
+  (c-name "desktop_agnostic_vfs_file_monitor_event_get_type")
+  (return-type "GType")
+)
+
+(define-function file_monitor_get_type
+  (c-name "desktop_agnostic_vfs_file_monitor_get_type")
+  (return-type "GType")
+)
+
+(define-method exists
+  (of-object "DesktopAgnosticVFSFile")
+  (c-name "desktop_agnostic_vfs_file_exists")
+  (return-type "gboolean")
+)
+
+(define-method monitor
+  (of-object "DesktopAgnosticVFSFile")
+  (c-name "desktop_agnostic_vfs_file_monitor")
+  (return-type "DesktopAgnosticVFSFileMonitor*")
+)
+
+(define-method load_contents
+  (of-object "DesktopAgnosticVFSFile")
+  (c-name "desktop_agnostic_vfs_file_load_contents")
+  (return-type "gboolean")
+  (parameters
+    '("char**" "contents")
+    '("gsize*" "length")
+    '("GError**" "error")
+  )
+)
+
+(define-method replace_contents
+  (of-object "DesktopAgnosticVFSFile")
+  (c-name "desktop_agnostic_vfs_file_replace_contents")
+  (return-type "gboolean")
+  (parameters
+    '("const-char*" "contents")
+    '("GError**" "error")
+  )
+)
+
+(define-method launch
+  (of-object "DesktopAgnosticVFSFile")
+  (c-name "desktop_agnostic_vfs_file_launch")
+  (return-type "gboolean")
+  (parameters
+    '("GError**" "error")
+  )
+)
+
+(define-method remove
+  (of-object "DesktopAgnosticVFSFile")
+  (c-name "desktop_agnostic_vfs_file_remove")
+  (return-type "gboolean")
+  (parameters
+    '("GError**" "error")
+  )
+)
+
+(define-function file_new_for_path
+  (c-name "desktop_agnostic_vfs_file_new_for_path")
+  (return-type "DesktopAgnosticVFSFile*")
+  (parameters
+    '("const-char*" "path")
+    '("GError**" "error")
+  )
+)
+
+(define-function file_new_for_uri
+  (c-name "desktop_agnostic_vfs_file_new_for_uri")
+  (return-type "DesktopAgnosticVFSFile*")
+  (parameters
+    '("const-char*" "uri")
+    '("GError**" "error")
+  )
+)
+
+(define-method changed
+  (of-object "DesktopAgnosticVFSFileMonitor")
+  (c-name "desktop_agnostic_vfs_file_monitor_emit")
+  (return-type "none")
+  (parameters
+    '("DesktopAgnosticVFSFile*" "other")
+    '("DesktopAgnosticVFSFileMonitorEvent" "event")
+  )
+)
+
+(define-method cancel
+  (of-object "DesktopAgnosticVFSFileMonitor")
+  (c-name "desktop_agnostic_vfs_file_monitor_cancel")
+  (return-type "gboolean")
+)
 
 (define-function init
   (c-name "desktop_agnostic_vfs_init")

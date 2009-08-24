@@ -1,0 +1,315 @@
+%%
+headers
+/*
+ * Copyright (c) 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+*/
+
+#ifdef HAVE_BUILD_CONFIG_H
+#include "build-config.h"
+#endif
+#include <pyglib.h>
+#include <pygobject.h>
+#include <libdesktop-agnostic/fdo.h>
+
+PYGLIB_DEFINE_TYPE("desktopagnostic.fdo.Pid", PyGPid_Type, PyIntObject)
+
+/* Taken from PyGObject 2.19.0 <gobject/pygobject.h> (LGPL 2.1+). */
+#ifndef PYLIST_ASGLIBLIST
+/**
+ * PYLIST_ASGLIBLIST
+ * @type: the type of the GLib list e.g. GList or GSList
+ * @prefix: the prefix of functions that manipulate a list of the type
+ * given by type e.g. g_list or g_slist
+ *
+ * A macro that creates a type specific code block to be used to convert a
+ * Python list to a GLib list (GList or GSList). The first two args of the
+ * macro are used to specify the type and list function prefix so that the
+ * type specific macros can be generated.
+ *
+ * The rest of the args are for the standard args for the type specific
+ * macro(s) created from this macro.
+ */
+#define PYLIST_ASGLIBLIST(type,prefix,py_list,list,check_func,\
+                           convert_func,child_free_func,errormsg,errorreturn) \
+G_STMT_START \
+{ \
+    Py_ssize_t i, n_list; \
+    GFunc glib_child_free_func = (GFunc)child_free_func;        \
+ \
+    if (!(py_list = PySequence_Fast(py_list, ""))) { \
+        errormsg; \
+        return errorreturn; \
+    } \
+    n_list = PySequence_Fast_GET_SIZE(py_list); \
+    for (i = 0; i < n_list; i++) { \
+        PyObject *py_item = PySequence_Fast_GET_ITEM(py_list, i); \
+ \
+        if (!check_func) { \
+            if (glib_child_free_func) \
+                    prefix##_foreach(list, glib_child_free_func, NULL); \
+            prefix##_free(list); \
+            Py_DECREF(py_list); \
+            errormsg; \
+            return errorreturn; \
+        } \
+        list = prefix##_prepend(list, convert_func); \
+    }; \
+        Py_DECREF(py_list); \
+        list =  prefix##_reverse(list); \
+} \
+G_STMT_END
+/**
+ * PYLIST_ASGSLIST
+ * @py_list: the Python list to be converted
+ * @list: the #GSList list to be converted
+ * @check_func: the expression that takes a #PyObject* arg (must be named
+ * @py_item) and returns an int value indicating if the Python object matches
+ * the required list item type (0 - %False or 1 - %True). An example is:
+ * [[
+ * (PyString_Check(py_item)||PyUnicode_Check(py_item))
+ * ]]
+ * @convert_func: the function that takes a #PyObject* arg (must be named
+ * py_item) and returns a pointer to the converted list object. An example
+ * is:
+ * [[
+ * pygobject_get(py_item)
+ * ]]
+ * @child_free_func: the name of a #GFunc function that frees a GLib list
+ * item or %NULL if the list item does not have to be freed. This function is
+ * used to help free the items in a partially created list if there is an
+ * error. An example is:
+ * [[
+ * g_free
+ * ]]
+ * @errormsg: a function that sets up a Python error message. An example is:
+ * [[
+ * PyErr_SetString(PyExc_TypeError, "strings must be a sequence of" "strings
+ * or unicode objects")
+ * ]]
+ * @errorreturn: the value to return if an error occurs, e.g.:
+ * [[
+ * %NULL
+ * ]]
+ *
+ * A macro that creates code that converts a Python list to a #GSList. The
+ * returned list must be freed using the appropriate list free function when
+ * it's no longer needed. If an error occurs the child_free_func is used to
+ * release the memory used by the list items and then the list memory is
+ * freed.
+ */
+#define PYLIST_ASGSLIST(py_list,list,check_func,convert_func,child_free_func,\
+                        errormsg,errorreturn) \
+        PYLIST_ASGLIBLIST(GSList,g_slist,py_list,list,check_func,convert_func,\
+                          child_free_func,errormsg,errorreturn)
+#endif
+
+/* Modified from the function in PyGObject 2.19.0 <glib/gspawn.c>
+ * (LGPL 2.1+).
+ */
+static PyObject *
+pyg_pid_new (GPid pid)
+{
+  PyIntObject *pygpid;
+  pygpid = PyObject_NEW(PyIntObject, &PyGPid_Type);
+
+#if PY_VERSION_HEX >= 0x03000000
+# warning "FIXME: figure out how to subclass long"    
+#else
+  ((PyIntObject*)pygpid)->ob_ival = pid;
+#endif    
+  return (PyObject *) pygpid;
+}
+static void
+pyg_pid_free(PyObject *gpid)
+{
+    g_spawn_close_pid((GPid) PyInt_AsLong(gpid));
+    PyInt_Type.tp_free((void *) gpid);
+}
+
+static int
+pyg_pid_tp_init(PyObject *self, PyObject *args, PyObject *kwargs)
+{
+    PyErr_SetString(PyExc_TypeError, "glib.Pid cannot be manually instantiated");
+    return -1;
+}
+void
+pyglib_pid_register_type(PyObject *d)
+{
+    PyGPid_Type.tp_base = &PyInt_Type;
+    PyGPid_Type.tp_flags = Py_TPFLAGS_DEFAULT;
+    PyGPid_Type.tp_init = pyg_pid_tp_init;
+    PyGPid_Type.tp_free = (freefunc)pyg_pid_free;
+    PYGLIB_REGISTER_TYPE(d, PyGPid_Type, "Pid");
+}
+%%
+modulename desktopagnostic.fdo
+%%
+import gobject.GObject as PyGObject_Type
+import desktopagnostic.vfs.File as PyDesktopAgnosticVFSFile_Type
+%%
+ignore-glob
+  *_get_type
+  *_keyfile
+  *_error_quark
+  desktop_agnostic_fdo_desktop_entry_new_for_*
+  desktop_agnostic_fdo_desktop_entry_type_to_string
+%%
+define DesktopAgnosticFDODesktopEntry.new noargs staticmethod
+static PyObject *
+_wrap_desktop_agnostic_f_d_o_desktop_entry_new (PyObject *self)
+{
+  DesktopAgnosticFDODesktopEntry *ret;
+  GError *error = NULL;
+  
+  ret = desktop_agnostic_fdo_desktop_entry_new (&error);
+  
+  if (pyg_error_check (&error))
+  {
+    return NULL;
+  }
+
+  /* pygobject_new handles NULL checking */
+  return pygobject_new ((GObject *)ret);
+}
+%%
+define DesktopAgnosticFDODesktopEntry.for_data kwargs staticmethod
+static PyObject *
+_wrap_desktop_agnostic_f_d_o_desktop_entry_for_data (PyObject *self,
+                                                     PyObject *args,
+                                                     PyObject *kwargs)
+{
+  static char *kwlist[] = { "data", NULL };
+  char *data;
+  DesktopAgnosticFDODesktopEntry *ret;
+  GError *error = NULL;
+
+  if (!PyArg_ParseTupleAndKeywords (args, kwargs,
+                                    "s:DesktopEntry._new_for_data", kwlist,
+                                    &data))
+  {
+    return NULL;
+  }
+  
+  ret = desktop_agnostic_fdo_desktop_entry_new_for_data (data, &error);
+  
+  if (pyg_error_check (&error))
+  {
+    return NULL;
+  }
+
+  /* pygobject_new handles NULL checking */
+  return pygobject_new ((GObject *)ret);
+}
+%%
+define DesktopAgnosticFDODesktopEntry.for_file onearg staticmethod
+static PyObject *
+_wrap_desktop_agnostic_f_d_o_desktop_entry_for_file (PyObject *self,
+                                                     PyGObject *file)
+{
+  DesktopAgnosticFDODesktopEntry *ret;
+  GError *error = NULL;
+  
+  ret = desktop_agnostic_fdo_desktop_entry_new_for_file (DESKTOP_AGNOSTIC_VFS_FILE(file->obj),
+                                                         &error);
+  
+  if (pyg_error_check (&error))
+  {
+    return NULL;
+  }
+
+  /* pygobject_new handles NULL checking */
+  return pygobject_new ((GObject *)ret);
+}
+%%
+define DesktopAgnosticFDODesktopEntry.type_to_string onearg staticmethod
+static PyObject *
+_wrap_desktop_agnostic_f_d_o_desktop_entry_type_to_string (PyObject *self,
+                                                         PyObject *arg)
+{
+  DesktopAgnosticFDODesktopEntryType entry_type;
+  gchar *ret;
+
+  if (pyg_enum_get_value (DESKTOP_AGNOSTIC_FDO_TYPE_DESKTOP_ENTRY_TYPE, arg,
+                          (gpointer)&entry_type))
+  {
+    return NULL;
+  }
+  
+  ret = desktop_agnostic_fdo_desktop_entry_type_to_string (entry_type);
+  
+  if (ret)
+  {
+    PyObject *py_ret = PyString_FromString (ret);
+    g_free (ret);
+    return py_ret;
+  }
+  else
+  {
+    Py_INCREF (Py_None);
+    return Py_None;
+  }
+}
+%%
+override desktop_agnostic_fdo_desktop_entry_launch kwargs
+static PyObject *
+_wrap_desktop_agnostic_fdo_desktop_entry_launch (PyGObject *self,
+                                                 PyObject  *args,
+                                                 PyObject  *kwargs)
+{
+  static char *kwlist[] = { "flags", "documents", NULL };
+  PyObject *py_flags = NULL;
+  DesktopAgnosticFDODesktopEntryLaunchFlags flags;
+  PyObject *py_documents = NULL;
+  GSList *documents = NULL;
+  GError *error = NULL;
+  GPid pid;
+
+  if (!PyArg_ParseTupleAndKeywords (args, kwargs,
+                                    "OO:DesktopAgnosticFDODesktopEntry.launch",
+                                    kwlist, &py_flags, &py_documents))
+  {
+    return NULL;
+  }
+
+  if (pyg_enum_get_value (DESKTOP_AGNOSTIC_FDO_TYPE_DESKTOP_ENTRY_LAUNCH_FLAGS,
+                          py_flags, (gpointer)&flags))
+  {
+    return NULL;
+  }
+
+  if (py_documents != Py_None)
+  {
+    PYLIST_ASGSLIST(py_documents, documents,
+                    (PyString_Check (py_item) || PyUnicode_Check (py_item)),
+                    PyString_AsString (py_item), g_free, 
+                    PyErr_SetString(PyExc_TypeError,
+                                    "documents must be a sequence of "
+                                    "strings or unicode objects"),
+                    NULL);
+  }
+
+  pid = desktop_agnostic_fdo_desktop_entry_launch (DESKTOP_AGNOSTIC_FDO_DESKTOP_ENTRY (self->obj),
+                                                   flags, documents, &error);
+
+  if (pyg_error_check (&error))
+  {
+    return NULL;
+  }
+
+  return pyg_pid_new (pid);
+}

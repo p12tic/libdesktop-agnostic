@@ -32,3 +32,79 @@ import gobject.GObject as PyGObject_Type
 ignore-glob
   *_get_type
   *_error_quark
+  desktop_agnostic_vfs_file_new_*
+%%
+define DesktopAgnosticVFSFile.for_path onearg staticmethod
+static PyObject *
+_wrap_desktop_agnostic_v_f_s_file_for_path (PyObject *self, PyObject *arg)
+{
+  char *path;
+  DesktopAgnosticVFSFile *ret;
+  GError *error = NULL;
+
+  if (!PyString_Check (arg))
+  {
+    PyErr_SetString (PyExc_TypeError,
+                     "The parameter must be a string.");
+    return NULL;
+  }
+
+  path = PyString_AsString (arg);
+  
+  ret = desktop_agnostic_vfs_file_new_for_path (path, &error);
+  
+  if (pyg_error_check (&error))
+  {
+    return NULL;
+  }
+
+  /* pygobject_new handles NULL checking */
+  return pygobject_new ((GObject *)ret);
+}
+%%
+define DesktopAgnosticVFSFile.for_uri onearg staticmethod
+static PyObject *
+_wrap_desktop_agnostic_v_f_s_file_for_uri (PyObject *self, PyObject *arg)
+{
+    char *uri;
+    DesktopAgnosticVFSFile *ret;
+    GError *error = NULL;
+
+  if (!PyString_Check (arg))
+  {
+    PyErr_SetString (PyExc_TypeError,
+                     "The parameter must be a string.");
+    return NULL;
+  }
+
+  uri = PyString_AsString (arg);
+    
+  ret = desktop_agnostic_vfs_file_new_for_uri (uri, &error);
+  
+  if (pyg_error_check (&error))
+  {
+    return NULL;
+  }
+
+  /* pygobject_new handles NULL checking */
+  return pygobject_new ((GObject *)ret);
+}
+%%
+override desktop_agnostic_vfs_file_load_contents noargs
+static PyObject *
+_wrap_desktop_agnostic_vfs_file_load_contents (PyGObject *self)
+{
+  gchar *data;
+  size_t length;
+  GError *error = NULL;
+
+  desktop_agnostic_vfs_file_load_contents (DESKTOP_AGNOSTIC_VFS_FILE (self->obj),
+                                           &data, &length, &error);
+
+  if (pyg_error_check (&error))
+  {
+    return NULL;
+  }
+
+  return PyString_FromStringAndSize (data, length);
+}

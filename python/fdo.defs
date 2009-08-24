@@ -1,0 +1,297 @@
+;; -*- scheme -*-
+; boxed definitions ...
+
+; interface definitions ...
+
+(define-interface DesktopEntry
+  (in-module "DesktopAgnosticFDO")
+  (c-name "DesktopAgnosticFDODesktopEntry")
+  (gtype-id "DESKTOP_AGNOSTIC_FDO_TYPE_DESKTOP_ENTRY")
+  (prerequisite "GObject")
+)
+
+; object definitions ...
+
+; pointer definitions ...
+
+;; Enumerations and Flags ...
+
+(define-enum DesktopEntryLaunchFlags
+  (in-module "DesktopAgnosticFDO")
+  (c-name "DesktopAgnosticFDODesktopEntryLaunchFlags")
+  (gtype-id "DESKTOP_AGNOSTIC_FDO_TYPE_DESKTOP_ENTRY_LAUNCH_FLAGS")
+  (values
+    '("only-one" "DESKTOP_AGNOSTIC_FDO_DESKTOP_ENTRY_LAUNCH_FLAGS_ONLY_ONE")
+    '("use-cwd" "DESKTOP_AGNOSTIC_FDO_DESKTOP_ENTRY_LAUNCH_FLAGS_USE_CWD")
+    '("do-not-reap-child" "DESKTOP_AGNOSTIC_FDO_DESKTOP_ENTRY_LAUNCH_FLAGS_DO_NOT_REAP_CHILD")
+  )
+)
+
+(define-enum DesktopEntryType
+  (in-module "DesktopAgnosticFDO")
+  (c-name "DesktopAgnosticFDODesktopEntryType")
+  (gtype-id "DESKTOP_AGNOSTIC_FDO_TYPE_DESKTOP_ENTRY_TYPE")
+  (values
+    '("unknown" "DESKTOP_AGNOSTIC_FDO_DESKTOP_ENTRY_TYPE_UNKNOWN")
+    '("application" "DESKTOP_AGNOSTIC_FDO_DESKTOP_ENTRY_TYPE_APPLICATION")
+    '("link" "DESKTOP_AGNOSTIC_FDO_DESKTOP_ENTRY_TYPE_LINK")
+    '("directory" "DESKTOP_AGNOSTIC_FDO_DESKTOP_ENTRY_TYPE_DIRECTORY")
+  )
+)
+
+;; Untyped enumerations and flags ...
+
+(define-enum DesktopEntryError
+  (in-module "DesktopAgnosticFDO")
+  (c-name "DesktopAgnosticFDODesktopEntryError")
+  (values
+    '("invalid-file" "DESKTOP_AGNOSTIC_FDO_DESKTOP_ENTRY_ERROR_INVALID_FILE")
+    '("not-launchable" "DESKTOP_AGNOSTIC_FDO_DESKTOP_ENTRY_ERROR_NOT_LAUNCHABLE")
+  )
+)
+
+
+;; From fdo.h
+
+(define-function desktop_entry_launch_flags_get_type
+  (c-name "desktop_agnostic_fdo_desktop_entry_launch_flags_get_type")
+  (return-type "GType")
+)
+
+(define-function desktop_entry_type_get_type
+  (c-name "desktop_agnostic_fdo_desktop_entry_type_get_type")
+  (return-type "GType")
+)
+
+(define-function desktop_entry_error_quark
+  (c-name "desktop_agnostic_fdo_desktop_entry_error_quark")
+  (return-type "GQuark")
+)
+
+(define-function desktop_entry_type_to_string
+  (c-name "desktop_agnostic_fdo_desktop_entry_type_to_string")
+  (return-type "char*")
+  (parameters
+    '("DesktopAgnosticFDODesktopEntryType" "entry_type")
+  )
+)
+
+(define-function desktop_entry_get_type
+  (c-name "desktop_agnostic_fdo_desktop_entry_get_type")
+  (return-type "GType")
+)
+
+(define-method get_boolean
+  (of-object "DesktopAgnosticFDODesktopEntry")
+  (c-name "desktop_agnostic_fdo_desktop_entry_get_boolean")
+  (return-type "gboolean")
+  (parameters
+    '("const-char*" "key")
+  )
+)
+
+(define-method set_boolean
+  (of-object "DesktopAgnosticFDODesktopEntry")
+  (c-name "desktop_agnostic_fdo_desktop_entry_set_boolean")
+  (return-type "none")
+  (parameters
+    '("const-char*" "key")
+    '("gboolean" "value")
+  )
+)
+
+(define-method get_string
+  (of-object "DesktopAgnosticFDODesktopEntry")
+  (c-name "desktop_agnostic_fdo_desktop_entry_get_string")
+  (return-type "char*")
+  (parameters
+    '("const-char*" "key")
+  )
+)
+
+(define-method set_string
+  (of-object "DesktopAgnosticFDODesktopEntry")
+  (c-name "desktop_agnostic_fdo_desktop_entry_set_string")
+  (return-type "none")
+  (parameters
+    '("const-char*" "key")
+    '("const-char*" "value")
+  )
+)
+
+(define-method get_localestring
+  (of-object "DesktopAgnosticFDODesktopEntry")
+  (c-name "desktop_agnostic_fdo_desktop_entry_get_localestring")
+  (return-type "char*")
+  (parameters
+    '("const-char*" "key")
+    '("const-char*" "locale")
+  )
+)
+
+(define-method set_localestring
+  (of-object "DesktopAgnosticFDODesktopEntry")
+  (c-name "desktop_agnostic_fdo_desktop_entry_set_localestring")
+  (return-type "none")
+  (parameters
+    '("const-char*" "key")
+    '("const-char*" "locale")
+    '("const-char*" "value")
+  )
+)
+
+(define-method exists
+  (of-object "DesktopAgnosticFDODesktopEntry")
+  (c-name "desktop_agnostic_fdo_desktop_entry_exists")
+  (return-type "gboolean")
+)
+
+(define-method launch
+  (of-object "DesktopAgnosticFDODesktopEntry")
+  (c-name "desktop_agnostic_fdo_desktop_entry_launch")
+  (return-type "GPid")
+  (parameters
+    '("DesktopAgnosticFDODesktopEntryLaunchFlags" "flags")
+    '("GSList*" "documents")
+    '("GError**" "error")
+  )
+)
+
+(define-method save
+  (of-object "DesktopAgnosticFDODesktopEntry")
+  (c-name "desktop_agnostic_fdo_desktop_entry_save")
+  (return-type "none")
+  (parameters
+    '("DesktopAgnosticVFSFile*" "new_file")
+    '("GError**" "error")
+  )
+)
+
+(define-method get_file
+  (of-object "DesktopAgnosticFDODesktopEntry")
+  (c-name "desktop_agnostic_fdo_desktop_entry_get_file")
+  (return-type "DesktopAgnosticVFSFile*")
+)
+
+(define-method set_file
+  (of-object "DesktopAgnosticFDODesktopEntry")
+  (c-name "desktop_agnostic_fdo_desktop_entry_set_file")
+  (return-type "none")
+  (parameters
+    '("DesktopAgnosticVFSFile*" "value")
+  )
+)
+
+(define-method get_keyfile
+  (of-object "DesktopAgnosticFDODesktopEntry")
+  (c-name "desktop_agnostic_fdo_desktop_entry_get_keyfile")
+  (return-type "GKeyFile*")
+)
+
+(define-method set_keyfile
+  (of-object "DesktopAgnosticFDODesktopEntry")
+  (c-name "desktop_agnostic_fdo_desktop_entry_set_keyfile")
+  (return-type "none")
+  (parameters
+    '("GKeyFile*" "value")
+  )
+)
+
+(define-method set_data
+  (of-object "DesktopAgnosticFDODesktopEntry")
+  (c-name "desktop_agnostic_fdo_desktop_entry_set_data")
+  (return-type "none")
+  (parameters
+    '("const-char*" "value")
+  )
+)
+
+(define-method get_entry_type
+  (of-object "DesktopAgnosticFDODesktopEntry")
+  (c-name "desktop_agnostic_fdo_desktop_entry_get_entry_type")
+  (return-type "DesktopAgnosticFDODesktopEntryType")
+)
+
+(define-method set_entry_type
+  (of-object "DesktopAgnosticFDODesktopEntry")
+  (c-name "desktop_agnostic_fdo_desktop_entry_set_entry_type")
+  (return-type "none")
+  (parameters
+    '("DesktopAgnosticFDODesktopEntryType" "value")
+  )
+)
+
+(define-method get_name
+  (of-object "DesktopAgnosticFDODesktopEntry")
+  (c-name "desktop_agnostic_fdo_desktop_entry_get_name")
+  (return-type "char*")
+)
+
+(define-method set_name
+  (of-object "DesktopAgnosticFDODesktopEntry")
+  (c-name "desktop_agnostic_fdo_desktop_entry_set_name")
+  (return-type "none")
+  (parameters
+    '("const-char*" "value")
+  )
+)
+
+(define-method get_icon
+  (of-object "DesktopAgnosticFDODesktopEntry")
+  (c-name "desktop_agnostic_fdo_desktop_entry_get_icon")
+  (return-type "char*")
+)
+
+(define-method set_icon
+  (of-object "DesktopAgnosticFDODesktopEntry")
+  (c-name "desktop_agnostic_fdo_desktop_entry_set_icon")
+  (return-type "none")
+  (parameters
+    '("const-char*" "value")
+  )
+)
+
+(define-function get_type
+  (c-name "desktop_agnostic_fdo_get_type")
+  (return-type "GType")
+  (parameters
+    '("GError**" "error")
+  )
+)
+
+(define-function desktop_entry_new
+  (c-name "desktop_agnostic_fdo_desktop_entry_new")
+  (is-constructor-of "DesktopAgnosticFDODesktopEntry")
+  (return-type "DesktopAgnosticFDODesktopEntry*")
+  (parameters
+    '("GError**" "error")
+  )
+)
+
+(define-function desktop_entry_new_for_file
+  (c-name "desktop_agnostic_fdo_desktop_entry_new_for_file")
+  (return-type "DesktopAgnosticFDODesktopEntry*")
+  (parameters
+    '("DesktopAgnosticVFSFile*" "file")
+    '("GError**" "error")
+  )
+)
+
+(define-function desktop_entry_new_for_keyfile
+  (c-name "desktop_agnostic_fdo_desktop_entry_new_for_keyfile")
+  (return-type "DesktopAgnosticFDODesktopEntry*")
+  (parameters
+    '("GKeyFile*" "keyfile")
+    '("GError**" "error")
+  )
+)
+
+(define-function desktop_entry_new_for_data
+  (c-name "desktop_agnostic_fdo_desktop_entry_new_for_data")
+  (return-type "DesktopAgnosticFDODesktopEntry*")
+  (parameters
+    '("const-char*" "data")
+    '("GError**" "error")
+  )
+)
+

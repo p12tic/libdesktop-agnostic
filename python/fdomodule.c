@@ -23,24 +23,26 @@
 
 #include <pygobject.h>
 
-/* the following symbols are declared in vfs.c: */
-void pydesktopagnostic_vfs_add_constants (PyObject *module,
+/* the following symbols are declared in fdo.c: */
+void pydesktopagnostic_fdo_add_constants (PyObject *module,
                                           const gchar *strip_prefix);
-void pydesktopagnostic_vfs_register_classes (PyObject *d);
-extern PyMethodDef pydesktopagnostic_vfs_functions[];
+void pydesktopagnostic_fdo_register_classes (PyObject *d);
+void pyglib_pid_register_type (PyObject *d);
+extern PyMethodDef pydesktopagnostic_fdo_functions[];
 
 DL_EXPORT (void)
-initvfs (void)
+initfdo (void)
 {
   PyObject *m, *d;
 
   init_pygobject ();
 
-  m = Py_InitModule ("desktopagnostic.vfs", pydesktopagnostic_vfs_functions);
+  m = Py_InitModule ("desktopagnostic.fdo", pydesktopagnostic_fdo_functions);
   d = PyModule_GetDict (m);
 
-  pydesktopagnostic_vfs_register_classes (d);
-  pydesktopagnostic_vfs_add_constants (m, "DESKTOP_AGNOSTIC_VFS_");
+  pydesktopagnostic_fdo_register_classes (d);
+  pyglib_pid_register_type (d);
+  pydesktopagnostic_fdo_add_constants (m, "DESKTOP_AGNOSTIC_FDO_");
 
   if (PyErr_Occurred ())
   {

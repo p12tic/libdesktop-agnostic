@@ -321,7 +321,7 @@ namespace DesktopAgnostic.Config
      * Removes all of the bindings for a given object.
      */
     public void
-    unbind_all_for_object (Object obj) throws Error
+    unbind_all_for_object (Object obj) throws GLib.Error
     {
       unowned Bridge bridge = Bridge.get_default ();
 

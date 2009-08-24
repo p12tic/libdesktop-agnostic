@@ -267,7 +267,7 @@ namespace DesktopAgnostic.Config
      * Removes all of the bindings related to a specific object.
      */
     public void
-    remove_all_for_object (Backend config, Object obj) throws Error
+    remove_all_for_object (Backend config, Object obj) throws GLib.Error
     {
       unowned List<string> key_list = this.bindings_by_obj.lookup (obj);
       foreach (unowned string full_key in key_list)

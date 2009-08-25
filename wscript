@@ -41,6 +41,7 @@ config_backend = None
 def set_options(opt):
     [opt.tool_options(x) for x in ['compiler_cc']]
     opt.sub_options('libdesktop-agnostic')
+    opt.sub_options('tools')
     opt.add_option('--enable-debug', action='store_true',
                    dest='debug', default=False,
                    help='Enables the library to be built with debug symbols.')
@@ -129,6 +130,9 @@ def configure(conf):
 
     # manual Python bindings
     conf.sub_config('python')
+
+    # tools-related
+    conf.sub_config('tools')
 
     conf.define('API_VERSION', str(API_VERSION))
     conf.define('VERSION', str(VERSION))

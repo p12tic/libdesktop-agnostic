@@ -59,18 +59,10 @@ namespace DesktopAgnostic.Config
       }
       construct
       {
-        if (value != null)
+        if (value != null && !this.create_instance_config (value))
         {
-          Value single_instance = this._schema.get_metadata_option ("single_instance");
-          if ((bool)single_instance)
-          {
-            warning ("The configuration schema has declared that there can only be a single configuration instance.");
-            warning ("Not creating an instance config object.");
-          }
-          else
-          {
-            this.instance = Config.new_for_instance (value, this._schema);
-          }
+          warning ("The configuration schema has declared that there can only be a single configuration instance.");
+          warning ("Not creating an instance config object.");
         }
       }
     }
@@ -78,16 +70,17 @@ namespace DesktopAgnostic.Config
     {
       construct
       {
-        try
+        if (value != null)
         {
-          // force the config module load before creating the schema
-          Config.get_type ();
-          this._schema = new Schema (value);
-          this.global = Config.new (this._schema);
-        }
-        catch (GLib.Error err)
-        {
-          critical ("Config error: %s", err.message);
+          try
+          {
+            this._schema = new Schema (value);
+            this.create_global_config ();
+          }
+          catch (GLib.Error err)
+          {
+            critical ("Config error: %s", err.message);
+          }
         }
       }
     }
@@ -102,7 +95,42 @@ namespace DesktopAgnostic.Config
       this.schema_filename = schema_filename;
       this.instance_id = instance_id;
     }
+    /**
+     * Auto-determines whether an instance config object should be created.
+     */
+    public Client.for_schema (Schema schema,
+                              string? instance_id) throws GLib.Error
+    {
+      this._schema = schema;
+      this.create_global_config ();
+      if (instance_id != null)
+      {
+        this.create_instance_config (instance_id);
+      }
+    }
     // helper methods
+    private void
+    create_global_config ()
+    {
+      this.global = Config.new (this._schema);
+    }
+    /**
+     * @return whether an instance config object was created.
+     */
+    private bool
+    create_instance_config (string instance_id) throws GLib.Error
+    {
+      Value single_instance = this._schema.get_metadata_option ("single_instance");
+      if ((bool)single_instance)
+      {
+        return false;
+      }
+      else
+      {
+        this.instance = Config.new_for_instance (instance_id, this._schema);
+        return true;
+      }
+    }
     private unowned Backend
     get_backend (string group, string key)
     {

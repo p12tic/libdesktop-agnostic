@@ -139,6 +139,15 @@ namespace DesktopAgnostic.Config
       Value val = Value (typeof (bool));
       val.set_boolean (true);
       common_metadata_keys.insert ("single_instance", val);
+      // force the config module to load before creating the schema.
+      try
+      {
+        Config.get_type ();
+      }
+      catch (GLib.Error err)
+      {
+        critical ("Config error: %s", err.message);
+      }
     }
     // properties
     private string _filename;

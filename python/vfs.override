@@ -50,9 +50,9 @@ _wrap_desktop_agnostic_v_f_s_file_for_path (PyObject *self, PyObject *arg)
   }
 
   path = PyString_AsString (arg);
-  
+
   ret = desktop_agnostic_vfs_file_new_for_path (path, &error);
-  
+
   if (pyg_error_check (&error))
   {
     return NULL;
@@ -78,9 +78,9 @@ _wrap_desktop_agnostic_v_f_s_file_for_uri (PyObject *self, PyObject *arg)
   }
 
   uri = PyString_AsString (arg);
-    
+
   ret = desktop_agnostic_vfs_file_new_for_uri (uri, &error);
-  
+
   if (pyg_error_check (&error))
   {
     return NULL;

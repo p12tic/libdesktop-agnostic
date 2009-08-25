@@ -381,7 +381,7 @@ _wrap_desktop_agnostic_config_client_notify_add (PyGObject *self,
 
   // to properly support notify_remove we need a global list of all
   //  added notifications
-  
+
   ndata = g_slice_new0 (NotifyData);
   ndata->group = g_strdup (group);
   ndata->key = g_strdup (key);

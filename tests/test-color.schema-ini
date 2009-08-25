@@ -10,7 +10,7 @@ description = Some color list.
 
 [DEFAULT/none]
 type = color
-default = 
+default =
 description = no default color; should be a NULL object.
 
 ; vim: set ft=dosini :

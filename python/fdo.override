@@ -150,10 +150,10 @@ pyg_pid_new (GPid pid)
   pygpid = PyObject_NEW(PyIntObject, &PyGPid_Type);
 
 #if PY_VERSION_HEX >= 0x03000000
-# warning "FIXME: figure out how to subclass long"    
+# warning "FIXME: figure out how to subclass long"
 #else
   ((PyIntObject*)pygpid)->ob_ival = pid;
-#endif    
+#endif
   return (PyObject *) pygpid;
 }
 static void
@@ -197,9 +197,9 @@ _wrap_desktop_agnostic_f_d_o_desktop_entry_new (PyObject *self)
 {
   DesktopAgnosticFDODesktopEntry *ret;
   GError *error = NULL;
-  
+
   ret = desktop_agnostic_fdo_desktop_entry_new (&error);
-  
+
   if (pyg_error_check (&error))
   {
     return NULL;
@@ -226,9 +226,9 @@ _wrap_desktop_agnostic_f_d_o_desktop_entry_for_data (PyObject *self,
   {
     return NULL;
   }
-  
+
   ret = desktop_agnostic_fdo_desktop_entry_new_for_data (data, &error);
-  
+
   if (pyg_error_check (&error))
   {
     return NULL;
@@ -245,10 +245,10 @@ _wrap_desktop_agnostic_f_d_o_desktop_entry_for_file (PyObject *self,
 {
   DesktopAgnosticFDODesktopEntry *ret;
   GError *error = NULL;
-  
+
   ret = desktop_agnostic_fdo_desktop_entry_new_for_file (DESKTOP_AGNOSTIC_VFS_FILE(file->obj),
                                                          &error);
-  
+
   if (pyg_error_check (&error))
   {
     return NULL;
@@ -271,9 +271,9 @@ _wrap_desktop_agnostic_f_d_o_desktop_entry_type_to_string (PyObject *self,
   {
     return NULL;
   }
-  
+
   ret = desktop_agnostic_fdo_desktop_entry_type_to_string (entry_type);
-  
+
   if (ret)
   {
     PyObject *py_ret = PyString_FromString (ret);
@@ -318,7 +318,7 @@ _wrap_desktop_agnostic_fdo_desktop_entry_launch (PyGObject *self,
   {
     PYLIST_ASGSLIST(py_documents, documents,
                     (PyString_Check (py_item) || PyUnicode_Check (py_item)),
-                    PyString_AsString (py_item), g_free, 
+                    PyString_AsString (py_item), g_free,
                     PyErr_SetString(PyExc_TypeError,
                                     "documents must be a sequence of "
                                     "strings or unicode objects"),

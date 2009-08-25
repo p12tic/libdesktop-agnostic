@@ -61,7 +61,7 @@ _wrap_desktop_agnostic_color_gdk_value_to_cairo (PyObject *self, PyObject *arg)
   }
 
   ret = desktop_agnostic_color_gdk_value_to_cairo (value);
-  
+
   return PyFloat_FromDouble (ret);
 }
 %%
@@ -87,9 +87,9 @@ _wrap_desktop_agnostic_color_cairo_value_to_gdk (PyObject *self, PyObject *arg)
                      "The parameter must be a float value between 0.0 and 1.0.");
     return NULL;
   }
-    
+
   ret = desktop_agnostic_color_cairo_value_to_gdk ((float)value);
-  
+
   return PyInt_FromLong (ret);
 }
 %%
@@ -106,9 +106,9 @@ _wrap_desktop_agnostic_color_from_values (PyObject *self, PyObject *args,
                                       "iiii:color_new_from_values", kwlist,
                                       &red, &green, &blue, &alpha))
         return NULL;
-    
+
     ret = desktop_agnostic_color_new_from_values (red, green, blue, alpha);
-    
+
     /* pygobject_new handles NULL checking */
     return pygobject_new ((GObject *)ret);
 }
@@ -128,9 +128,9 @@ _wrap_desktop_agnostic_color_from_string (PyObject *self, PyObject *args,
   {
     return NULL;
   }
-  
+
   ret = desktop_agnostic_color_new_from_string (spec, &error);
-  
+
   if (pyg_error_check (&error))
   {
     return NULL;
@@ -148,9 +148,9 @@ static PyObject *
 _wrap_desktop_agnostic_module_loader_get_default (PyObject *self)
 {
   DesktopAgnosticModuleLoader *ret;
-  
+
   ret = desktop_agnostic_module_loader_get_default ();
-  
+
   /* pygobject_new handles NULL checking */
   return pygobject_new ((GObject *)ret);
 }

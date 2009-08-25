@@ -27,13 +27,13 @@
  * @v1: a pointer to a #GType key.
  * @v2: a pointer to a #GType key to compare with @v1.
  *
- * Compares the two #GType values being pointed to and returns 
+ * Compares the two #GType values being pointed to and returns
  * %TRUE if they are equal.
  * It can be passed to g_hash_table_new() as the @key_equal_func
  * parameter, when using pointers to GType values as keys in a #GHashTable.
  *
  * Originally based on %g_int64_equal.
- * 
+ *
  * Returns: %TRUE if the two keys match.
  */
 static gboolean
@@ -50,7 +50,7 @@ desktop_agnostic_config_gtype_equal (gconstpointer v1,
  * @v: a pointer to a #GType key
  *
  * Converts a pointer to a #GType to a hash value.
- * It can be passed to g_hash_table_new() as the @hash_func parameter, 
+ * It can be passed to g_hash_table_new() as the @hash_func parameter,
  * when using pointers to GType values as keys in a #GHashTable.
  *
  * Originally based on %g_int64_hash.

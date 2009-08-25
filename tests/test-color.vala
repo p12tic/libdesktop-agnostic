@@ -49,7 +49,7 @@ int main (string[] args)
     try
     {
       Color green = new Color.from_string ("green");
-      assert (green.alpha == 0);
+      assert (green.alpha == ushort.MAX);
       message ("green = %s", green.to_string ());
       Color one_char_hex = new Color.from_string ("#f00f");
       message ("red = %s", one_char_hex.to_string ());

@@ -102,6 +102,7 @@ namespace DesktopAgnostic
       {
         this._alpha = this.ushortify (value);
       }
+      default = ushort.MAX;
     }
     public Color (Gdk.Color color, ushort alpha)
     {
@@ -122,7 +123,7 @@ namespace DesktopAgnostic
     public Color.from_string (string spec) throws ColorParseError
     {
       this._color = Gdk.Color ();
-      this._alpha = 0;
+      this._alpha = ushort.MAX; // MIN = transparent, MAX = opaque
       string color_data;
       if (spec.get_char () == '#')
       {

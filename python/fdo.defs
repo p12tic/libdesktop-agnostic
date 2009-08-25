@@ -81,6 +81,15 @@
   (return-type "GType")
 )
 
+(define-method key_exists
+  (of-object "DesktopAgnosticFDODesktopEntry")
+  (c-name "desktop_agnostic_fdo_desktop_entry_key_exists")
+  (return-type "gboolean")
+  (parameters
+    '("const-char*" "key")
+  )
+)
+
 (define-method get_boolean
   (of-object "DesktopAgnosticFDODesktopEntry")
   (c-name "desktop_agnostic_fdo_desktop_entry_get_boolean")

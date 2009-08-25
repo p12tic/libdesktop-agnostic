@@ -23,4 +23,9 @@ type = list-string
 default = [a,b,c]
 description = some array.
 
+[group/enum]
+type = integer
+default = 1
+description = some enumeration.
+
 # vim: set ft=cfg :

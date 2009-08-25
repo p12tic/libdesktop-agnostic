@@ -108,6 +108,8 @@ namespace DesktopAgnostic.Config
           spec.value_type == typeof (float) ||
           spec.value_type == typeof (double) ||
           spec.value_type == typeof (int) ||
+          spec.value_type == typeof (long) ||
+          spec is ParamSpecEnum ||
           spec.value_type == typeof (string))
       {
         func (config, group, key, this.on_simple_value_changed);

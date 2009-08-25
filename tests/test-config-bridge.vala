@@ -23,6 +23,13 @@
 using GLib;
 using DesktopAgnostic;
 
+enum TestEnum
+{
+  ZERO = 0,
+  ONE,
+  TWO
+}
+
 /**
  * Note: array test disabled until the following Vala bug is fixed:
  * http://bugzilla.gnome.org/show_bug.cgi?id=592493
@@ -34,6 +41,7 @@ private class Test : Object
   public float dec { get; set; }
   public bool tf { get; set; }
   //public unowned ValueArray arr { get; set; }
+  public TestEnum enum_val { get; set; }
 
   construct
   {
@@ -42,6 +50,7 @@ private class Test : Object
     this.dec = 2.71f;
     this.tf = false;
     //this.arr = new ValueArray (0);
+    this.enum_val = TestEnum.ZERO;
   }
 }
 
@@ -83,6 +92,7 @@ bridge_assertions (Config.Backend cfg, Config.Bridge bridge, Test obj) throws Er
   bridge.bind (cfg, "group", "decimal", obj, "dec", false);
   bridge.bind (cfg, "group", "tf", obj, "tf", true);
   //bridge.bind (cfg, "group", "array", obj, "arr", false);
+  bridge.bind (cfg, "group", "enum", obj, "enum_val", true);
   assert (obj.str == "foo");
   assert (obj.num == 10);
   if (obj is TestDestruct)
@@ -92,6 +102,7 @@ bridge_assertions (Config.Backend cfg, Config.Bridge bridge, Test obj) throws Er
   assert (obj.dec == 3.14f);
   assert (obj.tf == true);
   //assert (obj.arr.n_values == 3);
+  assert (obj.enum_val == TestEnum.ONE);
   obj.str = "Some new string";
   obj.num = 100;
   obj.dec = 1.618f;
@@ -102,11 +113,13 @@ bridge_assertions (Config.Backend cfg, Config.Bridge bridge, Test obj) throws Er
   array_item = "y";
   new_array.append (array_item);
   obj.arr = new_array;*/
+  obj.enum_val = TestEnum.TWO;
   assert (cfg.get_string ("group", "string") == obj.str);
   assert (cfg.get_int ("group", "number") != obj.num);
   assert (cfg.get_float ("group", "decimal") == obj.dec);
   assert (cfg.get_bool ("group", "tf") != obj.tf);
   //assert (cfg.get_list ("group", "array").n_values == obj.arr.n_values);
+  assert (cfg.get_int ("group", "enum") != 2);
 }
 
 int main (string[] args)

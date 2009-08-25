@@ -49,7 +49,7 @@ namespace DesktopAgnostic
       }
     }
     private ushort
-    ushortify (int value) throws ColorParseError
+    ushortify (uint value) throws ColorParseError
     {
       if (value < 0 || value > ushort.MAX)
       {
@@ -58,7 +58,7 @@ namespace DesktopAgnostic
       }
       return (ushort)value;
     }
-    public int red
+    public uint red
     {
       get
       {
@@ -69,7 +69,7 @@ namespace DesktopAgnostic
         this._color.red = this.ushortify (value);
       }
     }
-    public int green
+    public uint green
     {
       get
       {
@@ -80,7 +80,7 @@ namespace DesktopAgnostic
         this._color.green = this.ushortify (value);
       }
     }
-    public int blue
+    public uint blue
     {
       get
       {
@@ -92,7 +92,7 @@ namespace DesktopAgnostic
       }
     }
     private ushort _alpha;
-    public int alpha
+    public uint alpha
     {
       get
       {

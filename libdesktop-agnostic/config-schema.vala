@@ -296,7 +296,7 @@ namespace DesktopAgnostic.Config
           }
           else
           {
-            throw new SchemaError.PARSE ("Invalid section in schema ('%s'): %s",
+            throw new SchemaError.PARSE ("Invalid section in schema ('%s'), there is no group name: %s",
                                          this._filename, group);
           }
         }

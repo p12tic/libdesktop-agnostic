@@ -301,7 +301,17 @@ namespace DesktopAgnostic.Config
           (method == BindMethod.FALLBACK &&
            (this.instance == null || !option.per_instance)))
       {
-        bridge.bind (this.global, group, key, obj, property_name, read_only);
+        string global_prop;
+
+        if (method == BindMethod.BOTH)
+        {
+          global_prop = "%s-base".printf (property_name);
+        }
+        else
+        {
+          global_prop = property_name;
+        }
+        bridge.bind (this.global, group, key, obj, global_prop, read_only);
       }
 
       if (this.instance != null && option.per_instance &&
@@ -334,7 +344,17 @@ namespace DesktopAgnostic.Config
           (method == BindMethod.FALLBACK &&
            (this.instance == null || !option.per_instance)))
       {
-        bridge.remove (this.global, group, key, obj, property_name);
+        string global_prop;
+
+        if (method == BindMethod.BOTH)
+        {
+          global_prop = "%s-base".printf (property_name);
+        }
+        else
+        {
+          global_prop = property_name;
+        }
+        bridge.remove (this.global, group, key, obj, global_prop);
       }
 
       if (this.instance != null && option.per_instance &&

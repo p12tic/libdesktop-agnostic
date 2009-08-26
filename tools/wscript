@@ -1,20 +1,6 @@
 #!/usr/bin/python
 # encoding: utf-8
 
-import Options
-
-def set_options(opt):
-    opt.add_option('--with-gtk-tools', action='store_true',
-                   dest='gtk_tools', default=False,
-                   help='Enable building tools that require GTK+.')
-
-def configure(conf):
-    conf.env['GTK_TOOLS'] = Options.options.gtk_tools
-    if conf.env['GTK_TOOLS']:
-        conf.check_cfg(package='gtk+-2.0', uselib_store='GTK',
-                       atleast_version='2.12.0', mandatory=True,
-                       args='--cflags --libs')
-
 def build(bld):
     if 'gconf' in bld.env['BACKENDS_CFG']:
         schema = bld.new_task_gen('cc', 'program')
@@ -22,12 +8,3 @@ def build(bld):
         schema.uselib_local = 'desktop-agnostic-cfg'
         schema.vapi_dirs = '../libdesktop-agnostic'
         schema.target = 'lda-schema-to-gconf'
-    if bld.env['GTK_TOOLS']:
-        launcher = bld.new_task_gen('cc', 'program')
-        launcher.source = 'lda-desktop-entry-editor.vala'
-        launcher.packages = 'gtk+-2.0'
-        launcher.uselib = 'GTK'
-        launcher.uselib_local = 'desktop-agnostic-fdo'
-        launcher.vapi_dirs = '../libdesktop-agnostic'
-        launcher.target = 'lda-desktop-entry-editor'
-        launcher.ccflags = '-DGETTEXT_PACKAGE="%s"' % launcher.target

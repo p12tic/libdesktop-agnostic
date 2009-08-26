@@ -45,7 +45,7 @@ namespace DesktopAgnostic.FDO
           {
             warning ("The desktop entry has already been initialized.");
           }
-          else
+          else if (value.exists ())
           {
             string? path;
 
@@ -188,7 +188,8 @@ namespace DesktopAgnostic.FDO
     public bool
     key_exists (string key)
     {
-      return this._keyfile.has_key (GROUP, key);
+      return this._keyfile.has_group (GROUP) &&
+             this._keyfile.has_key (GROUP, key);
     }
 
     public bool

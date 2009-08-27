@@ -33,7 +33,8 @@ namespace DesktopAgnostic.Config
     NO_SCHEMA,
     INVALID_TYPE,
     KEY_NOT_FOUND,
-    NOTIFY
+    NOTIFY,
+    DUPLICATE_BINDING
   }
   /**
    * The placeholder used for the default group. In some backends, this

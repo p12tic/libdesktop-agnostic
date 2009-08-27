@@ -158,6 +158,26 @@ namespace DesktopAgnostic.Config
         string full_key;
         unowned List<string>? key_list;
 
+        binding_key = "%s/%s".printf (group, key);
+
+        full_key = "%s:%s".printf (binding_key, property_name);
+        key_list = this.bindings_by_obj.lookup (obj);
+        if (key_list == null)
+        {
+          List<string> new_key_list = new List<string> ();
+          new_key_list.append (full_key);
+          this.bindings_by_obj.insert (obj, (owned)new_key_list);
+        }
+        else if (key_list.find_custom (full_key, (CompareFunc)strcmp) == null)
+        {
+          key_list.append (full_key);
+        }
+        else
+        {
+          throw new Error.DUPLICATE_BINDING ("You cannot bind a config key (%s) to a property (%s) more than once.",
+                                             binding_key, property_name);
+        }
+
         obj.set_property (binding.property_name, config.get_value (group, key));
         if (!read_only)
         {
@@ -166,7 +186,6 @@ namespace DesktopAgnostic.Config
                                               binding);
         }
         binding.read_only = read_only;
-        binding_key = "%s/%s".printf (group, key);
 
         bindings_list = this.bindings.get_data (binding_key);
         if (bindings_list == null)
@@ -186,19 +205,6 @@ namespace DesktopAgnostic.Config
         else
         {
           bindings_list.append ((owned)binding);
-        }
-
-        full_key = "%s:%s".printf (binding_key, property_name);
-        key_list = this.bindings_by_obj.lookup (obj);
-        if (key_list == null)
-        {
-          List<string> new_key_list = new List<string> ();
-          new_key_list.append (full_key);
-          this.bindings_by_obj.insert (obj, (owned)new_key_list);
-        }
-        else if (key_list.find_custom (full_key, (CompareFunc)strcmp) == null)
-        {
-          key_list.append (full_key);
         }
       }
       else

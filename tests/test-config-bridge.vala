@@ -30,6 +30,8 @@ enum TestEnum
   TWO
 }
 
+const string DEFAULT_STR = "Not expected string";
+
 /**
  * Note: array test disabled until the following Vala bug is fixed:
  * http://bugzilla.gnome.org/show_bug.cgi?id=592493
@@ -45,7 +47,7 @@ private class Test : Object
 
   construct
   {
-    this.str = "Not expected string";
+    this.str = DEFAULT_STR;
     this.num = 1;
     this.dec = 2.71f;
     this.tf = false;
@@ -57,6 +59,8 @@ private class Test : Object
 private class TestDestruct : Test
 {
   private Config.Backend cfg;
+  public int foo_counter = 0;
+  public int str_counter = 0;
   public int num2 { get; set; }
   public static bool instance_exists = false;
   public TestDestruct (Config.Backend cfg)
@@ -64,6 +68,45 @@ private class TestDestruct : Test
     this.num2 = 1;
     this.cfg = cfg;
     instance_exists = true;
+    this.notify["str"].connect (this.on_str_notify_pre_bind);
+  }
+
+  private void
+  on_str_notify_pre_bind (ParamSpec spec)
+  {
+    string str = this.str;
+
+    assert (str != DEFAULT_STR);
+    if (str == "foo")
+    {
+      this.foo_counter++;
+    }
+    else
+    {
+      this.str_counter++;
+    }
+  }
+
+  public void
+  add_post_bind_notify ()
+  {
+    this.notify["str"].connect (this.on_str_notify_post_bind);
+  }
+
+  private void
+  on_str_notify_post_bind (ParamSpec spec)
+  {
+    string str = this.str;
+
+    assert (str != DEFAULT_STR);
+    if (str == "foo")
+    {
+      this.foo_counter--;
+    }
+    else
+    {
+      this.str_counter--;
+    }
   }
 
   ~TestDestruct ()
@@ -87,6 +130,7 @@ bridge_assertions (Config.Backend cfg, Config.Bridge bridge, Test obj) throws Er
   bridge.bind (cfg, "group", "number", obj, "num", true);
   if (obj is TestDestruct)
   {
+    (obj as TestDestruct).add_post_bind_notify ();
     bridge.bind (cfg, "group", "number", obj, "num2", true);
   }
   bridge.bind (cfg, "group", "decimal", obj, "dec", false);
@@ -120,6 +164,12 @@ bridge_assertions (Config.Backend cfg, Config.Bridge bridge, Test obj) throws Er
   assert (cfg.get_bool ("group", "tf") != obj.tf);
   //assert (cfg.get_list ("group", "array").n_values == obj.arr.n_values);
   assert (cfg.get_int ("group", "enum") != 2);
+  if (obj is TestDestruct)
+  {
+    unowned TestDestruct td = obj as TestDestruct;
+    assert (td.foo_counter == 1);
+    assert (td.str_counter == 1);
+  }
 }
 
 int main (string[] args)

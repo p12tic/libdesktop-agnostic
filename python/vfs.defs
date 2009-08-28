@@ -10,6 +10,13 @@
   (prerequisite "GObject")
 )
 
+(define-interface Trash
+  (in-module "DesktopAgnosticVFS")
+  (c-name "DesktopAgnosticVFSTrash")
+  (gtype-id "DESKTOP_AGNOSTIC_VFS_TYPE_TRASH")
+  (prerequisite "GObject")
+)
+
 
 ; object definitions ...
 
@@ -189,6 +196,35 @@
 (define-function init
   (c-name "desktop_agnostic_vfs_init")
   (return-type "none")
+  (parameters
+    '("GError**" "error")
+  )
+)
+
+(define-function trash_get_type
+  (c-name "desktop_agnostic_vfs_trash_get_type")
+  (return-type "GType")
+)
+
+(define-method send_to_trash
+  (of-object "DesktopAgnosticVFSTrash")
+  (c-name "desktop_agnostic_vfs_trash_send_to_trash")
+  (return-type "none")
+  (parameters
+    '("DesktopAgnosticVFSFile*" "file")
+    '("GError**" "error")
+  )
+)
+
+(define-method empty
+  (of-object "DesktopAgnosticVFSTrash")
+  (c-name "desktop_agnostic_vfs_trash_empty")
+  (return-type "none")
+)
+
+(define-function trash_get_default
+  (c-name "desktop_agnostic_vfs_trash_get_default")
+  (return-type "DesktopAgnosticVFSTrash*")
   (parameters
     '("GError**" "error")
   )

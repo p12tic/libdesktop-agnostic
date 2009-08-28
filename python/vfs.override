@@ -33,6 +33,7 @@ ignore-glob
   *_get_type
   *_error_quark
   desktop_agnostic_vfs_file_new_*
+  desktop_agnostic_vfs_trash_get_default
 %%
 define DesktopAgnosticVFSFile.for_path onearg staticmethod
 static PyObject *
@@ -107,4 +108,21 @@ _wrap_desktop_agnostic_vfs_file_load_contents (PyGObject *self)
   }
 
   return PyString_FromStringAndSize (data, length);
+}
+%%
+define DesktopAgnosticVFSTrash.get_default noargs staticmethod
+static PyObject *
+_wrap_desktop_agnostic_v_f_s_trash_get_default (PyObject *self)
+{
+  DesktopAgnosticVFSTrash *ret;
+  GError *error = NULL;
+
+  ret = desktop_agnostic_vfs_trash_get_default (&error);
+
+  if (pyg_error_check (&error))
+  {
+    return NULL;
+  }
+  /* pygobject_new handles NULL checking */
+  return pygobject_new ((GObject *)ret);
 }

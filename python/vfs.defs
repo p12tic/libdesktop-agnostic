@@ -57,7 +57,7 @@
   (in-module "DesktopAgnosticVFS")
   (c-name "DesktopAgnosticVFSFileError")
   (values
-    '("found" "DESKTOP_AGNOSTIC_VFS_FILE_ERROR_FILE_NOT_FOUND")
+    '("file-not-found" "DESKTOP_AGNOSTIC_VFS_FILE_ERROR_FILE_NOT_FOUND")
   )
 )
 

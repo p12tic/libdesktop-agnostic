@@ -29,6 +29,7 @@ int main (string[] args)
   Gdk.init (ref args);
   try
   {
+    bool test_launch;
     unowned string path;
     VFS.File tmp;
     string file_path;
@@ -39,6 +40,8 @@ int main (string[] args)
     VFS.File file_copy;
     string copy_contents;
     size_t copy_length;
+
+    test_launch = (args.length > 1 && args[1] == "launch");
 
     VFS.init ();
     path = Environment.get_tmp_dir ();
@@ -53,13 +56,23 @@ int main (string[] args)
     file.replace_contents (CONTENT);
     file.load_contents (out contents, out length);
     assert (contents == CONTENT);
-    assert (file.launch ());
+    if (test_launch)
+    {
+      assert (file.launch ());
+    }
     file_copy_path = "%s-copy".printf (file_path);
     file_copy = VFS.file_new_for_path (file_copy_path);
     assert (file.copy (file_copy, true));
     file_copy.load_contents (out copy_contents, out copy_length);
     assert (contents == copy_contents);
     assert (length == copy_length);
+    if (!test_launch)
+    {
+      assert (file_copy.remove ());
+      assert (!file_copy.exists ());
+      assert (file.remove ());
+      assert (!file.exists ());
+    }
     file = null;
     VFS.shutdown ();
   }

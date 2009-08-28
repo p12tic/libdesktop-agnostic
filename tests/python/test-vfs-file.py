@@ -16,6 +16,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
+import sys
 import os.path
 import tempfile
 from desktopagnostic import vfs
@@ -26,6 +27,7 @@ CONTENT = 'Desktop Agnostic Library'
 def main():
     gtk.init_check()
     vfs.init()
+    test_launch = 'launch' in sys.argv
     try:
         path = tempfile.gettempdir()
         tmp = vfs.File.for_path(path)
@@ -37,11 +39,17 @@ def main():
         tmp_file = vfs.File.for_path(file_path);
         tmp_file.replace_contents(CONTENT)
         assert tmp_file.load_contents() == CONTENT
-        assert tmp_file.launch()
+        if test_launch:
+          assert tmp_file.launch()
         file_copy_path = '%s-copy' % file_path
         file_copy = vfs.File.for_path (file_copy_path)
         assert tmp_file.copy (file_copy, True)
         assert CONTENT == file_copy.load_contents()
+        if not test_launch:
+          assert file_copy.remove()
+          assert not file_copy.exists()
+          assert tmp_file.remove()
+          assert not tmp_file.exists()
     finally:
         vfs.shutdown()
 

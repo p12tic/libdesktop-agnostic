@@ -38,6 +38,10 @@ def main():
         tmp_file.replace_contents(CONTENT)
         assert tmp_file.load_contents() == CONTENT
         assert tmp_file.launch()
+        file_copy_path = '%s-copy' % file_path
+        file_copy = vfs.File.for_path (file_copy_path)
+        assert tmp_file.copy (file_copy, True)
+        assert CONTENT == file_copy.load_contents()
     finally:
         vfs.shutdown()
 

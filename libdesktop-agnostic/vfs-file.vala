@@ -27,7 +27,8 @@ namespace DesktopAgnostic.VFS
    */
   public errordomain FileError
   {
-    FILE_NOT_FOUND
+    FILE_NOT_FOUND,
+    EXISTS
   }
   /**
    * The kinds of files recognized by the File backends.
@@ -129,6 +130,15 @@ namespace DesktopAgnostic.VFS
      * @return %TRUE on successful launch, %FALSE on failure.
      */
     public abstract bool launch () throws Error;
+
+    /**
+     * Copies a file to another URI. This is a synchronous operation. Only
+     * guaranteed to work on files, not directories.
+     * @param destination the destination of the copied file.
+     * @param overwrite if a file exists at the destination, whether to
+     * overwrite it.
+     */
+    public abstract bool copy (File destination, bool overwrite) throws Error;
 
     /**
      * Removes the specified file. Only works on files, not directories.

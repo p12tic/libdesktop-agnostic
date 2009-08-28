@@ -150,6 +150,24 @@ namespace DesktopAgnostic.VFS
      * Note: not using a ThunarVfs.Job because they're async.
      */
     public override bool
+    copy (File destination, bool overwrite) throws Error
+    {
+      string data;
+      size_t length;
+
+      if (!overwrite && destination.exists ())
+      {
+        throw new FileError.EXISTS ("The destination file (%s) exists.",
+                                    this.impl_path);
+      }
+
+      return this.load_contents (out data, out length) &&
+             destination.replace_contents (data);
+    }
+    /**
+     * Note: not using a ThunarVfs.Job because they're async.
+     */
+    public override bool
     remove () throws Error
     {
       if (!this.exists ())

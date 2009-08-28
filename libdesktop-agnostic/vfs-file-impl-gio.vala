@@ -138,6 +138,18 @@ namespace DesktopAgnostic.VFS
       return app_info.launch (files, null);
     }
     public override bool
+    copy (File destination, bool overwrite) throws Error
+    {
+      FileCopyFlags flags = 0;
+
+      if (overwrite)
+      {
+        flags = FileCopyFlags.OVERWRITE;
+      }
+      return this._file.copy ((GLib.File)destination.implementation,
+                              flags, null, null);
+    }
+    public override bool
     remove () throws Error
     {
       if (!this.exists ())

@@ -58,6 +58,7 @@
   (c-name "DesktopAgnosticVFSFileError")
   (values
     '("file-not-found" "DESKTOP_AGNOSTIC_VFS_FILE_ERROR_FILE_NOT_FOUND")
+    '("exists" "DESKTOP_AGNOSTIC_VFS_FILE_ERROR_EXISTS")
   )
 )
 
@@ -127,6 +128,17 @@
   (c-name "desktop_agnostic_vfs_file_launch")
   (return-type "gboolean")
   (parameters
+    '("GError**" "error")
+  )
+)
+
+(define-method copy
+  (of-object "DesktopAgnosticVFSFile")
+  (c-name "desktop_agnostic_vfs_file_copy")
+  (return-type "gboolean")
+  (parameters
+    '("DesktopAgnosticVFSFile*" "destination")
+    '("gboolean" "overwrite")
     '("GError**" "error")
   )
 )

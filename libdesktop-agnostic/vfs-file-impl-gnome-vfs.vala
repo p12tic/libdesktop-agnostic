@@ -200,6 +200,27 @@ namespace DesktopAgnostic.VFS
       return mime_app.launch (uris) == GnomeVFS.Result.OK;
     }
     public override bool
+    copy (File destination, bool overwrite) throws Error
+    {
+      GnomeVFS.XferOverwriteMode overwrite_mode;
+      GnomeVFS.Result res;
+
+      if (overwrite)
+      {
+        overwrite_mode = GnomeVFS.XferOverwriteMode.REPLACE;
+      }
+      else
+      {
+        overwrite_mode = GnomeVFS.XferOverwriteMode.ABORT;
+      }
+      res = GnomeVFS.xfer_uri ((GnomeVFS.URI)this.implementation,
+                               (GnomeVFS.URI)destination.implementation,
+                               GnomeVFS.XferOptions.DEFAULT,
+                               GnomeVFS.XferErrorMode.ABORT,
+                               overwrite_mode, null);
+      return (res == GnomeVFS.Result.OK);
+    }
+    public override bool
     remove () throws Error
     {
       if (!this.exists ())

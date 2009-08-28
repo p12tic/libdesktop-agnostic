@@ -29,22 +29,37 @@ int main (string[] args)
   Gdk.init (ref args);
   try
   {
+    unowned string path;
+    VFS.File tmp;
+    string file_path;
+    VFS.File file;
+    string contents;
+    size_t length;
+    string file_copy_path;
+    VFS.File file_copy;
+    string copy_contents;
+    size_t copy_length;
+
     VFS.init ();
-    unowned string path = Environment.get_tmp_dir ();
-    VFS.File tmp = VFS.file_new_for_path (path);
+    path = Environment.get_tmp_dir ();
+    tmp = VFS.file_new_for_path (path);
     assert (tmp.exists ());
     assert (tmp.file_type == VFS.FileType.DIRECTORY);
     message ("URI: %s", tmp.uri);
     message ("Path: %s", tmp.path);
     tmp = null;
-    string file_path = Path.build_filename (path, "desktop-agnostic-test");
-    VFS.File file = VFS.file_new_for_path (file_path);
+    file_path = Path.build_filename (path, "desktop-agnostic-test");
+    file = VFS.file_new_for_path (file_path);
     file.replace_contents (CONTENT);
-    string contents;
-    size_t length;
     file.load_contents (out contents, out length);
     assert (contents == CONTENT);
     assert (file.launch ());
+    file_copy_path = "%s-copy".printf (file_path);
+    file_copy = VFS.file_new_for_path (file_copy_path);
+    assert (file.copy (file_copy, true));
+    file_copy.load_contents (out copy_contents, out copy_length);
+    assert (contents == copy_contents);
+    assert (length == copy_length);
     file = null;
     VFS.shutdown ();
   }

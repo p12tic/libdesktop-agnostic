@@ -76,7 +76,6 @@ namespace DesktopAgnostic.VFS
             else
             {
               // set fallback
-              warning ("Could not find any icon names.");
               this._icon = "drive-harddisk";
             }
           }

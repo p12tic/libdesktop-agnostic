@@ -148,7 +148,6 @@ namespace DesktopAgnostic.Config
       binding.group = group;
       binding.key = key;
       binding.obj = obj;
-      binding.property_name = property_name;
 
       spec = get_property_spec (obj, property_name);
       if (spec != null)
@@ -158,9 +157,11 @@ namespace DesktopAgnostic.Config
         string full_key;
         unowned List<string>? key_list;
 
+        binding.property_name = spec.name;
+
         binding_key = "%s/%s".printf (group, key);
 
-        full_key = "%s:%s".printf (binding_key, property_name);
+        full_key = "%s:%s".printf (binding_key, spec.name);
         key_list = this.bindings_by_obj.lookup (obj);
         if (key_list == null)
         {
@@ -175,10 +176,10 @@ namespace DesktopAgnostic.Config
         else
         {
           throw new Error.DUPLICATE_BINDING ("You cannot bind a config key (%s) to a property (%s) more than once.",
-                                             binding_key, property_name);
+                                             binding_key, spec.name);
         }
 
-        obj.set_property (binding.property_name, config.get_value (group, key));
+        obj.set_property (spec.name, config.get_value (group, key));
         if (!read_only)
         {
           binding.notify_id = Signal.connect (obj, "notify::%s".printf (spec.name),

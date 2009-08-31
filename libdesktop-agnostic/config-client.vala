@@ -38,6 +38,13 @@ namespace DesktopAgnostic.Config
     FALLBACK,
     BOTH
   }
+  /**
+   * A wrapper for #Config.Backend and #Config.Bridge which handles calls to
+   * the global and/or instance objects of #Config.Backend.
+   *
+   * NOTE: Unknown bizarre behavior may occur if one instantiates two instances
+   * of this class using the same schema, but different instance IDs.
+   */
   public class Client : Object
   {
     private Schema _schema;

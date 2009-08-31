@@ -161,7 +161,7 @@ namespace DesktopAgnostic.Config
 
         binding_key = "%s/%s".printf (group, key);
 
-        full_key = "%s:%s".printf (binding_key, spec.name);
+        full_key = "%s:%u:%s".printf (binding_key, direct_hash (obj), spec.name);
         key_list = this.bindings_by_obj.lookup (obj);
         if (key_list == null)
         {
@@ -287,13 +287,25 @@ namespace DesktopAgnostic.Config
       unowned List<string> key_list = this.bindings_by_obj.lookup (obj);
       foreach (unowned string full_key in key_list)
       {
-        unowned string property_name = full_key.rchr (-1, ':');
-        long property_offset = full_key.pointer_to_offset (property_name);
+        unowned string property_name;
+        long property_offset;
+        unowned string obj_hash;
+        long obj_hash_offset;
+        unowned string last_slash;
+        long last_slash_offset;
+        string key;
+        string group;
+
+        property_name = full_key.rchr (-1, ':');
+        property_offset = full_key.pointer_to_offset (property_name);
         property_name = property_name.offset (1);
-        unowned string last_slash = full_key.rchr (property_offset, '/');
-        long last_slash_offset = full_key.pointer_to_offset (last_slash) + 1;
-        string key = full_key.substring (last_slash_offset, property_offset - last_slash_offset);
-        string group = full_key.substring (0, last_slash_offset - 1);
+        obj_hash = full_key.rchr (property_offset, ':');
+        obj_hash_offset = full_key.pointer_to_offset (obj_hash);
+        last_slash = full_key.rchr (obj_hash_offset, '/');
+        last_slash_offset = full_key.pointer_to_offset (last_slash) + 1;
+        key = full_key.substring (last_slash_offset,
+                                  obj_hash_offset - last_slash_offset);
+        group = full_key.substring (0, last_slash_offset - 1);
         this.remove (config, group, key, obj, property_name);
       }
       this.bindings_by_obj.remove (obj);

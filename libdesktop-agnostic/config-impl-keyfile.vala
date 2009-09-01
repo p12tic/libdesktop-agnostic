@@ -270,7 +270,7 @@ namespace DesktopAgnostic.Config
           if (this._checksum != checksum)
           {
             // iterate through the config keys and determine which ones have changed
-            Schema schema = this.schema;
+            unowned Schema schema = this.schema;
             KeyFile new_data = new KeyFile ();
 
             new_data.load_from_data (data, length, KeyFileFlags.NONE);
@@ -370,16 +370,16 @@ namespace DesktopAgnostic.Config
     public override void
     reset () throws GLib.Error
     {
-      Schema? schema = this.schema;
+      unowned Schema? schema = this.schema;
       if (schema == null)
       {
         throw new Error.NO_SCHEMA ("The schema was not loaded.");
       }
 
       this._autosave = false;
-      foreach (string group in schema.get_groups ())
+      foreach (unowned string group in schema.get_groups ())
       {
-        foreach (string key in schema.get_keys (group))
+        foreach (unowned string key in schema.get_keys (group))
         {
           SchemaOption option = schema.get_option (group, key);
           this.set_value (group, key, option.default_value);

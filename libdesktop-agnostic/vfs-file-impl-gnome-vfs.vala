@@ -87,6 +87,40 @@ namespace DesktopAgnostic.VFS
         return ft;
       }
     }
+    public override AccessFlags access_flags
+    {
+      get
+      {
+        AccessFlags flags = AccessFlags.NONE;
+
+        if (this.exists ())
+        {
+          GnomeVFS.FileInfo info = new GnomeVFS.FileInfo ();
+          GnomeVFS.FileInfoOptions options;
+
+          options = GnomeVFS.FileInfoOptions.GET_ACCESS_RIGHTS;
+          GnomeVFS.get_file_info_uri (this._uri, info, options);
+
+          if ((info.permissions &
+               GnomeVFS.FilePermissions.ACCESS_READABLE) != 0)
+          {
+            flags |= AccessFlags.READ;
+          }
+          if ((info.permissions &
+               GnomeVFS.FilePermissions.ACCESS_WRITABLE) != 0)
+          {
+            flags |= AccessFlags.WRITE;
+          }
+          if ((info.permissions &
+               GnomeVFS.FilePermissions.ACCESS_EXECUTABLE) != 0)
+          {
+            flags |= AccessFlags.EXECUTE;
+          }
+        }
+
+        return flags;
+      }
+    }
     protected override void init (string uri)
     {
       this._uri_str = uri;

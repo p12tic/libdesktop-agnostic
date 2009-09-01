@@ -41,6 +41,13 @@ namespace DesktopAgnostic.VFS
     SYMBOLIC_LINK,
     SPECIAL
   }
+  public enum AccessFlags
+  {
+    NONE = 0,
+    READ = 1 << 0,
+    WRITE = 1 << 1,
+    EXECUTE = 1 << 2
+  }
   /**
    * Abstract base class for representations of files.
    */
@@ -97,6 +104,11 @@ namespace DesktopAgnostic.VFS
      */
     public abstract FileType file_type { get; }
     /**
+     * Access rights for the current user for the file.
+     * @see AccessFlags
+     */
+    public abstract AccessFlags access_flags { get; default = AccessFlags.NONE; }
+    /**
      * Implementation detail. Implementing classes override this to properly
      * associate the URI with the implementation pointer.
      */
@@ -105,6 +117,27 @@ namespace DesktopAgnostic.VFS
      * Whether something exists at the URI that the object represents.
      */
     public abstract bool exists ();
+    /**
+     * Whether the file is readable.
+     */
+    public bool is_readable ()
+    {
+      return (this.access_flags & AccessFlags.READ) != 0;
+    }
+    /**
+     * Whether the file is writable.
+     */
+    public bool is_writable ()
+    {
+      return (this.access_flags & AccessFlags.WRITE) != 0;
+    }
+    /**
+     * Whether the file is executable.
+     */
+    public bool is_executable ()
+    {
+      return (this.access_flags & AccessFlags.EXECUTE) != 0;
+    }
     /**
      * Adds a monitor to the file.
      * @return the monitor associated with the file

@@ -93,6 +93,31 @@ namespace DesktopAgnostic.VFS
         return ft;
       }
     }
+    private override AccessFlags access_flags
+    {
+      get
+      {
+        AccessFlags flags = AccessFlags.NONE;
+
+        if (this._info != null)
+        {
+          if ((this._info.flags & ThunarVfs.FileFlags.READABLE) != 0)
+          {
+            flags |= AccessFlags.READ;
+          }
+          if ((this._info.flags & ThunarVfs.FileFlags.WRITABLE) != 0)
+          {
+            flags |= AccessFlags.WRITE;
+          }
+          if ((this._info.flags & ThunarVfs.FileFlags.EXECUTABLE) != 0)
+          {
+            flags |= AccessFlags.EXECUTE;
+          }
+        }
+
+        return flags;
+      }
+    }
     protected override void
     init (string uri)
     {

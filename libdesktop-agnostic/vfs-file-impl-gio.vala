@@ -103,6 +103,47 @@ namespace DesktopAgnostic.VFS
         return ft;
       }
     }
+    public override AccessFlags access_flags
+    {
+      get
+      {
+        AccessFlags flags = AccessFlags.NONE;
+        if (this.exists ())
+        {
+          FileInfo info;
+
+          try
+          {
+            string attrs;
+
+            attrs = "%s,%s,%s".printf (FILE_ATTRIBUTE_ACCESS_CAN_READ,
+                                       FILE_ATTRIBUTE_ACCESS_CAN_WRITE,
+                                       FILE_ATTRIBUTE_ACCESS_CAN_EXECUTE);
+            info = this._file.query_info (attrs, FileQueryInfoFlags.NONE,
+                                          null);
+            if (info.get_attribute_boolean (FILE_ATTRIBUTE_ACCESS_CAN_READ))
+            {
+              flags |= AccessFlags.READ;
+            }
+            if (info.get_attribute_boolean (FILE_ATTRIBUTE_ACCESS_CAN_WRITE))
+            {
+              flags |= AccessFlags.WRITE;
+            }
+            if (info.get_attribute_boolean (FILE_ATTRIBUTE_ACCESS_CAN_EXECUTE))
+            {
+              flags |= AccessFlags.EXECUTE;
+            }
+          }
+          catch (Error err)
+          {
+            warning ("An error occurred while querying the access flags: %s",
+                     err.message);
+          }
+        }
+
+        return flags;
+      }
+    }
     protected override void
     init (string uri)
     {

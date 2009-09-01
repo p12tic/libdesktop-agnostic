@@ -33,6 +33,10 @@ def main():
         tmp = vfs.File.for_path(path)
         assert tmp.exists()
         assert tmp.props.file_type == vfs.FILE_TYPE_DIRECTORY
+        assert (tmp.props.access_flags & vfs.ACCESS_FLAGS_READ) != 0
+        assert tmp.is_readable()
+        assert (tmp.props.access_flags & vfs.ACCESS_FLAGS_WRITE) != 0
+        assert tmp.is_writable()
         print 'URI: %s' % tmp.props.uri
         print 'Path: %s' % tmp.props.path
         file_path = os.path.join(path, '%s-lda-test' % tempfile.gettempprefix())

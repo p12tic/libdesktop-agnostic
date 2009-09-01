@@ -48,6 +48,10 @@ int main (string[] args)
     tmp = VFS.file_new_for_path (path);
     assert (tmp.exists ());
     assert (tmp.file_type == VFS.FileType.DIRECTORY);
+    assert ((tmp.access_flags & VFS.AccessFlags.READ) != 0);
+    assert (tmp.is_readable ());
+    assert ((tmp.access_flags & VFS.AccessFlags.WRITE) != 0);
+    assert (tmp.is_writable ());
     message ("URI: %s", tmp.uri);
     message ("Path: %s", tmp.path);
     tmp = null;

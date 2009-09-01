@@ -32,6 +32,18 @@
 
 ;; Enumerations and Flags ...
 
+(define-enum AccessFlags
+  (in-module "DesktopAgnosticVFS")
+  (c-name "DesktopAgnosticVFSAccessFlags")
+  (gtype-id "DESKTOP_AGNOSTIC_VFS_TYPE_ACCESS_FLAGS")
+  (values
+    '("none" "DESKTOP_AGNOSTIC_VFS_ACCESS_FLAGS_NONE")
+    '("read" "DESKTOP_AGNOSTIC_VFS_ACCESS_FLAGS_READ")
+    '("write" "DESKTOP_AGNOSTIC_VFS_ACCESS_FLAGS_WRITE")
+    '("execute" "DESKTOP_AGNOSTIC_VFS_ACCESS_FLAGS_EXECUTE")
+  )
+)
+
 (define-enum FileMonitorEvent
   (in-module "DesktopAgnosticVFS")
   (c-name "DesktopAgnosticVFSFileMonitorEvent")
@@ -100,6 +112,24 @@
 (define-method exists
   (of-object "DesktopAgnosticVFSFile")
   (c-name "desktop_agnostic_vfs_file_exists")
+  (return-type "gboolean")
+)
+
+(define-method is_readable
+  (of-object "DesktopAgnosticVFSFile")
+  (c-name "desktop_agnostic_vfs_file_is_readable")
+  (return-type "gboolean")
+)
+
+(define-method is_writable
+  (of-object "DesktopAgnosticVFSFile")
+  (c-name "desktop_agnostic_vfs_file_is_writable")
+  (return-type "gboolean")
+)
+
+(define-method is_executable
+  (of-object "DesktopAgnosticVFSFile")
+  (c-name "desktop_agnostic_vfs_file_is_executable")
   (return-type "gboolean")
 )
 

@@ -171,7 +171,7 @@ namespace DesktopAgnostic.Config
         throw new Error.KEY_NOT_FOUND ("The key %s/%s is invalid.",
                                        group, key);
       }
-      else if (keyfile == this._data && !keyfile.has_key (group, key))
+      else if (!keyfile.has_key (group, key))
       {
         return new ValueArray (0);
       }
@@ -251,8 +251,8 @@ namespace DesktopAgnostic.Config
     }
 
     private void
-    on_keyfile_changed (VFS.FileMonitor monitor, VFS.File file, VFS.File other,
-                        VFS.FileMonitorEvent event)
+    on_keyfile_changed (VFS.File file, VFS.File? other,
+                        VFS.FileMonitorEvent event, VFS.FileMonitor monitor)
     {
       switch (event)
       {
@@ -280,9 +280,14 @@ namespace DesktopAgnostic.Config
             {
               foreach (unowned string key in schema.get_keys (group))
               {
-                if (this._data.get_value (group, key) != new_data.get_value (group, key))
+                if (this._data.has_group (group))
                 {
-                  this.set_value_from_keyfile (new_data, group, key);
+                  if ((this._data.has_key (group, key) &&
+                       this._data.get_value (group, key) != new_data.get_value (group, key)) ||
+                      schema.get_option (group, key).option_type == typeof (ValueArray))
+                  {
+                    this.set_value_from_keyfile (new_data, group, key);
+                  }
                 }
               }
             }
@@ -312,6 +317,17 @@ namespace DesktopAgnostic.Config
       }
     }
 
+    private bool
+    create_file_monitor ()
+    {
+      this._keyfile_monitor = this._keyfile.monitor ();
+      this._monitor_changed_id = Signal.connect_swapped (this._keyfile_monitor,
+                                                         "changed",
+                                                         (Callback)this.on_keyfile_changed,
+                                                         this);
+      return false;
+    }
+
     /**
      * Determines the path to the config file and creates/loads it.
      */
@@ -324,7 +340,6 @@ namespace DesktopAgnostic.Config
 
       base_path = Path.build_filename (Environment.get_user_config_dir (),
                                        "desktop-agnostic");
-      this.ensure_directory (base_path);
       if (this.instance_id == null)
       {
         path = Path.build_filename (base_path,
@@ -335,7 +350,6 @@ namespace DesktopAgnostic.Config
         path = Path.build_filename (base_path, "instances",
                                     "%s-%s.ini".printf (schema.app_name,
                                                         this.instance_id));
-        this.ensure_directory (Path.get_basename (path));
       }
       this._keyfile = VFS.file_new_for_path (path);
       try
@@ -346,6 +360,7 @@ namespace DesktopAgnostic.Config
         }
         else
         {
+          this.ensure_directory (Path.get_dirname (path));
           this.reset ();
         }
       }
@@ -353,11 +368,9 @@ namespace DesktopAgnostic.Config
       {
         critical ("Config error: %s", err.message);
       }
-      this._keyfile_monitor = this._keyfile.monitor ();
-      this._monitor_changed_id = Signal.connect (this._keyfile_monitor,
-                                                 "changed",
-                                                 (Callback)this.on_keyfile_changed,
-                                                 this);
+      // don't immediately create the file monitor, otherwise it will catch
+      // the "config file created" signal.
+      Idle.add (this.create_file_monitor);
     }
 
     ~GKeyFile ()

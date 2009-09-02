@@ -101,8 +101,11 @@ def build(bld):
     pyda.register = [GDK_DEFS(bld)]
     pyda.uselib += ' GDK'
 
-    for module, dep, lr in (('config', 'cfg', None), ('vfs', 'vfs', None),
-                            ('fdo', 'fdo', ['vfs.defs'])):
+    modules = (('config', 'cfg', None), ('vfs', 'vfs', None),
+               ('fdo', 'fdo', ['vfs.defs']),
+               ('gtk', 'gtk', ['desktopagnostic.defs']))
+
+    for module, dep, lr in modules:
         pyext = bld.pyg_module(module, 'desktop-agnostic-%s' % dep,
                                'pydesktopagnostic_%s' % module, lr)
 

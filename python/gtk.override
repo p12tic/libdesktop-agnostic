@@ -1,0 +1,51 @@
+%%
+headers
+/*
+ * Copyright (c) 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+*/
+
+#ifdef HAVE_BUILD_CONFIG_H
+#include "build-config.h"
+#endif
+#include <pygobject.h>
+#include <libdesktop-agnostic/gtk.h>
+%%
+modulename desktopagnostic.gtk
+%%
+import gobject.GObject as PyGObject_Type
+import desktopagnostic.Color as PyDesktopAgnosticColor_Type
+import gtk.ColorButton as PyGtkColorButton_Type
+%%
+ignore-glob
+  *_get_type
+  *_error_quark
+  *_construct*
+  *_new_*
+%%
+define DesktopAgnosticGTKColorButton.with_color onearg staticmethod
+static PyObject *
+_wrap_desktop_agnostic_g_t_k_color_button_with_color (PyObject *self,
+                                                      PyGObject *color)
+{
+    DesktopAgnosticGTKColorButton *ret;
+
+    ret = desktop_agnostic_gtk_color_button_new_with_color (DESKTOP_AGNOSTIC_COLOR(color->obj));
+
+    /* pygobject_new handles NULL checking */
+    return pygobject_new((GObject *)ret);
+}

@@ -89,6 +89,9 @@ def configure(conf):
     conf.check_cfg(package='gdk-2.0', uselib_store='GDK',
                    atleast_version='2.12.0', mandatory=True,
                    args='--cflags --libs')
+    conf.check_cfg(package='gtk+-2.0', uselib_store='GTK',
+                   atleast_version='2.12.0', mandatory=True,
+                   args='--cflags --libs')
     if 'memory' in conf.env['BACKENDS_CFG']:
         MIN_VALA_VERSION = (0, 7, 6)
     if 'gconf' in conf.env['BACKENDS_CFG']:

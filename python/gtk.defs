@@ -1,0 +1,82 @@
+;; -*- scheme -*-
+; boxed definitions ...
+
+; interface definitions ...
+
+; object definitions ...
+
+(define-object ColorButton
+  (in-module "DesktopAgnosticGTK")
+  (parent "GtkColorButton")
+  (c-name "DesktopAgnosticGTKColorButton")
+  (gtype-id "DESKTOP_AGNOSTIC_GTK_TYPE_COLOR_BUTTON")
+)
+
+; pointer definitions ...
+
+;; Enumerations and Flags ...
+
+
+;; From gtk.h
+
+(define-function color_button_get_type
+  (c-name "desktop_agnostic_gtk_color_button_get_type")
+  (return-type "GType")
+)
+
+(define-function color_button_new_with_color
+  (c-name "desktop_agnostic_gtk_color_button_new_with_color")
+  (return-type "DesktopAgnosticGTKColorButton*")
+  (parameters
+    '("DesktopAgnosticColor*" "color")
+  )
+)
+
+(define-function color_button_construct_with_color
+  (c-name "desktop_agnostic_gtk_color_button_construct_with_color")
+  (return-type "DesktopAgnosticGTKColorButton*")
+  (parameters
+    '("GType" "object_type")
+    '("DesktopAgnosticColor*" "color")
+  )
+)
+
+(define-method set_alpha
+  (of-object "DesktopAgnosticGTKColorButton")
+  (c-name "desktop_agnostic_gtk_color_button_set_alpha")
+  (return-type "none")
+  (parameters
+    '("guint16" "alpha")
+  )
+)
+
+(define-function color_button_new
+  (c-name "desktop_agnostic_gtk_color_button_new")
+  (is-constructor-of "DesktopAgnosticGTKColorButton")
+  (return-type "DesktopAgnosticGTKColorButton*")
+)
+
+(define-function color_button_construct
+  (c-name "desktop_agnostic_gtk_color_button_construct")
+  (return-type "DesktopAgnosticGTKColorButton*")
+  (parameters
+    '("GType" "object_type")
+  )
+)
+
+(define-method get_da_color
+  (of-object "DesktopAgnosticGTKColorButton")
+  (c-name "desktop_agnostic_gtk_color_button_get_da_color")
+  (return-type "DesktopAgnosticColor*")
+)
+
+(define-method set_da_color
+  (of-object "DesktopAgnosticGTKColorButton")
+  (c-name "desktop_agnostic_gtk_color_button_set_da_color")
+  (return-type "none")
+  (parameters
+    '("DesktopAgnosticColor*" "value")
+  )
+)
+
+

@@ -11,6 +11,7 @@ Build-Depends: debhelper (>= 7),
                libgirepository1.0-dev (>= 0.6.3),
                libglib2.0-dev (>= 2.16.0),
                libgtk2.0-dev,
+               libgladeui-1-dev,
 # python bindings
                python-support (>= 0.6),
                python-dev,
@@ -159,6 +160,7 @@ Depends: 	${shlibs:Depends},
 		libdesktop-agnostic0 (= ${binary:Version}),
 		libglib2.0-dev,
 		libgtk2.0-dev
+Suggests:	glade (>= 3) | glade-3
 Description: Development files for libdesktop-agnostic
  This library provides an extensible configuration API, a unified virtual file
  system API, and a desktop item editor (all with pluggable backends) for

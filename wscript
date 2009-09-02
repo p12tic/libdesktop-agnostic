@@ -40,6 +40,7 @@ config_backend = None
 
 def set_options(opt):
     [opt.tool_options(x) for x in ['compiler_cc']]
+    opt.sub_options('data')
     opt.sub_options('libdesktop-agnostic')
     opt.add_option('--enable-debug', action='store_true',
                    dest='debug', default=False,
@@ -129,6 +130,8 @@ def configure(conf):
                    args='--cflags --libs')
     conf.env['G_IR_COMPILER'] = Utils.cmd_output('pkg-config --variable g_ir_compiler gobject-introspection-1.0',
                                                  silent=1).strip()
+
+    conf.sub_config('data')
 
     # manual Python bindings
     conf.sub_config('python')

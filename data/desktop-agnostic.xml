@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<glade-catalog name="desktop-agnostic" version="0.4" depends="gtk+">
+    <glade-widget-classes>
+        <glade-widget-class name="DesktopAgnosticGTKColorButton"
+                            icon-name="widget-gtk-colorbutton"
+                            parent="GtkColorButton" generic-name="colorbutton"
+                            title="Color Button">
+        </glade-widget-class>
+    </glade-widget-classes>
+    <glade-widget-group name="desktop-agnostic" title="Desktop Agnostic">
+        <glade-widget-class-ref name="DesktopAgnosticGTKColorButton" />
+    </glade-widget-group>
+</glade-catalog>

@@ -26,7 +26,7 @@ namespace DesktopAgnostic.GTK
 {
   public class ColorButton : Gtk.ColorButton
   {
-    public Color da_color { get; set; }
+    public Color da_color { get; set; default = new Color.from_values (0, 0, 0, 0); }
     public ColorButton.with_color (Color color)
     {
       this.color = color.color;

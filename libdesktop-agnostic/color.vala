@@ -22,6 +22,7 @@
 
 using Gdk;
 
+[CCode (cheader_filename = "libdesktop-agnostic/desktop-agnostic.h")]
 namespace DesktopAgnostic
 {
   public errordomain ColorParseError

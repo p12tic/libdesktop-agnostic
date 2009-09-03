@@ -61,6 +61,10 @@ namespace DesktopAgnostic.VFS
         return this.vol.lookup_icon_name (Gtk.IconTheme.get_default ());
       }
     }
+    public VolumeThunarVFS.for_implementation (ThunarVfs.Volume impl)
+    {
+      this.implementation = impl;
+    }
     public bool
     is_mounted ()
     {
@@ -187,8 +191,7 @@ namespace DesktopAgnostic.VFS
     private VFS.Volume
     create_volume (ThunarVfs.Volume vol)
     {
-        return (VFS.Volume)Object.new (typeof (VolumeThunarVFS),
-                                       "implementation", vol);
+      return new VolumeThunarVFS.for_implementation (vol);
     }
     private VFS.Volume
     check_volume (ThunarVfs.Volume tvol)

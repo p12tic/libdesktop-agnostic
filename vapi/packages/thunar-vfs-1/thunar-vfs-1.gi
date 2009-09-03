@@ -1311,9 +1311,9 @@
 				</parameters>
 			</signal>
 		</object>
-		<constant name="THUNAR_VFS_MAJOR_VERSION" type="int" value="0"/>
-		<constant name="THUNAR_VFS_MICRO_VERSION" type="int" value="0"/>
-		<constant name="THUNAR_VFS_MINOR_VERSION" type="int" value="9"/>
+		<constant name="THUNAR_VFS_MAJOR_VERSION" type="int" value="1"/>
+		<constant name="THUNAR_VFS_MICRO_VERSION" type="int" value="1"/>
+		<constant name="THUNAR_VFS_MINOR_VERSION" type="int" value="0"/>
 		<constant name="THUNAR_VFS_PATH_MAXSTRLEN" type="int" value="1"/>
 		<constant name="THUNAR_VFS_PATH_MAXURILEN" type="int" value="-2"/>
 	</namespace>

@@ -22,7 +22,14 @@
 
 namespace ThunarVfs {
 	public class Job {
+		public virtual signal bool infos_ready (GLib.List<ThunarVfs.Info> info_list);
 		public virtual signal void status_ready (uint64 total_size, uint file_count, uint directory_count, uint unreadable_directory_count);
 	}
+	[Compact]
+	public class Path {
+		public void unref ();
+	}
 }
+
+// vim: set noet :
 

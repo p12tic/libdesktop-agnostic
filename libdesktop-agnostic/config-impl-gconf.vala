@@ -271,11 +271,16 @@ namespace DesktopAgnostic.Config
     gconfvalue_to_gvalue (string group, string key,
                           GConf.Value gc_val) throws Error
     {
-      SchemaOption schema_option;
+      SchemaOption? schema_option;
       Type type;
       GLib.Value value;
 
       schema_option = this.schema.get_option (group, key);
+      if (schema_option == null)
+      {
+        throw new Error.KEY_NOT_FOUND ("The config key '%s/%s' does not exist in the schema.",
+                                       group, key);
+      }
       type = schema_option.option_type;
       if (type == typeof (bool))
       {

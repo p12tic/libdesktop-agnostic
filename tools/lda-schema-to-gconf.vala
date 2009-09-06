@@ -100,6 +100,12 @@ int main (string[] args)
       return 1;
     }
 
+    if (!FileUtils.test (args[1], FileTest.IS_REGULAR))
+    {
+      critical ("The schema file '%s' does not seem to exist.", args[1]);
+      return 1;
+    }
+
     schema = new Schema (args[1]);
 
     gconf = new StringBuilder ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");

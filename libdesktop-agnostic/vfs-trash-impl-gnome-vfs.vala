@@ -1,5 +1,5 @@
 /*
- * Desktop Agnostic Library: Trash implementation with Thunar VFS.
+ * Desktop Agnostic Library: Trash implementation with GNOME VFS.
  *
  * Copyright (C) 2008, 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>
  *

@@ -142,9 +142,13 @@ namespace DesktopAgnostic.VFS
     {
       if (this._unmount_callback == null)
       {
+        unowned Mount? mount;
         this._unmount_callback = callback;
-        this.vol.get_mount ().unmount (MountUnmountFlags.NONE, null,
-                                       this.on_unmount);
+        mount = this.vol.get_mount ();
+        if (mount != null)
+        {
+          mount.unmount (MountUnmountFlags.NONE, null, this.on_unmount);
+        }
       }
     }
     public bool unmount_finish () throws VolumeError

@@ -178,6 +178,28 @@ namespace DesktopAgnostic.VFS
       files.append (this._file);
       return app_info.launch (files, null);
     }
+    public override SList<File>
+    enumerate_children () throws Error
+    {
+      SList<File> children;
+      FileEnumerator enumerator;
+      FileInfo info;
+
+      children = new SList<File> ();
+      enumerator = this._file.enumerate_children (FILE_ATTRIBUTE_STANDARD_NAME,
+                                                  FileQueryInfoFlags.NONE,
+                                                  null);
+      while ((info = enumerator.next_file (null)) != null)
+      {
+        GLib.File gchild;
+        File child;
+
+        gchild = this._file.get_child (info.get_name ());
+        child = file_new_for_uri (gchild.get_uri ());
+        children.append ((owned)child);
+      }
+      return children;
+    }
     public override bool
     copy (File destination, bool overwrite) throws Error
     {

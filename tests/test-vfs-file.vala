@@ -54,6 +54,7 @@ int main (string[] args)
     assert (tmp.is_writable ());
     message ("URI: %s", tmp.uri);
     message ("Path: %s", tmp.path);
+    message ("# of files: %u", tmp.enumerate_children ().length ());
     tmp = null;
     file_path = Path.build_filename (path, "desktop-agnostic-test");
     file = VFS.file_new_for_path (file_path);

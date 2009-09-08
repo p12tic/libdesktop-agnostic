@@ -233,6 +233,43 @@ namespace DesktopAgnostic.VFS
       uris.append (this._uri_str);
       return mime_app.launch (uris) == GnomeVFS.Result.OK;
     }
+    public override SList<File>
+    enumerate_children () throws Error
+    {
+      SList<File> result;
+      unowned GnomeVFS.DirectoryHandle dir;
+      GnomeVFS.Result res;
+
+      result = new SList<File> ();
+      res = GnomeVFS.directory_open_from_uri (out dir, this._uri,
+                                              GnomeVFS.FileInfoOptions.NAME_ONLY);
+      if (res == GnomeVFS.Result.OK)
+      {
+        GnomeVFS.FileInfo file_info = new GnomeVFS.FileInfo ();
+
+        while ((res = GnomeVFS.directory_read_next (dir, file_info)) == GnomeVFS.Result.OK)
+        {
+          if (file_info.name != "." && file_info.name != "..")
+          {
+            string full_uri;
+            File child;
+
+            full_uri = "%s/%s".printf (this._uri_str,
+                                       GnomeVFS.escape_string (file_info.name));
+            child = file_new_for_uri (full_uri);
+            result.append ((owned)child);
+          }
+        }
+        GnomeVFS.directory_close (dir);
+      }
+      else
+      {
+        throw new FileError.INVALID_TYPE ("VFS Error: %s",
+                                          GnomeVFS.result_to_string (res));
+      }
+
+      return result;
+    }
     public override bool
     copy (File destination, bool overwrite) throws Error
     {

@@ -28,7 +28,8 @@ namespace DesktopAgnostic.VFS
   public errordomain FileError
   {
     FILE_NOT_FOUND,
-    EXISTS
+    EXISTS,
+    INVALID_TYPE
   }
   /**
    * The kinds of files recognized by the File backends.
@@ -163,6 +164,13 @@ namespace DesktopAgnostic.VFS
      * @return %TRUE on successful launch, %FALSE on failure.
      */
     public abstract bool launch () throws Error;
+
+    /**
+     * Retrieves a list of child file objects for a given object. Only
+     * guaranteed to work on directories.
+     * @return a list of child file objects
+     */
+    public abstract SList<File> enumerate_children () throws Error;
 
     /**
      * Copies a file to another URI. This is a synchronous operation. Only

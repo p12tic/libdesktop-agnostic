@@ -39,6 +39,7 @@ def main():
         assert tmp.is_writable()
         print 'URI: %s' % tmp.props.uri
         print 'Path: %s' % tmp.props.path
+        print '# of files: %d' % len(tmp.enumerate_children())
         file_path = os.path.join(path, '%s-lda-test' % tempfile.gettempprefix())
         tmp_file = vfs.File.for_path(file_path);
         tmp_file.replace_contents(CONTENT)

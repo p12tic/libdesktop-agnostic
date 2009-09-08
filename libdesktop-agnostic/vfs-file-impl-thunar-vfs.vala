@@ -174,6 +174,34 @@ namespace DesktopAgnostic.VFS
     /**
      * Note: not using a ThunarVfs.Job because they're async.
      */
+    public override SList<File>
+    enumerate_children () throws Error
+    {
+      SList<File> children;
+      Dir dir;
+      unowned string child;
+
+      if (this.file_type != FileType.DIRECTORY)
+      {
+        throw new FileError.INVALID_TYPE ("File '%s' is not a directory.",
+                                          this.impl_path);
+      }
+
+      children = new SList<File> ();
+      dir = Dir.open (this.impl_path);
+      while ((child = dir.read_name ()) != null)
+      {
+        string child_path;
+
+        child_path = Path.build_filename (this.impl_path, child);
+        children.append (file_new_for_path (child_path));
+      }
+
+      return children;
+    }
+    /**
+     * Note: not using a ThunarVfs.Job because they're async.
+     */
     public override bool
     copy (File destination, bool overwrite) throws Error
     {

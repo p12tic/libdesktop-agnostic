@@ -78,6 +78,7 @@
   (values
     '("file-not-found" "DESKTOP_AGNOSTIC_VFS_FILE_ERROR_FILE_NOT_FOUND")
     '("exists" "DESKTOP_AGNOSTIC_VFS_FILE_ERROR_EXISTS")
+    '("invalid-type" "DESKTOP_AGNOSTIC_VFS_FILE_ERROR_INVALID_TYPE")
   )
 )
 
@@ -164,6 +165,15 @@
   (of-object "DesktopAgnosticVFSFile")
   (c-name "desktop_agnostic_vfs_file_launch")
   (return-type "gboolean")
+  (parameters
+    '("GError**" "error")
+  )
+)
+
+(define-method enumerate_children
+  (of-object "DesktopAgnosticVFSFile")
+  (c-name "desktop_agnostic_vfs_file_enumerate_children")
+  (return-type "GSList*")
   (parameters
     '("GError**" "error")
   )

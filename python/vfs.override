@@ -24,6 +24,82 @@ headers
 #endif
 #include <pygobject.h>
 #include <libdesktop-agnostic/vfs.h>
+
+/* Taken from PyGObject 2.19.0 <gobject/pygobject.h> (LGPL 2.1+). */
+#ifndef PYLIST_FROMGLIBLIST
+/**
+ * PYLIST_FROMGLIBLIST:
+ * @type: the type of the GLib list e.g. #GList or #GSList
+ * @prefix: the prefix of functions that manipulate a list of the type
+ * given by type.
+ *
+ * A macro that creates a type specific code block which converts a GLib
+ * list (#GSList or #GList) to a Python list. The first two args of the macro
+ * are used to specify the type and list function prefix so that the type
+ * specific macros can be generated.
+ *
+ * The rest of the args are for the standard args for the type specific
+ * macro(s) created from this macro.
+ */
+ #define PYLIST_FROMGLIBLIST(type,prefix,py_list,list,item_convert_func,\
+                            list_free,list_item_free)  \
+G_STMT_START \
+{ \
+    gint i, len; \
+    PyObject *item; \
+    void (*glib_list_free)(type*) = list_free; \
+    GFunc glib_list_item_free = (GFunc)list_item_free;  \
+ \
+    len = prefix##_length(list); \
+    py_list = PyList_New(len); \
+    for (i = 0; i < len; i++) { \
+        gpointer list_item = prefix##_nth_data(list, i); \
+ \
+        item = item_convert_func; \
+        PyList_SetItem(py_list, i, item); \
+    } \
+    if (glib_list_item_free != NULL) \
+        prefix##_foreach(list, glib_list_item_free, NULL); \
+    if (glib_list_free != NULL) \
+        glib_list_free(list); \
+} G_STMT_END
+/**
+ * PYLIST_FROMGSLIST:
+ * @py_list: the name of the Python list
+ *
+ * @list: the #GSList to be converted to a Python list
+ *
+ * @item_convert_func: the function that converts a list item to a Python
+ * object. The function must refer to the list item using "@list_item" and
+ * must return a #PyObject* object. An example conversion function is:
+ * [[
+ * PyString_FromString(list_item)
+ * ]]
+ * A more elaborate function is:
+ * [[
+ * pyg_boxed_new(GTK_TYPE_RECENT_INFO, list_item, TRUE, TRUE)
+ * ]]
+ * @list_free: the name of a function that takes a single arg (the list) and
+ * frees its memory. Can be %NULL if the list should not be freed. An example
+ * is:
+ * [[
+ * g_list_free
+ * ]]
+ * @list_item_free: the name of a #GFunc function that frees the memory used
+ * by the items in the list or %NULL if the list items do not have to be
+ * freed. A simple example is:
+ * [[
+ * g_free
+ * ]]
+ *
+ * A macro that adds code that converts a #GSList to a Python list.
+ *
+ */
+#define PYLIST_FROMGSLIST(py_list,list,item_convert_func,list_free,\
+                          list_item_free) \
+        PYLIST_FROMGLIBLIST(GSList,g_slist,py_list,list,item_convert_func,\
+                            list_free,list_item_free)
+#endif
 %%
 modulename desktopagnostic.vfs
 %%
@@ -89,6 +165,29 @@ _wrap_desktop_agnostic_v_f_s_file_for_uri (PyObject *self, PyObject *arg)
 
   /* pygobject_new handles NULL checking */
   return pygobject_new ((GObject *)ret);
+}
+%%
+override desktop_agnostic_vfs_file_enumerate_children noargs
+static PyObject *
+_wrap_desktop_agnostic_vfs_file_enumerate_children (PyGObject *self)
+{
+  GSList *children = NULL;
+  GError *error = NULL;
+  PyObject *py_children;
+
+  children = desktop_agnostic_vfs_file_enumerate_children (DESKTOP_AGNOSTIC_VFS_FILE (self->obj),
+                                                           &error);
+
+  if (pyg_error_check (&error))
+  {
+    return NULL;
+  }
+
+  PYLIST_FROMGSLIST (py_children, children,
+                     pygobject_new ((GObject *)list_item), g_slist_free,
+                     g_object_unref);
+
+  return py_children;
 }
 %%
 override desktop_agnostic_vfs_file_load_contents noargs

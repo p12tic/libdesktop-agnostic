@@ -8,3 +8,10 @@ def build(bld):
         schema.uselib_local = 'desktop-agnostic-cfg'
         schema.vapi_dirs = '../libdesktop-agnostic'
         schema.target = 'lda-schema-to-gconf'
+    launcher = bld.new_task_gen('cc', 'program')
+    launcher.source = 'lda-desktop-entry-editor.vala'
+    launcher.packages = 'desktop-agnostic-gtk'
+    launcher.packages_private = 'build'
+    launcher.uselib_local = 'desktop-agnostic-gtk'
+    launcher.vapi_dirs = '../libdesktop-agnostic ../vapi'
+    launcher.target = 'lda-desktop-entry-editor'

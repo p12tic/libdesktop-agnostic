@@ -12,9 +12,41 @@
   (gtype-id "DESKTOP_AGNOSTIC_GTK_TYPE_COLOR_BUTTON")
 )
 
+(define-object IconButton
+  (in-module "DesktopAgnosticGTK")
+  (parent "GtkButton")
+  (c-name "DesktopAgnosticGTKIconButton")
+  (gtype-id "DESKTOP_AGNOSTIC_GTK_TYPE_ICON_BUTTON")
+)
+
+(define-object IconChooserDialog
+  (in-module "DesktopAgnosticGTK")
+  (parent "GtkDialog")
+  (c-name "DesktopAgnosticGTKIconChooserDialog")
+  (gtype-id "DESKTOP_AGNOSTIC_GTK_TYPE_ICON_CHOOSER_DIALOG")
+)
+
+(define-object LauncherEditorDialog
+  (in-module "DesktopAgnosticGTK")
+  (parent "GtkDialog")
+  (c-name "DesktopAgnosticGTKLauncherEditorDialog")
+  (gtype-id "DESKTOP_AGNOSTIC_GTK_TYPE_LAUNCHER_EDITOR_DIALOG")
+)
+
 ; pointer definitions ...
 
 ;; Enumerations and Flags ...
+
+(define-enum IconType
+  (in-module "DesktopAgnosticGTK")
+  (c-name "DesktopAgnosticGTKIconType")
+  (gtype-id "DESKTOP_AGNOSTIC_GTK_TYPE_ICON_TYPE")
+  (values
+    '("none" "DESKTOP_AGNOSTIC_GTK_ICON_TYPE_NONE")
+    '("themed" "DESKTOP_AGNOSTIC_GTK_ICON_TYPE_THEMED")
+    '("file" "DESKTOP_AGNOSTIC_GTK_ICON_TYPE_FILE")
+  )
+)
 
 
 ;; From gtk.h
@@ -76,6 +108,85 @@
   (return-type "none")
   (parameters
     '("DesktopAgnosticColor*" "value")
+  )
+)
+
+(define-function icon_button_get_type
+  (c-name "desktop_agnostic_gtk_icon_button_get_type")
+  (return-type "GType")
+)
+
+(define-function icon_button_new
+  (c-name "desktop_agnostic_gtk_icon_button_new")
+  (is-constructor-of "DesktopAgnosticGTKIconButton")
+  (return-type "DesktopAgnosticGTKIconButton*")
+  (properties
+    '("icon")
+  )
+)
+
+(define-function icon_button_construct
+  (c-name "desktop_agnostic_gtk_icon_button_construct")
+  (return-type "DesktopAgnosticGTKIconButton*")
+  (parameters
+    '("GType" "object_type")
+    '("const-char*" "icon")
+  )
+)
+
+(define-function icon_type_get_type
+  (c-name "desktop_agnostic_gtk_icon_type_get_type")
+  (return-type "GType")
+)
+
+(define-method get_icon_type
+  (of-object "DesktopAgnosticGTKIconButton")
+  (c-name "desktop_agnostic_gtk_icon_button_get_icon_type")
+  (return-type "DesktopAgnosticGTKIconType")
+)
+
+(define-function icon_chooser_dialog_get_type
+  (c-name "desktop_agnostic_gtk_icon_chooser_dialog_get_type")
+  (return-type "GType")
+)
+
+(define-function icon_chooser_dialog_new
+  (c-name "desktop_agnostic_gtk_icon_chooser_dialog_new")
+  (is-constructor-of "DesktopAgnosticGTKIconChooserDialog")
+  (return-type "DesktopAgnosticGTKIconChooserDialog*")
+)
+
+(define-function icon_chooser_dialog_construct
+  (c-name "desktop_agnostic_gtk_icon_chooser_dialog_construct")
+  (return-type "DesktopAgnosticGTKIconChooserDialog*")
+  (parameters
+    '("GType" "object_type")
+  )
+)
+
+(define-function launcher_editor_dialog_get_type
+  (c-name "desktop_agnostic_gtk_launcher_editor_dialog_get_type")
+  (return-type "GType")
+)
+
+(define-function launcher_editor_dialog_new
+  (c-name "desktop_agnostic_gtk_launcher_editor_dialog_new")
+  (is-constructor-of "DesktopAgnosticGTKLauncherEditorDialog")
+  (return-type "DesktopAgnosticGTKLauncherEditorDialog*")
+  (properties
+    '("file")
+    '("output")
+  )
+)
+
+(define-function launcher_editor_dialog_construct
+  (c-name "desktop_agnostic_gtk_launcher_editor_dialog_construct")
+  (return-type "DesktopAgnosticGTKLauncherEditorDialog*")
+  (parameters
+    '("GType" "object_type")
+    '("DesktopAgnosticVFSFile*" "file")
+    '("DesktopAgnosticVFSFile*" "output")
+    '("gboolean" "standalone")
   )
 )
 

@@ -29,7 +29,10 @@ modulename desktopagnostic.gtk
 %%
 import gobject.GObject as PyGObject_Type
 import desktopagnostic.Color as PyDesktopAgnosticColor_Type
+import desktopagnostic.vfs.File as PyDesktopAgnosticVFSFile_Type
+import gtk.Button as PyGtkButton_Type
 import gtk.ColorButton as PyGtkColorButton_Type
+import gtk.Dialog as PyGtkDialog_Type
 %%
 ignore-glob
   *_get_type

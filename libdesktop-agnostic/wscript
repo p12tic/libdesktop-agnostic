@@ -165,14 +165,20 @@ def build(bld):
     fdo.vnum = bld.env['VNUM']
 
     gtk = bld.new_task_gen('cc', 'shlib')
-    gtk.source = 'gtk-color-button.vala'
-    gtk.packages = 'desktop-agnostic gtk+-2.0'
+    gtk.source = ' '.join([
+        'gtk-color-button.vala',
+        'gtk-icon-button.vala',
+        'gtk-icon-chooser-dialog.vala',
+        'gtk-launcher-editor-dialog.vala',
+        ])
+    gtk.packages = 'desktop-agnostic-fdo gtk+-2.0'
+    gtk.packages_private = 'build'
     gtk.target = 'desktop-agnostic-gtk'
     gtk.header = 'gtk'
     gtk.gir = 'DesktopAgnosticGTK-1.0'
     gtk.uselib = 'GTK'
-    gtk.uselib_local = 'desktop-agnostic'
-    gtk.vapi_dirs = '.'
+    gtk.uselib_local = 'desktop-agnostic-fdo'
+    gtk.vapi_dirs = '. ../vapi'
     gtk.includes='..'
     gtk.vnum = bld.env['VNUM']
 

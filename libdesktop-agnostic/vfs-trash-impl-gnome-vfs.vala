@@ -106,6 +106,7 @@ namespace DesktopAgnostic.VFS
             this._file_count++;
           }
         }
+        directory_close (handle);
       }
     }
 

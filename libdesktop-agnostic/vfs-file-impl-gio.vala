@@ -55,7 +55,7 @@ namespace DesktopAgnostic.VFS
     {
       get
       {
-        FileType ft;
+        FileType ft = FileType.UNKNOWN;
         if (this.exists ())
         {
           // File.query_file_type requires GIO 2.18...
@@ -95,10 +95,6 @@ namespace DesktopAgnostic.VFS
                      err.message);
             ft = FileType.UNKNOWN;
           }
-        }
-        else
-        {
-          ft = FileType.UNKNOWN;
         }
         return ft;
       }

@@ -26,10 +26,10 @@ using ThunarVfs;
 [DBus (name = "org.xfce.Trash")]
 public interface Xfce.Trash : DBus.Object
 {
-  public abstract void DisplayTrash (string display);
+  public abstract void DisplayTrash (string display) throws DBus.Error;
   public abstract void EmptyTrash (string display) throws DBus.Error;
-  public abstract void MoveToTrash (string[] uris, string display);
-  public abstract bool QueryTrash ();
+  public abstract void MoveToTrash (string[] uris, string display) throws DBus.Error;
+  public abstract bool QueryTrash () throws DBus.Error;
   public signal void TrashChanged (bool full);
 }
 

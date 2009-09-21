@@ -52,12 +52,8 @@ namespace DesktopAgnostic.VFS
     {
       get
       {
-        FileType ft;
-        if (this._info == null)
-        {
-          ft = FileType.UNKNOWN;
-        }
-        else
+        FileType ft = FileType.UNKNOWN;;
+        if (this._info != null)
         {
           if ((this._info.flags & ThunarVfs.FileFlags.SYMLINK) != 0)
           {

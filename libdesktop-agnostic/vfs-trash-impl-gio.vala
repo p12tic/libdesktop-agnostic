@@ -70,7 +70,7 @@ namespace DesktopAgnostic.VFS
     }
 
     private void
-    on_trash_count (Object obj, AsyncResult res)
+    on_trash_count (Object? obj, AsyncResult res)
     {
       GLib.File dir = (GLib.File)obj;
       FileInfo file_info;

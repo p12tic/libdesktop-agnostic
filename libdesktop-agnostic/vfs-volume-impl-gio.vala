@@ -101,7 +101,7 @@ namespace DesktopAgnostic.VFS
     }
     private VolumeCallback _mount_callback;
     private AsyncResult async_result;
-    private void on_mount (Object obj, AsyncResult res)
+    private void on_mount (Object? obj, AsyncResult res)
     {
       this.async_result = res;
       this._mount_callback (this);
@@ -131,7 +131,7 @@ namespace DesktopAgnostic.VFS
       return result;
     }
     private VolumeCallback _unmount_callback;
-    private void on_unmount (Object obj, AsyncResult res)
+    private void on_unmount (Object? obj, AsyncResult res)
     {
       this.async_result = res;
       this._unmount_callback (this);
@@ -172,7 +172,7 @@ namespace DesktopAgnostic.VFS
     }
     private VolumeCallback _eject_callback;
     private void
-    on_eject (Object obj, AsyncResult res)
+    on_eject (Object? obj, AsyncResult res)
     {
       this.async_result = res;
       this._eject_callback (this);

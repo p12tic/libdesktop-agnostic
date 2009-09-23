@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <glade-catalog name="desktop-agnostic" version="0.4" depends="gtk+">
     <glade-widget-classes>
+        <!-- do not use @parent, it overrides @get-type -->
         <glade-widget-class name="DesktopAgnosticGTKColorButton"
+                            get-type-function="desktop_agnostic_gtk_color_button_get_type"
                             icon-name="widget-gtk-colorbutton"
-                            parent="GtkColorButton" generic-name="colorbutton"
-                            title="Color Button">
-        </glade-widget-class>
+                            generic-name="colorbutton" title="Color Button"/>
     </glade-widget-classes>
     <glade-widget-group name="desktop-agnostic" title="Desktop Agnostic">
         <glade-widget-class-ref name="DesktopAgnosticGTKColorButton" />

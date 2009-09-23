@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#
 # Copyright (c) 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -16,10 +17,13 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import desktopagnostic
+from gtk import gdk
 
 green = desktopagnostic.Color.from_string('green')
 print green.to_string()
 print green
+assert isinstance(green.props.color, gdk.Color)
+print str(green.props.color)
 one_char_hex = desktopagnostic.Color.from_string('#f00f')
 print one_char_hex.to_string()
 print one_char_hex

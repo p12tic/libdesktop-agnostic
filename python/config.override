@@ -49,8 +49,8 @@ _wrap_desktop_agnostic_config_client_get_value (PyGObject *self, PyObject *args,
     return NULL;
   }
 
-  value = desktop_agnostic_config_client_get_value (DESKTOP_AGNOSTIC_CONFIG_CLIENT (self->obj),
-                                                    group, key, &error);
+  desktop_agnostic_config_client_get_value (DESKTOP_AGNOSTIC_CONFIG_CLIENT (self->obj),
+                                            group, key, &value, &error);
 
   if (pyg_error_check (&error))
   {

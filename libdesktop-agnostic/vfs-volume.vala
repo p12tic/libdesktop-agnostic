@@ -32,6 +32,7 @@ namespace DesktopAgnostic.VFS
   }
   public interface Volume : Object
   {
+    public delegate void Callback ();
     /**
      * The name of the volume.
      */
@@ -49,15 +50,14 @@ namespace DesktopAgnostic.VFS
      * Tells whether the volume is mounted.
      */
     public abstract bool is_mounted ();
-    public abstract void mount (VolumeCallback callback);
+    public abstract void mount (Callback callback);
     public abstract bool mount_finish () throws VolumeError;
-    public abstract void unmount (VolumeCallback callback);
+    public abstract void unmount (Callback callback);
     public abstract bool unmount_finish () throws VolumeError;
     public abstract bool can_eject ();
-    public abstract void eject (VolumeCallback callback);
+    public abstract void eject (Callback callback);
     public abstract bool eject_finish () throws VolumeError;
   }
-  public delegate void VolumeCallback (Volume vol);
   public interface VolumeMonitor : Object
   {
     public abstract void* implementation { get; }

@@ -70,16 +70,16 @@ namespace DesktopAgnostic.VFS
     {
       return this.vol.is_mounted ();
     }
-    private VolumeCallback _mount_callback;
+    private Volume.Callback _mount_callback;
     public bool
     do_mount ()
     {
-      this._mount_callback (this);
+      this._mount_callback ();
       this._mount_callback = null;
       return false;
     }
     public void
-    mount (VolumeCallback callback)
+    mount (Volume.Callback callback)
     {
       if (this._mount_callback == null)
       {
@@ -101,16 +101,16 @@ namespace DesktopAgnostic.VFS
       }
       return result;
     }
-    private VolumeCallback _unmount_callback;
+    private Volume.Callback _unmount_callback;
     public bool
     do_unmount ()
     {
-      this._unmount_callback (this);
+      this._unmount_callback ();
       this._unmount_callback = null;
       return false;
     }
     public void
-    unmount (VolumeCallback callback)
+    unmount (Volume.Callback callback)
     {
       if (this._unmount_callback == null)
       {
@@ -137,16 +137,16 @@ namespace DesktopAgnostic.VFS
     {
       return this.vol.is_ejectable ();
     }
-    private VolumeCallback _eject_callback;
+    private Volume.Callback _eject_callback;
     public bool
     do_eject ()
     {
-      this._eject_callback (this);
+      this._eject_callback ();
       this._eject_callback = null;
       return false;
     }
     public void
-    eject (VolumeCallback callback)
+    eject (Volume.Callback callback)
     {
       if (this._eject_callback == null)
       {

@@ -73,7 +73,7 @@ namespace DesktopAgnostic.VFS
       return this.drive.is_mounted ();
     }
     private VolumeResult? result;
-    private VolumeCallback _mount_callback;
+    private Volume.Callback _mount_callback;
     private void
     on_drive_mounted (bool succeeded, string error, string detailed_error)
     {
@@ -81,11 +81,11 @@ namespace DesktopAgnostic.VFS
       result.succeeded = succeeded;
       result.error = error;
       result.detailed_error = detailed_error;
-      this._mount_callback (this);
+      this._mount_callback ();
       this._mount_callback = null;
     }
     public void
-    mount (VolumeCallback callback)
+    mount (Volume.Callback callback)
     {
       if (this._mount_callback == null)
       {
@@ -107,7 +107,7 @@ namespace DesktopAgnostic.VFS
       this.result = null;
       return result;
     }
-    private VolumeCallback _unmount_callback;
+    private Volume.Callback _unmount_callback;
     private void
     on_drive_unmounted (bool succeeded, string error, string detailed_error)
     {
@@ -115,11 +115,11 @@ namespace DesktopAgnostic.VFS
       result.succeeded = succeeded;
       result.error = error;
       result.detailed_error = detailed_error;
-      this._unmount_callback (this);
+      this._unmount_callback ();
       this._unmount_callback = null;
     }
     public void
-    unmount (VolumeCallback callback)
+    unmount (Volume.Callback callback)
     {
       if (this._unmount_callback == null)
       {
@@ -146,7 +146,7 @@ namespace DesktopAgnostic.VFS
     {
       return true;
     }
-    private VolumeCallback _eject_callback;
+    private Volume.Callback _eject_callback;
     private void
     on_drive_ejected (bool succeeded, string error, string detailed_error)
     {
@@ -154,11 +154,11 @@ namespace DesktopAgnostic.VFS
       result.succeeded = succeeded;
       result.error = error;
       result.detailed_error = detailed_error;
-      this._eject_callback (this);
+      this._eject_callback ();
       this._eject_callback = null;
     }
     public void
-    eject (VolumeCallback callback)
+    eject (Volume.Callback callback)
     {
       if (this._eject_callback == null)
       {

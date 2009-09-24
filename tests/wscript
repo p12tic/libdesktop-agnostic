@@ -27,4 +27,4 @@ def build(bld):
      for name in ['vfs-bookmarks-gtk', 'vfs-file', 'vfs-file-monitor',
                   'vfs-glob', 'vfs-trash', 'vfs-volume']]
     [build_test_program(bld, 'test-' + name, 'gtk')
-     for name in ['gtk-color-button']]
+     for name in ['gtk-color-button', 'gtk-color-button-gtkbuilder']]

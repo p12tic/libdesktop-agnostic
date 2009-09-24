@@ -74,7 +74,7 @@ def configure(conf):
 
     conf.check_tool('compiler_cc misc vala python')
 
-    MIN_VALA_VERSION = (0, 7, 4)
+    MIN_VALA_VERSION = (0, 7, 7)
 
     conf.check_cfg(package='gmodule-2.0', uselib_store='GMODULE',
                    atleast_version='2.6.0', mandatory=True,
@@ -93,8 +93,6 @@ def configure(conf):
     conf.check_cfg(package='gtk+-2.0', uselib_store='GTK',
                    atleast_version='2.12.0', mandatory=True,
                    args='--cflags --libs')
-    if 'memory' in conf.env['BACKENDS_CFG']:
-        MIN_VALA_VERSION = (0, 7, 6)
     if 'gconf' in conf.env['BACKENDS_CFG']:
         conf.check_cfg(package='glib-2.0', uselib_store='GREGEX',
                        atleast_version='2.14.0', mandatory=True,

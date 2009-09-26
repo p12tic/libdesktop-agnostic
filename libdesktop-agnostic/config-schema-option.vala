@@ -82,9 +82,9 @@ namespace DesktopAgnostic.Config
      */
     public ValueArray? whitelist
     {
-      get
+      owned get
       {
-        return this._whitelist;
+        return this._whitelist.copy ();
       }
     }
     private ValueArray? _blacklist;
@@ -97,9 +97,9 @@ namespace DesktopAgnostic.Config
      */
     public ValueArray? blacklist
     {
-      get
+      owned get
       {
-        return this._blacklist;
+        return this._blacklist.copy ();
       }
     }
     /**

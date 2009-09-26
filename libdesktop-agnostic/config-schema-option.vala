@@ -123,12 +123,10 @@ namespace DesktopAgnostic.Config
       string full_key = group + "/" + key;
       this.parse_type (schema.get_value (full_key, "type"));
       this.parse_default_value (schema, full_key);
-      // TODO handle proper locale for description/summary
-      this.description = schema.get_value (full_key, "description");
-      if (schema.has_key (full_key, "summary"))
-      {
-        this.summary = schema.get_value (full_key, "summary");
-      }
+      this._description = this.parse_localized_value (schema, full_key,
+                                                      "description", true);
+      this._summary = this.parse_localized_value (schema, full_key,
+                                                  "summary", true);
       // TODO handle optional upper/lower boundaries
       // TODO handle optional blacklist/whitelist
       if (schema.has_key (full_key, "per_instance"))
@@ -310,6 +308,40 @@ namespace DesktopAgnostic.Config
           throw err;
         }
       }
+    }
+    private string?
+    parse_localized_value (KeyFile schema, string group, string key,
+                           bool mandatory) throws GLib.Error
+    {
+      string? result = null;
+
+      if (schema.has_key (group, key))
+      {
+        foreach (unowned string locale in Intl.get_language_names ())
+        {
+          if (locale == "C")
+          {
+            result = schema.get_string (group, key);
+            break;
+          }
+          try
+          {
+            result = schema.get_locale_string (group, key, locale);
+            break;
+          }
+          catch (KeyFileError.KEY_NOT_FOUND err)
+          {
+            // do nothing
+          }
+        }
+      }
+      else if (mandatory)
+      {
+        throw new Error.METADATA_NOT_FOUND ("The metadata value '%s' for the config key '%s' was not found.",
+                                            key, group);
+      }
+
+      return result;
     }
   }
 }

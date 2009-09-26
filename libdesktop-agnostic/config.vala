@@ -33,6 +33,7 @@ namespace DesktopAgnostic.Config
     NO_SCHEMA,
     INVALID_TYPE,
     KEY_NOT_FOUND,
+    METADATA_NOT_FOUND,
     NOTIFY,
     DUPLICATE_BINDING
   }

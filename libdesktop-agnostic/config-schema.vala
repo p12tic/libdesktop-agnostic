@@ -163,12 +163,13 @@ namespace DesktopAgnostic.Config
 
         if (!value.has_suffix (".schema-ini"))
         {
-          throw new SchemaError.PARSE ("Schema files MUST have the extension '.schema-ini'.");
+          critical ("Schema files MUST have the extension '.schema-ini'.");
+          return;
         }
         if (!FileUtils.test (value, FileTest.EXISTS))
         {
-          throw new SchemaError.PARSE ("The file '%s' could not be found.",
-                                       value);
+          critical ("The file '%s' could not be found.", value);
+          return;
         }
         this._filename = value;
         basename = Path.get_basename (value);

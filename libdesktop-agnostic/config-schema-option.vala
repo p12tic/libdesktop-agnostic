@@ -39,18 +39,11 @@ namespace DesktopAgnostic.Config
      * integer, float, string, color. Otherwise, the list type is "invalid".
      */
     public Type list_type { get; private set; }
-    private Value _default_value;
     /**
      * The default value of the configuration option. Its value type depends on
      * the option type, and potentially the list type.
      */
-    public Value default_value
-    {
-      get
-      {
-        return this._default_value;
-      }
-    }
+    public Value default_value { get; private set; }
     /**
      * The description of the configuration option.
      */
@@ -60,7 +53,6 @@ namespace DesktopAgnostic.Config
      * metadata.
      */
     public string? summary { get; private set; }
-    private Value? _lower_boundary;
     /**
      * The lower boundary (inclusive) of a configuration option. This is an
      * optional piece of metadata that is applicable for all types except
@@ -69,14 +61,7 @@ namespace DesktopAgnostic.Config
      * characters). For lists, the value must be an integer that indicates the
      * minimum number of elements present.
      */
-    public Value? lower_boundary
-    {
-      get
-      {
-        return this._lower_boundary;
-      }
-    }
-    private Value? _upper_boundary;
+    public Value? lower_boundary { get; private set; }
     /**
      * The upper boundary (inclusive) of a configuration option. This is an
      * optional piece of metadata that is applicable for all types except
@@ -85,13 +70,7 @@ namespace DesktopAgnostic.Config
      * characters). For lists, the value must be an integer that indicates the
      * maximum number of elements present.
      */
-    public Value? upper_boundary
-    {
-      get
-      {
-        return this._upper_boundary;
-      }
-    }
+    public Value? upper_boundary { get; private set; }
     private ValueArray? _whitelist;
     /**
      * A list of values that the configuration option may only be set to. This

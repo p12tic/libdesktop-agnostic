@@ -5,19 +5,37 @@ Installation
 The following document details how to install libdesktop-agnostic.
 
 -------------
+Debian/Ubuntu
+-------------
+
+For Ubuntu users, there is a PPA with semi-regular releases:
+https://launchpad.net/~malept/+archive/experimental
+
+If you wish to build from source, the preferred method is to use the Debian
+packaging method:
+
+1. Install the build-time prerequisites. They are listed in ``debian/control``,
+   under the ``Build-Depends`` entry.
+2. Run ``debuild binary``.
+3. Install the built packages with ``sudo dpkg -i``. The packages should be in
+   the parent directory of the source directory.
+
+-------------
 Prerequisites
 -------------
 
 Build-only
 ~~~~~~~~~~
 
-* Python 2.4 or later
-* GObject Introspection 0.6.3 or later
+* Python 2.4 or later (requires the development files, for the Python
+  bindings)
+* GObject Introspection 0.6.3 or later (requires the development files, to
+  properly detect the correct version)
 
 Build/Runtime (*required*)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-* Vala 0.7.4 or later
+* Vala 0.7.7 or later
 * GLib 2.12 or later
 * GTK 2.12 or later
 

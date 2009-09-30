@@ -126,7 +126,7 @@ namespace DesktopAgnostic.Config
       this._description = this.parse_localized_value (schema, full_key,
                                                       "description", true);
       this._summary = this.parse_localized_value (schema, full_key,
-                                                  "summary", true);
+                                                  "summary", false);
       // TODO handle optional upper/lower boundaries
       // TODO handle optional blacklist/whitelist
       if (schema.has_key (full_key, "per_instance"))

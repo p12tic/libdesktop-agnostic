@@ -44,7 +44,7 @@ namespace DesktopAgnostic
   {
     private static string[] paths;
 
-    private delegate Type RegisterModuleFunction ();
+    private static delegate Type RegisterModuleFunction ();
 
     private static ModuleLoader? module_loader = null;
 
@@ -60,7 +60,7 @@ namespace DesktopAgnostic
       modules = Datalist<Module> ();
     }
 
-    private delegate Type GuessModuleFunction (ModuleLoader loader, string library_prefix);
+    private delegate Type GuessModuleFunction (string library_prefix);
     private Module? module_guesser;
 
     private ModuleLoader ()
@@ -188,7 +188,7 @@ namespace DesktopAgnostic
 
       this.module_guesser.symbol ("guess_module", out function);
       guess_module = (GuessModuleFunction)function;
-      return guess_module (this, library_prefix);
+      return guess_module (library_prefix);
     }
   }
   private static KeyFile module_config = null;

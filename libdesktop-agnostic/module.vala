@@ -90,19 +90,35 @@ namespace DesktopAgnostic
     load_from_path (string name, string path)
     {
       Module module = null;
-      void* function;
-      RegisterModuleFunction register_plugin;
+
       debug_msg ("Loading plugin with path: '%s'".printf (path));
       module = Module.open (path, ModuleFlags.BIND_LAZY);
       if (module == null)
       {
+        critical ("Could not load the module '%s': %s",
+                  path, Module.error ());
         return Type.INVALID;
       }
-      module.symbol ("register_plugin", out function);
-      register_plugin = (RegisterModuleFunction) function;
-      modules.set_data (name, (owned)module);
+      else
+      {
+        void* function = null;
 
-      return register_plugin ();
+        module.symbol ("register_plugin", out function);
+        if (function == null)
+        {
+          critical ("Could not find entry function for '%s'.", path);
+          return Type.INVALID;
+        }
+        else
+        {
+          RegisterModuleFunction register_plugin;
+
+          register_plugin = (RegisterModuleFunction) function;
+          modules.set_data (name, (owned)module);
+
+          return register_plugin ();
+        }
+      }
     }
 
     public Type

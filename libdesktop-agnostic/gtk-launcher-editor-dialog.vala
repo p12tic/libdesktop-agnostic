@@ -277,8 +277,7 @@ namespace DesktopAgnostic.GTK
 
       if (response_id == ResponseType.APPLY)
       {
-        message ("saving...");
-        if (!this._output.is_writable ())
+        if (this._output.exists () && !this._output.is_writable ())
         {
           // pop up a "Save As" dialog.
           FileChooserDialog dialog;
@@ -303,6 +302,10 @@ namespace DesktopAgnostic.GTK
         {
           try
           {
+            if (this._entry.entry_type == DesktopEntryType.UNKNOWN)
+            {
+              this._entry.entry_type = DesktopEntryType.APPLICATION;
+            }
             this._entry.save (this._output);
           }
           catch (Error err)

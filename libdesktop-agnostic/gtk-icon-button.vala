@@ -63,6 +63,10 @@ namespace DesktopAgnostic.GTK
     public IconButton (string icon)
     {
       this.icon = icon;
+    }
+
+    construct
+    {
       this.clicked.connect (this.on_clicked);
       this._dialog = new IconChooserDialog ();
       this._dialog.icon_selected.connect (this.on_icon_selected);
@@ -71,7 +75,9 @@ namespace DesktopAgnostic.GTK
     private void
     on_clicked ()
     {
+      this._dialog.set_transient_for ((Window)this.get_toplevel ());
       this._dialog.show ();
+      this._dialog.run ();
     }
 
     private void

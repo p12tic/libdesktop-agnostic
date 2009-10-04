@@ -3,7 +3,6 @@
     <glade-widget-classes>
         <!-- do not use @parent, it overrides @get-type -->
         <glade-widget-class name="DesktopAgnosticGTKColorButton"
-                            get-type-function="desktop_agnostic_gtk_color_button_get_type"
                             icon-name="widget-gtk-colorbutton"
                             generic-name="colorbutton" title="Color Button"/>
     </glade-widget-classes>

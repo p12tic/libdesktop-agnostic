@@ -42,7 +42,7 @@ namespace DesktopAgnostic.GTK
     constructed ()
     {
       this.use_alpha = true;
-      this.da_color_signal = Signal.connect (this, "notify::da_color",
+      this.da_color_signal = Signal.connect (this, "notify::da-color",
                                              (Callback)this.on_da_color_changed,
                                              null);
       this.color_set.connect (this.on_color_set);

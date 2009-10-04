@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<glade-catalog name="desktop-agnostic" version="0.4" depends="gtk+">
+<glade-catalog name="desktop-agnostic" library="desktop-agnostic-gtk" version="0.4" depends="gtk+">
     <glade-widget-classes>
         <!-- do not use @parent, it overrides @get-type -->
         <glade-widget-class name="DesktopAgnosticGTKColorButton"

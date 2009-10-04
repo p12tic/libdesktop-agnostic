@@ -50,7 +50,10 @@ namespace DesktopAgnostic.GTK
 
     ~ColorButton ()
     {
-      SignalHandler.disconnect (this, this.da_color_signal);
+      if (SignalHandler.is_connected (this, this.da_color_signal))
+      {
+        SignalHandler.disconnect (this, this.da_color_signal);
+      }
     }
 
     private void

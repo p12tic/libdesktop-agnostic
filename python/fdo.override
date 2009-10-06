@@ -221,7 +221,7 @@ _wrap_desktop_agnostic_f_d_o_desktop_entry_for_data (PyObject *self,
   GError *error = NULL;
 
   if (!PyArg_ParseTupleAndKeywords (args, kwargs,
-                                    "s:DesktopEntry._new_for_data", kwlist,
+                                    "s:FDODesktopEntry.new_for_data", kwlist,
                                     &data))
   {
     return NULL;
@@ -302,7 +302,7 @@ _wrap_desktop_agnostic_fdo_desktop_entry_launch (PyGObject *self,
   GPid pid;
 
   if (!PyArg_ParseTupleAndKeywords (args, kwargs,
-                                    "OO:DesktopAgnosticFDODesktopEntry.launch",
+                                    "OO:FDODesktopEntry.launch",
                                     kwlist, &py_flags, &py_documents))
   {
     return NULL;

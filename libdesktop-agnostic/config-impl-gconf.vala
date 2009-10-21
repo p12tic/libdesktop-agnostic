@@ -586,12 +586,10 @@ namespace DesktopAgnostic.Config
         GConf.ValueType gc_type = this.type_to_valuetype (type);
 
         list = new SList<GConf.Value> ();
-        for (uint i = 0; i < value.n_values; i++)
+        foreach (unowned GLib.Value list_val in value)
         {
-          unowned GLib.Value list_val;
           GConf.Value gc_val;
 
-          list_val = value.get_nth (i);
           gc_val = new GConf.Value (gc_type);
           if (type == typeof (bool))
           {
@@ -635,11 +633,8 @@ namespace DesktopAgnostic.Config
 
         list = new SList<string> ();
 
-        for (uint i = 0; i < value.n_values; i++)
+        foreach (unowned GLib.Value list_val in value)
         {
-          unowned GLib.Value list_val;
-
-          list_val = value.get_nth (i);
           if (st == null)
           {
             list.append ((string)list_val);

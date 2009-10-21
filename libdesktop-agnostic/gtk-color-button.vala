@@ -48,14 +48,6 @@ namespace DesktopAgnostic.GTK
       this.color_set.connect (this.on_color_set);
     }
 
-    ~ColorButton ()
-    {
-      if (SignalHandler.is_connected (this, this.da_color_signal))
-      {
-        SignalHandler.disconnect (this, this.da_color_signal);
-      }
-    }
-
     private void
     on_da_color_changed (ParamSpec pspec)
     {

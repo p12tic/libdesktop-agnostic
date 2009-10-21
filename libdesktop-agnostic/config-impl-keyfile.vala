@@ -395,7 +395,10 @@ namespace DesktopAgnostic.Config
         foreach (unowned string key in schema.get_keys (group))
         {
           SchemaOption option = schema.get_option (group, key);
-          this.set_value (group, key, option.default_value);
+          if (this.instance_id == null || option.per_instance)
+          {
+            this.set_value (group, key, option.default_value);
+          }
         }
       }
       this._autosave = true;
@@ -702,48 +705,40 @@ namespace DesktopAgnostic.Config
       }
       else if (list_type == typeof (bool))
       {
-        bool[value.n_values] list = new bool[value.n_values];
-        for (uint i = 0; i < value.n_values; i++)
+        bool[] list = {};
+        foreach (unowned Value val in value)
         {
-          unowned Value val = value.get_nth (i);
-
-          list[i] = (bool)val;
+          list += (bool)val;
         }
 
         this._data.set_boolean_list (group, key, list);
       }
       else if (list_type == typeof (int))
       {
-        int[value.n_values] list = new int[value.n_values];
-        for (uint i = 0; i < value.n_values; i++)
+        int[] list = {};
+        foreach (unowned Value val in value)
         {
-          unowned Value val = value.get_nth (i);
-
-          list[i] = get_int_from_value (val);
+          list += get_int_from_value (val);
         }
 
         this._data.set_integer_list (group, key, list);
       }
       else if (list_type == typeof (float))
       {
-        double[value.n_values] list = new double[value.n_values];
-        for (uint i = 0; i < value.n_values; i++)
+        double[] list = {};
+        foreach (unowned Value val in value)
         {
-          unowned Value val = value.get_nth (i);
-
-          list[i] = get_float_from_value (val);
+          list += get_float_from_value (val);
         }
 
         this._data.set_double_list (group, key, list);
       }
       else if (list_type == typeof (string))
       {
-        string[value.n_values] list = new string[value.n_values];
-        for (uint i = 0; i < value.n_values; i++)
+        string[] list = {};
+        foreach (unowned Value val in value)
         {
-          unowned Value val = value.get_nth (i);
-
-          list[i] = (string)val;
+          list += (string)val;
         }
 
         this._data.set_string_list (group, key, list);
@@ -757,10 +752,10 @@ namespace DesktopAgnostic.Config
                                         list_type.name ());
         }
 
-        string[value.n_values] list = new string[value.n_values];
-        for (uint i = 0; i < value.n_values; i++)
+        string[] list = {};
+        foreach (unowned Value val in value)
         {
-          list[i] = st.serialize (value.get_nth (i));
+          list += st.serialize (val);
         }
 
         this._data.set_string_list (group, key, list);

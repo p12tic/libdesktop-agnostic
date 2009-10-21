@@ -47,7 +47,7 @@ static void
 desktop_agnostic_config_notify_delegate_execute (DesktopAgnosticConfigNotifyDelegate *self,
                                                  const gchar *group,
                                                  const gchar *key,
-                                                 const GValue *value)
+                                                 GValue *value)
 {
   self->callback (group, key, value, self->target);
 }

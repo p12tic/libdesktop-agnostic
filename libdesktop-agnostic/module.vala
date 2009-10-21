@@ -52,10 +52,10 @@ namespace DesktopAgnostic
     {
       paths = new string[]
       {
+        Environment.get_variable ("DESKTOP_AGNOSTIC_MODULE_DIR"),
         Path.build_filename (Build.LIBDIR, "desktop-agnostic", "modules"),
         Path.build_filename (Environment.get_home_dir (), ".local", "lib",
-                             "desktop-agnostic"),
-        Environment.get_variable ("DESKTOP_AGNOSTIC_MODULE_DIR")
+                             "desktop-agnostic")
       };
       modules = Datalist<Module> ();
     }

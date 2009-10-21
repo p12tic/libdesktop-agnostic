@@ -17,9 +17,8 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import gtk
-
 import desktopagnostic
-from desktopagnostic.gtk import ColorButton
+from desktopagnostic.ui import ColorButton
 
 
 class TestColorButton(gtk.Window):

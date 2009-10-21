@@ -29,7 +29,7 @@ class TestColorButton : Gtk.Window
     Gtk.VBox box;
     Color color;
     Gtk.Label label;
-    GTK.ColorButton button;
+    UI.ColorButton button;
 
     this.delete_event.connect (this.on_quit);
     box = new Gtk.VBox (false, 5);
@@ -37,12 +37,12 @@ class TestColorButton : Gtk.Window
     box.add (label);
     color = new Color.from_string ("green");
     color.alpha = ushort.MAX / 2;
-    button = new GTK.ColorButton.with_color (color);
+    button = new UI.ColorButton.with_color (color);
     button.color_set.connect (this.on_color_set);
     box.add (button);
     label = new Gtk.Label ("Without default color");
     box.add (label);
-    button = new GTK.ColorButton ();
+    button = new UI.ColorButton ();
     button.color_set.connect (this.on_color_set);
     box.add (button);
     this.add (box);
@@ -58,7 +58,7 @@ class TestColorButton : Gtk.Window
   private void
   on_color_set (Gtk.ColorButton button)
   {
-    GTK.ColorButton real_button = button as GTK.ColorButton;
+    UI.ColorButton real_button = button as UI.ColorButton;
     message ("Selected color: %s", real_button.da_color.to_string ());
     assert (real_button.da_color.color.equal (real_button.color));
     assert (real_button.da_color.alpha == real_button.alpha);

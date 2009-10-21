@@ -17,8 +17,10 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import gtk
+
 # needed to have a readable color string
 import desktopagnostic
+from desktopagnostic.ui import ColorButton
 
 def on_color_set(button):
     print str(button.props.da_color)
@@ -26,7 +28,7 @@ def on_color_set(button):
 
 if __name__ == '__main__':
     builder = gtk.Builder()
-    builder.add_from_file('../test-gtk-color-button-gtkbuilder.ui')
+    builder.add_from_file('../test-ui-color-button-gtkbuilder.ui')
     window = builder.get_object('window1')
     window.connect('delete-event', gtk.main_quit)
     button = window.get_child()

@@ -1,0 +1,193 @@
+;; -*- scheme -*-
+; boxed definitions ...
+
+; interface definitions ...
+
+; object definitions ...
+
+(define-object ColorButton
+  (in-module "DesktopAgnosticUI")
+  (parent "GtkColorButton")
+  (c-name "DesktopAgnosticUIColorButton")
+  (gtype-id "DESKTOP_AGNOSTIC_UI_TYPE_COLOR_BUTTON")
+)
+
+(define-object IconButton
+  (in-module "DesktopAgnosticUI")
+  (parent "GtkButton")
+  (c-name "DesktopAgnosticUIIconButton")
+  (gtype-id "DESKTOP_AGNOSTIC_UI_TYPE_ICON_BUTTON")
+)
+
+(define-object IconChooserDialog
+  (in-module "DesktopAgnosticUI")
+  (parent "GtkDialog")
+  (c-name "DesktopAgnosticUIIconChooserDialog")
+  (gtype-id "DESKTOP_AGNOSTIC_UI_TYPE_ICON_CHOOSER_DIALOG")
+)
+
+(define-object LauncherEditorDialog
+  (in-module "DesktopAgnosticUI")
+  (parent "GtkDialog")
+  (c-name "DesktopAgnosticUILauncherEditorDialog")
+  (gtype-id "DESKTOP_AGNOSTIC_UI_TYPE_LAUNCHER_EDITOR_DIALOG")
+)
+
+; pointer definitions ...
+
+;; Enumerations and Flags ...
+
+(define-enum IconType
+  (in-module "DesktopAgnosticUI")
+  (c-name "DesktopAgnosticUIIconType")
+  (gtype-id "DESKTOP_AGNOSTIC_UI_TYPE_ICON_TYPE")
+  (values
+    '("none" "DESKTOP_AGNOSTIC_UI_ICON_TYPE_NONE")
+    '("themed" "DESKTOP_AGNOSTIC_UI_ICON_TYPE_THEMED")
+    '("file" "DESKTOP_AGNOSTIC_UI_ICON_TYPE_FILE")
+  )
+)
+
+
+;; From ui.h
+
+(define-function color_button_get_type
+  (c-name "desktop_agnostic_ui_color_button_get_type")
+  (return-type "GType")
+)
+
+(define-function color_button_new_with_color
+  (c-name "desktop_agnostic_ui_color_button_new_with_color")
+  (return-type "DesktopAgnosticUIColorButton*")
+  (parameters
+    '("DesktopAgnosticColor*" "color")
+  )
+)
+
+(define-function color_button_construct_with_color
+  (c-name "desktop_agnostic_ui_color_button_construct_with_color")
+  (return-type "DesktopAgnosticUIColorButton*")
+  (parameters
+    '("GType" "object_type")
+    '("DesktopAgnosticColor*" "color")
+  )
+)
+
+(define-method set_alpha
+  (of-object "DesktopAgnosticUIColorButton")
+  (c-name "desktop_agnostic_ui_color_button_set_alpha")
+  (return-type "none")
+  (parameters
+    '("guint16" "alpha")
+  )
+)
+
+(define-function color_button_new
+  (c-name "desktop_agnostic_ui_color_button_new")
+  (is-constructor-of "DesktopAgnosticUIColorButton")
+  (return-type "DesktopAgnosticUIColorButton*")
+)
+
+(define-function color_button_construct
+  (c-name "desktop_agnostic_ui_color_button_construct")
+  (return-type "DesktopAgnosticUIColorButton*")
+  (parameters
+    '("GType" "object_type")
+  )
+)
+
+(define-method get_da_color
+  (of-object "DesktopAgnosticUIColorButton")
+  (c-name "desktop_agnostic_ui_color_button_get_da_color")
+  (return-type "DesktopAgnosticColor*")
+)
+
+(define-method set_da_color
+  (of-object "DesktopAgnosticUIColorButton")
+  (c-name "desktop_agnostic_ui_color_button_set_da_color")
+  (return-type "none")
+  (parameters
+    '("DesktopAgnosticColor*" "value")
+  )
+)
+
+(define-function icon_button_get_type
+  (c-name "desktop_agnostic_ui_icon_button_get_type")
+  (return-type "GType")
+)
+
+(define-function icon_button_new
+  (c-name "desktop_agnostic_ui_icon_button_new")
+  (is-constructor-of "DesktopAgnosticUIIconButton")
+  (return-type "DesktopAgnosticUIIconButton*")
+  (properties
+    '("icon")
+  )
+)
+
+(define-function icon_button_construct
+  (c-name "desktop_agnostic_ui_icon_button_construct")
+  (return-type "DesktopAgnosticUIIconButton*")
+  (parameters
+    '("GType" "object_type")
+    '("const-char*" "icon")
+  )
+)
+
+(define-function icon_type_get_type
+  (c-name "desktop_agnostic_ui_icon_type_get_type")
+  (return-type "GType")
+)
+
+(define-method get_icon_type
+  (of-object "DesktopAgnosticUIIconButton")
+  (c-name "desktop_agnostic_ui_icon_button_get_icon_type")
+  (return-type "DesktopAgnosticUIIconType")
+)
+
+(define-function icon_chooser_dialog_get_type
+  (c-name "desktop_agnostic_ui_icon_chooser_dialog_get_type")
+  (return-type "GType")
+)
+
+(define-function icon_chooser_dialog_new
+  (c-name "desktop_agnostic_ui_icon_chooser_dialog_new")
+  (is-constructor-of "DesktopAgnosticUIIconChooserDialog")
+  (return-type "DesktopAgnosticUIIconChooserDialog*")
+)
+
+(define-function icon_chooser_dialog_construct
+  (c-name "desktop_agnostic_ui_icon_chooser_dialog_construct")
+  (return-type "DesktopAgnosticUIIconChooserDialog*")
+  (parameters
+    '("GType" "object_type")
+  )
+)
+
+(define-function launcher_editor_dialog_get_type
+  (c-name "desktop_agnostic_ui_launcher_editor_dialog_get_type")
+  (return-type "GType")
+)
+
+(define-function launcher_editor_dialog_new
+  (c-name "desktop_agnostic_ui_launcher_editor_dialog_new")
+  (is-constructor-of "DesktopAgnosticUILauncherEditorDialog")
+  (return-type "DesktopAgnosticUILauncherEditorDialog*")
+  (properties
+    '("file")
+    '("output")
+  )
+)
+
+(define-function launcher_editor_dialog_construct
+  (c-name "desktop_agnostic_ui_launcher_editor_dialog_construct")
+  (return-type "DesktopAgnosticUILauncherEditorDialog*")
+  (parameters
+    '("GType" "object_type")
+    '("DesktopAgnosticVFSFile*" "file")
+    '("DesktopAgnosticVFSFile*" "output")
+    '("gboolean" "standalone")
+  )
+)
+
+

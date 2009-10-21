@@ -21,7 +21,7 @@
  */
 
 using DesktopAgnostic;
-using DesktopAgnostic.GTK;
+using DesktopAgnostic.UI;
 
 const OptionEntry[] entries = {
   //{ 0, }
@@ -32,7 +32,7 @@ main (string[] args)
 {
   VFS.File file;
   VFS.File? output = null;
-  GTK.LauncherEditorDialog editor;
+  LauncherEditorDialog editor;
 
   if (args.length < 2)
   {
@@ -51,7 +51,7 @@ main (string[] args)
     {
       output = VFS.file_new_for_path (args[2]);
     }
-    editor = new GTK.LauncherEditorDialog (file, output, true);
+    editor = new LauncherEditorDialog (file, output, true);
     editor.show_all ();
     Gtk.main ();
 

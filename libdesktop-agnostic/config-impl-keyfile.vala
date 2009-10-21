@@ -395,7 +395,10 @@ namespace DesktopAgnostic.Config
         foreach (unowned string key in schema.get_keys (group))
         {
           SchemaOption option = schema.get_option (group, key);
-          this.set_value (group, key, option.default_value);
+          if (this.instance_id == null || option.per_instance)
+          {
+            this.set_value (group, key, option.default_value);
+          }
         }
       }
       this._autosave = true;

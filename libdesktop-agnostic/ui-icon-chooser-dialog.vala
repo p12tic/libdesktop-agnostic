@@ -26,7 +26,7 @@ using Gtk;
 // make sure GETTEXT_PACKAGE is defined.
 private const string ICON_I18N_PACKAGE = Build.GETTEXT_PACKAGE;
 
-namespace DesktopAgnostic.GTK
+namespace DesktopAgnostic.UI
 {
   public enum IconType
   {

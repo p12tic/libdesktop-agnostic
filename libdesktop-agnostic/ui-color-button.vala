@@ -22,7 +22,7 @@
 
 using DesktopAgnostic;
 
-namespace DesktopAgnostic.GTK
+namespace DesktopAgnostic.UI
 {
   public class ColorButton : Gtk.ColorButton
   {

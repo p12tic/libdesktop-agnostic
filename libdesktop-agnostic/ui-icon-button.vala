@@ -22,7 +22,7 @@
 
 using Gtk;
 
-namespace DesktopAgnostic.GTK
+namespace DesktopAgnostic.UI
 {
   public class IconButton : Button
   {

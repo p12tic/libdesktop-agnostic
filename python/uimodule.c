@@ -1,5 +1,3 @@
-%%
-headers
 /*
  * Copyright (c) 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>
  *
@@ -22,33 +20,27 @@ headers
 #ifdef HAVE_BUILD_CONFIG_H
 #include "build-config.h"
 #endif
+
 #include <pygobject.h>
-#include <libdesktop-agnostic/gtk.h>
-%%
-modulename desktopagnostic.gtk
-%%
-import gobject.GObject as PyGObject_Type
-import desktopagnostic.Color as PyDesktopAgnosticColor_Type
-import desktopagnostic.vfs.File as PyDesktopAgnosticVFSFile_Type
-import gtk.Button as PyGtkButton_Type
-import gtk.ColorButton as PyGtkColorButton_Type
-import gtk.Dialog as PyGtkDialog_Type
-%%
-ignore-glob
-  *_get_type
-  *_error_quark
-  *_construct*
-  *_new_*
-%%
-define DesktopAgnosticGTKColorButton.with_color onearg staticmethod
-static PyObject *
-_wrap_desktop_agnostic_g_t_k_color_button_with_color (PyObject *self,
-                                                      PyGObject *color)
+
+/* the following symbols are declared in ui.c: */
+void pydesktopagnostic_ui_register_classes (PyObject *d);
+extern PyMethodDef pydesktopagnostic_ui_functions[];
+
+DL_EXPORT (void)
+initui (void)
 {
-    DesktopAgnosticGTKColorButton *ret;
+  PyObject *m, *d;
 
-    ret = desktop_agnostic_gtk_color_button_new_with_color (DESKTOP_AGNOSTIC_COLOR(color->obj));
+  init_pygobject ();
 
-    /* pygobject_new handles NULL checking */
-    return pygobject_new((GObject *)ret);
+  m = Py_InitModule ("desktopagnostic.ui", pydesktopagnostic_ui_functions);
+  d = PyModule_GetDict (m);
+
+  pydesktopagnostic_ui_register_classes (d);
+
+  if (PyErr_Occurred ())
+  {
+    Py_FatalError ("Unable to initialise the desktopagnostic.ui module");
+  }
 }

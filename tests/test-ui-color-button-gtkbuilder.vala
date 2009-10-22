@@ -32,7 +32,7 @@ on_quit (Gtk.Widget widget, Gdk.Event event)
 private void
 on_color_set (Gtk.ColorButton button)
 {
-  GTK.ColorButton real_button = button as GTK.ColorButton;
+  UI.ColorButton real_button = button as UI.ColorButton;
   message ("Selected color: %s", real_button.da_color.to_string ());
   Gtk.main_quit ();
 }
@@ -41,16 +41,16 @@ public static int main (string[] args)
 {
   Gtk.Builder builder;
   unowned Gtk.Window window;
-  unowned GTK.ColorButton button;
+  unowned UI.ColorButton button;
 
   Gtk.init (ref args);
   builder = new Gtk.Builder ();
   try
   {
-    builder.add_from_file ("test-gtk-color-button-gtkbuilder.ui");
+    builder.add_from_file ("test-ui-color-button-gtkbuilder.ui");
     window = builder.get_object ("window1") as Gtk.Window;
     window.delete_event.connect (on_quit);
-    button = window.get_child () as GTK.ColorButton;
+    button = window.get_child () as UI.ColorButton;
     button.color_set.connect (on_color_set);
     window.show_all ();
     Gtk.main ();

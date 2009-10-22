@@ -27,7 +27,7 @@ using Gtk;
 // make sure GETTEXT_PACKAGE is defined.
 private const string LAUNCHER_I18N_PACKAGE = Build.GETTEXT_PACKAGE;
 
-namespace DesktopAgnostic.GTK
+namespace DesktopAgnostic.UI
 {
   private class FixedTable : Table
   {

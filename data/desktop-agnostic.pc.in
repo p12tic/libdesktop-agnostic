@@ -8,6 +8,6 @@ vapidir=@datarootdir@/vala/vapi
 Name: libdesktop-agnostic
 Description: GLib-based desktop-agnostic library
 Version: @VERSION@
-Libs: -L${libdir} -ldesktop-agnostic -ldesktop-agnostic-vfs -ldesktop-agnostic-cfg -ldesktop-agnostic-fdo -ldesktop-agnostic-gtk
+Libs: -L${libdir} -ldesktop-agnostic -ldesktop-agnostic-vfs -ldesktop-agnostic-cfg -ldesktop-agnostic-fdo -ldesktop-agnostic-ui
 Cflags: -I${includedir}/libdesktop-agnostic-@API_VERSION@
 Requires: glib-2.0 gmodule-2.0 gdk-2.0

@@ -103,7 +103,7 @@ def build(bld):
 
     modules = (('config', 'cfg', None), ('vfs', 'vfs', None),
                ('fdo', 'fdo', ['vfs.defs']),
-               ('gtk', 'gtk', ['desktopagnostic.defs', 'vfs.defs']))
+               ('ui', 'ui', ['desktopagnostic.defs', 'vfs.defs']))
 
     for module, dep, lr in modules:
         pyext = bld.pyg_module(module, 'desktop-agnostic-%s' % dep,

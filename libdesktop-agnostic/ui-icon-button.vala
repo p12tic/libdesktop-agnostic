@@ -58,20 +58,47 @@ namespace DesktopAgnostic.UI
       }
     }
 
-    private IconChooserDialog _dialog;
+    private IconChooserDialog _dialog = null;
 
     public IconButton (string icon)
     {
       this.icon = icon;
-      this.clicked.connect (this.on_clicked);
-      this._dialog = new IconChooserDialog ();
-      this._dialog.icon_selected.connect (this.on_icon_selected);
     }
 
+    construct
+    {
+      this.clicked.connect (this.on_clicked);
+    }
+
+    /* ported from GTK+'s gtkcolorbutton.c, blob
+     * 081e687cbaed1411eed71f1682968d6b3f09fd3f
+     * see gtk_color_button_clicked().
+     */
     private void
     on_clicked ()
     {
-      this._dialog.show ();
+      if (this._dialog == null)
+      {
+        unowned Widget parent;
+
+        parent = this.get_toplevel ();
+
+        this._dialog = new IconChooserDialog ();
+        this._dialog.icon_selected.connect (this.on_icon_selected);
+
+        if (parent.is_toplevel () && parent is Window)
+        {
+          unowned Window parent_window;
+
+          parent_window = parent as Window;
+          if (parent_window != this._dialog.transient_for)
+          {
+            this._dialog.transient_for = parent_window;
+          }
+          this._dialog.modal = parent_window.modal;
+        }
+      }
+      this._dialog.present ();
     }
 
     private void

@@ -60,7 +60,8 @@ namespace DesktopAgnostic
       modules = Datalist<Module> ();
     }
 
-    private delegate Type GuessModuleFunction (string library_prefix);
+    private static delegate Type GuessModuleFunction (ModuleLoader loader,
+                                                      string library_prefix);
     private Module? module_guesser;
 
     private ModuleLoader ()
@@ -175,7 +176,7 @@ namespace DesktopAgnostic
     guess_module (string library_prefix)
     {
       void* function;
-      GuessModuleFunction guess_module;
+      unowned GuessModuleFunction guess_module;
 
       if (this.module_guesser == null)
       {
@@ -204,7 +205,7 @@ namespace DesktopAgnostic
 
       this.module_guesser.symbol ("guess_module", out function);
       guess_module = (GuessModuleFunction)function;
-      return guess_module (library_prefix);
+      return guess_module (this, library_prefix);
     }
   }
   private static KeyFile module_config = null;

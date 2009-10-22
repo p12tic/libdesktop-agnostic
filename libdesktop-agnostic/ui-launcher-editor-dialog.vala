@@ -277,7 +277,6 @@ namespace DesktopAgnostic.UI
 
       if (response_id == ResponseType.APPLY)
       {
-        message ("saving...");
         if (!this._output.is_writable ())
         {
           // pop up a "Save As" dialog.
@@ -303,6 +302,10 @@ namespace DesktopAgnostic.UI
         {
           try
           {
+            if (this._entry.entry_type == DesktopEntryType.UNKNOWN)
+            {
+              this._entry.entry_type = DesktopEntryType.APPLICATION;
+            }
             this._entry.save (this._output);
           }
           catch (Error err)

@@ -300,12 +300,12 @@ namespace DesktopAgnostic.UI
         }
         if (try_to_save)
         {
+          if (this._entry.entry_type == DesktopEntryType.UNKNOWN)
+          {
+            this._entry.entry_type = DesktopEntryType.APPLICATION;
+          }
           try
           {
-            if (this._entry.entry_type == DesktopEntryType.UNKNOWN)
-            {
-              this._entry.entry_type = DesktopEntryType.APPLICATION;
-            }
             this._entry.save (this._output);
           }
           catch (Error err)

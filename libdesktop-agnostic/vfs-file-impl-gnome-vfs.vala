@@ -121,6 +121,27 @@ namespace DesktopAgnostic.VFS
         return flags;
       }
     }
+    public override File? parent
+    {
+      owned get
+      {
+        unowned GnomeVFS.URI? uri;
+
+        uri = this._uri.get_parent ();
+        if (uri == null)
+        {
+          return null;
+        }
+        else
+        {
+          File result;
+
+          result = new FileGnomeVFS ();
+          result.init (uri.to_string (GnomeVFS.URIHideOptions.NONE));
+          return result;
+        }
+      }
+    }
     protected override void init (string uri)
     {
       this._uri_str = uri;

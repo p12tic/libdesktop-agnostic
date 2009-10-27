@@ -140,6 +140,27 @@ namespace DesktopAgnostic.VFS
         return flags;
       }
     }
+    public override File? parent
+    {
+      owned get
+      {
+        GLib.File? file;
+
+        file = this._file.get_parent ();
+        if (file == null)
+        {
+          return null;
+        }
+        else
+        {
+          File result;
+
+          result = new FileGIO ();
+          result.init (file.get_uri ());
+          return result;
+        }
+      }
+    }
     protected override void
     init (string uri)
     {

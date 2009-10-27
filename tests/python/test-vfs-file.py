@@ -31,6 +31,7 @@ def main():
     try:
         path = tempfile.gettempdir()
         tmp = vfs.File.for_path(path)
+        assert tmp.props.parent is not None
         assert tmp.exists()
         assert tmp.props.file_type == vfs.FILE_TYPE_DIRECTORY
         assert (tmp.props.access_flags & vfs.ACCESS_FLAGS_READ) != 0
@@ -42,6 +43,8 @@ def main():
         print '# of files: %d' % len(tmp.enumerate_children())
         file_path = os.path.join(path, '%s-lda-test' % tempfile.gettempprefix())
         tmp_file = vfs.File.for_path(file_path);
+        assert tmp_file.props.parent is not None and \
+               tmp_file.props.parent.props.uri == tmp.props.uri
         tmp_file.replace_contents(CONTENT)
         assert tmp_file.load_contents() == CONTENT
         if test_launch:

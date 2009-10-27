@@ -110,6 +110,10 @@ namespace DesktopAgnostic.VFS
      */
     public abstract AccessFlags access_flags { get; default = AccessFlags.NONE; }
     /**
+     * The parent URI. If this is the root, returns %NULL.
+     */
+    public abstract File? parent { owned get; }
+    /**
      * Implementation detail. Implementing classes override this to properly
      * associate the URI with the implementation pointer.
      */

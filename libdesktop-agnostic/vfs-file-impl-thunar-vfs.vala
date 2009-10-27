@@ -114,6 +114,27 @@ namespace DesktopAgnostic.VFS
         return flags;
       }
     }
+    public override File? parent
+    {
+      owned get
+      {
+        unowned ThunarVfs.Path? path;
+
+        path = this._path.get_parent ();
+        if (path == null)
+        {
+          return null;
+        }
+        else
+        {
+          File result;
+
+          result = new FileThunarVFS ();
+          result.init (path.dup_uri ());
+          return result;
+        }
+      }
+    }
     protected override void
     init (string uri)
     {

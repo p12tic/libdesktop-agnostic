@@ -46,6 +46,7 @@ int main (string[] args)
     VFS.init ();
     path = Environment.get_tmp_dir ();
     tmp = VFS.file_new_for_path (path);
+    assert (tmp.parent != null);
     assert (tmp.exists ());
     assert (tmp.file_type == VFS.FileType.DIRECTORY);
     assert ((tmp.access_flags & VFS.AccessFlags.READ) != 0);
@@ -55,9 +56,10 @@ int main (string[] args)
     message ("URI: %s", tmp.uri);
     message ("Path: %s", tmp.path);
     message ("# of files: %u", tmp.enumerate_children ().length ());
-    tmp = null;
     file_path = Path.build_filename (path, "desktop-agnostic-test");
     file = VFS.file_new_for_path (file_path);
+    assert (file.parent != null && file.parent.uri == tmp.uri);
+    tmp = null;
     file.replace_contents (CONTENT);
     file.load_contents (out contents, out length);
     assert (contents == CONTENT);

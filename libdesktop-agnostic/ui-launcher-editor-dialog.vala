@@ -63,7 +63,7 @@ namespace DesktopAgnostic.UI
     private Entry _exec;
     private CheckButton _terminal;
     private CheckButton _startup_notification;
-    public VFS.File file { get; construct; }
+    public unowned VFS.File file { get; construct; }
     public VFS.File? output { get; construct; }
     private bool _standalone;
     private DesktopEntry _entry;
@@ -270,6 +270,34 @@ namespace DesktopAgnostic.UI
       this._entry.set_boolean ("StartupNotify", button.active);
     }
 
+    /**
+     * Pops up a "Save As" dialog.
+     */
+    private bool
+    change_output_file_prompt ()
+    {
+      FileChooserDialog dialog;
+      int response;
+      bool try_to_save;
+
+      dialog = new FileChooserDialog (_ ("Save As"), this,
+                                      FileChooserAction.SAVE,
+                                      STOCK_CANCEL, ResponseType.CANCEL,
+                                      STOCK_SAVE_AS, ResponseType.ACCEPT);
+      response = dialog.run ();
+      if (response == ResponseType.ACCEPT)
+      {
+        this._output = VFS.file_new_for_uri (dialog.get_uri ());
+        try_to_save = true;
+      }
+      else
+      {
+        try_to_save = false;
+      }
+      dialog.destroy ();
+      return try_to_save;
+    }
+
     private void
     on_response (int response_id)
     {
@@ -277,26 +305,22 @@ namespace DesktopAgnostic.UI
 
       if (response_id == ResponseType.APPLY)
       {
-        if (!this._output.is_writable ())
+        if (this._output.exists ())
         {
-          // pop up a "Save As" dialog.
-          FileChooserDialog dialog;
-          int response;
+          if (!this._output.is_writable ())
+          {
+            try_to_save = this.change_output_file_prompt ();
+          }
+        }
+        else
+        {
+          VFS.File? directory;
 
-          dialog = new FileChooserDialog (_ ("Save As"), this,
-                                          FileChooserAction.SAVE,
-                                          STOCK_CANCEL, ResponseType.CANCEL,
-                                          STOCK_SAVE_AS, ResponseType.ACCEPT);
-          response = dialog.run ();
-          if (response == ResponseType.ACCEPT)
+          directory = this._output.parent;
+          if (directory == null || !directory.is_writable ())
           {
-            this._output = VFS.file_new_for_uri (dialog.get_uri ());
+            try_to_save = this.change_output_file_prompt ();
           }
-          else
-          {
-            try_to_save = false;
-          }
-          dialog.destroy ();
         }
         if (try_to_save)
         {

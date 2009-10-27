@@ -164,7 +164,6 @@ namespace ThunarVfs {
 	[Compact]
 	[CCode (ref_function = "thunar_vfs_path_ref", unref_function = "thunar_vfs_path_unref", cheader_filename = "thunar-vfs/thunar-vfs.h")]
 	public class Path {
-		public weak ThunarVfs.Path parent;
 		public int ref_count;
 		[CCode (has_construct_function = false)]
 		public Path (string identifier) throws GLib.Error;
@@ -175,7 +174,7 @@ namespace ThunarVfs {
 		public static unowned ThunarVfs.Path get_for_root ();
 		public static unowned ThunarVfs.Path get_for_trash ();
 		public unowned string get_name ();
-		public unowned ThunarVfs.Path get_parent ();
+		public unowned ThunarVfs.Path? get_parent ();
 		public ThunarVfs.PathScheme get_scheme ();
 		public static uint hash (void* path_ptr);
 		public bool is_ancestor (ThunarVfs.Path ancestor);

@@ -1,6 +1,8 @@
 ThunarVfs cheader_filename="thunar-vfs/thunar-vfs.h"
 ThunarVfs*Class hidden="1"
 ThunarVfsJob::infos_ready hidden="1"
+ThunarVfsPath.parent hidden="1"
+thunar_vfs_path_get_parent nullable="1"
 thunar_vfs_volume_eject.window nullable="1"
 thunar_vfs_volume_mount.window nullable="1"
 thunar_vfs_volume_unmount.window nullable="1"

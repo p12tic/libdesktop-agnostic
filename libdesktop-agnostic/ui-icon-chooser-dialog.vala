@@ -209,11 +209,13 @@ namespace DesktopAgnostic.UI
       foreach (unowned VFS.File child in children)
       {
         string path;
+        string path_down;
 
-        path = child.path.down ();
-        if (path.has_suffix (".png") || path.has_suffix (".svg") ||
-            path.has_suffix (".jpg") || path.has_suffix (".jpeg") ||
-            path.has_suffix (".xpm"))
+        path = child.path;
+        path_down = path.down ();
+        if (path_down.has_suffix (".png") || path_down.has_suffix (".svg") ||
+            path_down.has_suffix (".jpg") || path_down.has_suffix (".jpeg") ||
+            path_down.has_suffix (".xpm"))
         {
           try
           {

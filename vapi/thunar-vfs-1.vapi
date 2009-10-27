@@ -3,15 +3,15 @@
 [CCode (cprefix = "ThunarVfs", lower_case_cprefix = "thunar_vfs_")]
 namespace ThunarVfs {
 	[Compact]
-	[CCode (param_spec_function = "g_param_spec_pointer", cheader_filename = "thunar-vfs/thunar-vfs.h")]
+	[CCode (cheader_filename = "thunar-vfs/thunar-vfs.h")]
 	public class FileDevice {
 	}
 	[Compact]
-	[CCode (param_spec_function = "g_param_spec_pointer", cheader_filename = "thunar-vfs/thunar-vfs.h")]
+	[CCode (cheader_filename = "thunar-vfs/thunar-vfs.h")]
 	public class FileSize {
 	}
 	[Compact]
-	[CCode (param_spec_function = "g_param_spec_pointer", cheader_filename = "thunar-vfs/thunar-vfs.h")]
+	[CCode (cheader_filename = "thunar-vfs/thunar-vfs.h")]
 	public class FileTime {
 	}
 	[CCode (cheader_filename = "thunar-vfs/thunar-vfs.h")]
@@ -20,11 +20,11 @@ namespace ThunarVfs {
 		public unowned string get_name ();
 	}
 	[Compact]
-	[CCode (param_spec_function = "g_param_spec_pointer", cheader_filename = "thunar-vfs/thunar-vfs.h")]
+	[CCode (cheader_filename = "thunar-vfs/thunar-vfs.h")]
 	public class GroupId {
 	}
 	[Compact]
-	[CCode (ref_function = "thunar_vfs_info_ref", unref_function = "thunar_vfs_info_unref", type_id = "THUNAR_VFS_TYPE_INFO", param_spec_function = "g_param_spec_boxed", cheader_filename = "thunar-vfs/thunar-vfs.h")]
+	[CCode (ref_function = "thunar_vfs_info_ref", unref_function = "thunar_vfs_info_unref", type_id = "THUNAR_VFS_TYPE_INFO", cheader_filename = "thunar-vfs/thunar-vfs.h")]
 	public class Info {
 		public weak ThunarVfs.FileTime atime;
 		public weak ThunarVfs.FileTime ctime;
@@ -132,7 +132,7 @@ namespace ThunarVfs {
 		public string name { get; construct; }
 	}
 	[Compact]
-	[CCode (ref_function = "thunar_vfs_mime_info_ref", unref_function = "thunar_vfs_mime_info_unref", type_id = "THUNAR_VFS_TYPE_MIME_INFO", param_spec_function = "g_param_spec_boxed", cheader_filename = "thunar-vfs/thunar-vfs.h")]
+	[CCode (ref_function = "thunar_vfs_mime_info_ref", unref_function = "thunar_vfs_mime_info_unref", type_id = "THUNAR_VFS_TYPE_MIME_INFO", cheader_filename = "thunar-vfs/thunar-vfs.h")]
 	public class MimeInfo {
 		public weak string comment;
 		public weak string icon_name;
@@ -158,11 +158,11 @@ namespace ThunarVfs {
 		public void wait ();
 	}
 	[Compact]
-	[CCode (param_spec_function = "g_param_spec_pointer", cheader_filename = "thunar-vfs/thunar-vfs.h")]
+	[CCode (cheader_filename = "thunar-vfs/thunar-vfs.h")]
 	public class MonitorHandle {
 	}
 	[Compact]
-	[CCode (ref_function = "thunar_vfs_path_ref", unref_function = "thunar_vfs_path_unref", param_spec_function = "g_param_spec_pointer", cheader_filename = "thunar-vfs/thunar-vfs.h")]
+	[CCode (ref_function = "thunar_vfs_path_ref", unref_function = "thunar_vfs_path_unref", cheader_filename = "thunar-vfs/thunar-vfs.h")]
 	public class Path {
 		public weak ThunarVfs.Path parent;
 		public int ref_count;
@@ -187,7 +187,7 @@ namespace ThunarVfs {
 		public void unref ();
 	}
 	[Compact]
-	[CCode (copy_function = "thunar_vfs_path_list_copy", type_id = "THUNAR_VFS_TYPE_PATH_LIST", param_spec_function = "g_param_spec_boxed", cheader_filename = "thunar-vfs/thunar-vfs.h")]
+	[CCode (copy_function = "thunar_vfs_path_list_copy", type_id = "THUNAR_VFS_TYPE_PATH_LIST", cheader_filename = "thunar-vfs/thunar-vfs.h")]
 	public class PathList {
 		public static unowned GLib.List append (GLib.List path_list, ThunarVfs.Path path);
 		public static unowned GLib.List copy (GLib.List path_list);
@@ -217,7 +217,7 @@ namespace ThunarVfs {
 		public bool is_me ();
 	}
 	[Compact]
-	[CCode (param_spec_function = "g_param_spec_pointer", cheader_filename = "thunar-vfs/thunar-vfs.h")]
+	[CCode (cheader_filename = "thunar-vfs/thunar-vfs.h")]
 	public class UserId {
 	}
 	[CCode (cheader_filename = "thunar-vfs/thunar-vfs.h")]

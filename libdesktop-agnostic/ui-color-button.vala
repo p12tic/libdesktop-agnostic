@@ -81,7 +81,7 @@ namespace DesktopAgnostic.UI
     private void
     on_color_set ()
     {
-      if (this._da_color == null)
+      if (this._da_color == null || this._da_color == ZERO)
       {
         this._da_color = new Color (this.color, (ushort)this.alpha);
       }
@@ -96,7 +96,7 @@ namespace DesktopAgnostic.UI
     public new void
     set_color (Gdk.Color color)
     {
-      if (this._da_color == null)
+      if (this._da_color == null || this._da_color == ZERO)
       {
         this._da_color = new Color (color, ushort.MAX);
       }
@@ -104,12 +104,13 @@ namespace DesktopAgnostic.UI
       {
         this._da_color.alpha = alpha;
       }
+      this.da_color_notify ();
     }
 
     public new void
     set_alpha (uint16 alpha)
     {
-      if (this._da_color == null)
+      if (this._da_color == null || this._da_color == ZERO)
       {
         this._da_color = new Color (ZERO.color, alpha);
       }

@@ -97,10 +97,9 @@ namespace DesktopAgnostic.VFS
       {
         string attrs = FILE_ATTRIBUTE_STANDARD_NAME + "," +
                        FILE_ATTRIBUTE_STANDARD_TYPE;
-        GLib.File trash_dir = (GLib.File)this.trash.implementation;
-        files = trash_dir.enumerate_children (attrs,
-                                              FileQueryInfoFlags.NOFOLLOW_SYMLINKS,
-                                              null);
+        files = dir.enumerate_children (attrs,
+                                        FileQueryInfoFlags.NOFOLLOW_SYMLINKS,
+                                        null);
       }
       catch (Error e)
       {
@@ -139,7 +138,7 @@ namespace DesktopAgnostic.VFS
     public void
     empty ()
     {
-      this.do_empty ((GLib.File)trash.implementation);
+      this.do_empty ((GLib.File)this.trash.implementation);
     }
   }
 }

@@ -22,6 +22,10 @@
 
 using DesktopAgnostic.Config;
 
+// TODO: remove!
+// temporary fix while leaks in gconf bindings aren't fixed
+private static extern void gconf_entry_unref (GConf.Entry entry);
+
 namespace DesktopAgnostic.Config
 {
   private const string BACKEND_NAME = "GConf";
@@ -464,15 +468,18 @@ namespace DesktopAgnostic.Config
         }
       }
     }
+
     public override GLib.Value
     get_value (string group, string key) throws GLib.Error
     {
       string full_key;
       unowned GConf.Value? gc_val;
+      GConf.Entry? entry;
       GLib.Value val;
 
       full_key = this.generate_key (group, key);
-      gc_val = this.client.get_entry (full_key, null, true).get_value ();
+      entry = this.client.get_entry (full_key, null, true);
+      gc_val = entry.get_value ();
       if (gc_val == null)
       {
         throw new Error.KEY_NOT_FOUND ("Could not find the key specified: %s.",
@@ -482,6 +489,8 @@ namespace DesktopAgnostic.Config
       {
         val = this.gconfvalue_to_gvalue (group, key, gc_val);
       }
+      gconf_entry_unref (entry);
+
       return val;
     }
     public override bool

@@ -23,6 +23,106 @@
 
 namespace DesktopAgnostic.Config
 {
+  private class BindingNotifier : Object
+  {
+    public unowned Backend config;
+
+    public BindingNotifier (Backend cfg)
+    {
+      this.config = cfg;
+    }
+
+    public void
+    on_simple_value_changed (string group, string key, Value value)
+    {
+      unowned BindingListWrapper? bindings_list;
+      string full_key;
+      unowned Bridge bridge = Bridge.get_default ();
+
+      full_key = "%s/%s/%s".printf (this.config.instance_id, group, key);
+      bindings_list = bridge.bindings.get_data (full_key);
+      return_if_fail (bindings_list != null);
+      foreach (unowned Binding binding in bindings_list.binding_list)
+      {
+        if (!binding.read_only)
+        {
+          SignalHandler.block (binding.obj, binding.notify_id);
+        }
+        binding.obj.set_property (binding.property_name, value);
+        if (!binding.read_only)
+        {
+          SignalHandler.unblock (binding.obj, binding.notify_id);
+        }
+      }
+    }
+
+    public void
+    on_list_changed (string group, string key, Value value)
+    {
+      unowned BindingListWrapper? bindings_list;
+      string full_key;
+      unowned Bridge bridge = Bridge.get_default ();
+
+      full_key = "%s/%s/%s".printf (this.config.instance_id, group, key);
+      bindings_list = bridge.bindings.get_data (full_key);
+      return_if_fail (bindings_list != null);
+      foreach (unowned Binding binding in bindings_list.binding_list)
+      {
+        if (!binding.read_only)
+        {
+          SignalHandler.block (binding.obj, binding.notify_id);
+        }
+        binding.obj.set (binding.property_name, value.get_boxed ());
+        if (!binding.read_only)
+        {
+          SignalHandler.unblock (binding.obj, binding.notify_id);
+        }
+      }
+    }
+
+    public void
+    on_serialized_object_changed (string group, string key, Value value)
+    {
+      unowned BindingListWrapper? bindings_list;
+      string full_key;
+      unowned Bridge bridge = Bridge.get_default ();
+
+      full_key = "%s/%s/%s".printf (this.config.instance_id, group, key);
+      bindings_list = bridge.bindings.get_data (full_key);
+      return_if_fail (bindings_list != null);
+      foreach (unowned Binding binding in bindings_list.binding_list)
+      {
+        ParamSpec spec;
+        SchemaType? st;
+
+        spec = bridge.get_property_spec (binding.obj, binding.property_name);
+        st = Schema.find_type (spec.value_type);
+        if (st != null)
+        {
+          if (!binding.read_only)
+          {
+            SignalHandler.block (binding.obj, binding.notify_id);
+          }
+          binding.obj.set_property (binding.property_name, value);
+          if (!binding.read_only)
+          {
+            SignalHandler.unblock (binding.obj, binding.notify_id);
+          }
+        }
+      }
+    }
+  }
+
+  private class BindingListWrapper : Object
+  {
+    public List<Binding> binding_list = null;
+    public unowned Object bound_object = null;
+
+    public BindingListWrapper ()
+    {
+    }
+  }
+
   private class Binding : Object
   {
     public unowned Backend cfg;
@@ -49,15 +149,12 @@ namespace DesktopAgnostic.Config
    */
   public class Bridge : Object
   {
-    private Datalist<List<Binding>> bindings;
-    private HashTable<unowned Object,List<string>> bindings_by_obj;
+    public Datalist<BindingListWrapper> bindings;
     private static Bridge bridge = null;
 
     private Bridge ()
     {
-      this.bindings = Datalist<List<Binding>> ();
-      this.bindings_by_obj =
-        new HashTable<unowned Object,List<string>> (direct_hash, direct_equal);
+      this.bindings = Datalist<BindingListWrapper> ();
     }
 
     /**
@@ -73,7 +170,7 @@ namespace DesktopAgnostic.Config
       return bridge;
     }
 
-    private static unowned ParamSpec?
+    public static unowned ParamSpec?
     get_property_spec (Object obj, string property_name)
     {
       unowned ObjectClass obj_cls = (ObjectClass)(obj.get_type ().class_peek ());
@@ -104,6 +201,16 @@ namespace DesktopAgnostic.Config
                                         string key, ParamSpec spec,
                                         NotifyFuncHandler func) throws GLib.Error
     {
+      unowned BindingNotifier notifier;
+      notifier = (BindingNotifier*) config.get_data ("lda-binding-notifier");
+      if (notifier == null)
+      {
+        BindingNotifier new_notifier = new BindingNotifier (config);
+        notifier = new_notifier;
+        config.set_data_full ("lda-binding-notifier", notifier.@ref (),
+                              Object.unref);
+      }
+
       if (spec.value_type == typeof (bool) ||
           spec.value_type == typeof (float) ||
           spec.value_type == typeof (double) ||
@@ -112,11 +219,11 @@ namespace DesktopAgnostic.Config
           spec is ParamSpecEnum ||
           spec.value_type == typeof (string))
       {
-        func (config, group, key, this.on_simple_value_changed);
+        func (config, group, key, notifier.on_simple_value_changed);
       }
       else if (spec.value_type == typeof (ValueArray))
       {
-        func (config, group, key, this.on_list_changed);
+        func (config, group, key, notifier.on_list_changed);
       }
       else
       {
@@ -128,9 +235,29 @@ namespace DesktopAgnostic.Config
         }
         else
         {
-          func (config, group, key, this.on_serialized_object_changed);
+          func (config, group, key, notifier.on_serialized_object_changed);
         }
       }
+    }
+
+    private static void
+    object_finalized (BindingListWrapper obj)
+    {
+      if (obj.bound_object != null)
+      {
+        unowned Bridge bridge = Bridge.get_default ();
+        //debug ("Cleaning up bindings for object %s [%p]...",
+        //       obj.bound_object.get_type ().name (), obj.bound_object);
+        foreach (Binding b in obj.binding_list)
+        {
+          bridge.remove (b.cfg, b.group, b.key, b.obj, b.property_name);
+        }
+      }
+      else
+      {
+        warn_if_reached ();
+      }
+      obj.unref ();
     }
 
     /**
@@ -153,30 +280,30 @@ namespace DesktopAgnostic.Config
       if (spec != null)
       {
         string binding_key;
-        unowned List<Binding>? bindings_list;
+        unowned BindingListWrapper? bindings_list;
         string full_key;
         unowned List<string>? key_list;
 
         binding.property_name = spec.name;
 
-        binding_key = "%s/%s".printf (group, key);
+        binding_key = "%s/%s/%s".printf (config.instance_id, group, key);
 
-        full_key = "%s:%u:%s".printf (binding_key, direct_hash (obj), spec.name);
-        key_list = this.bindings_by_obj.lookup (obj);
-        if (key_list == null)
+        // FIXME: check duplicates
+        void *obj_bindings = obj.get_data ("lda-bindings");
+        if (obj_bindings == null)
         {
-          List<string> new_key_list = new List<string> ();
-          new_key_list.append (full_key);
-          this.bindings_by_obj.insert (obj, (owned)new_key_list);
-        }
-        else if (key_list.find_custom (full_key, (CompareFunc)strcmp) == null)
-        {
-          key_list.append (full_key);
+          BindingListWrapper new_bindings_list = new BindingListWrapper ();
+          new_bindings_list.bound_object = obj;
+          new_bindings_list.binding_list.append (binding);
+
+          obj.set_data_full ("lda-bindings", new_bindings_list.@ref (),
+                             (DestroyNotify) this.object_finalized);
         }
         else
         {
-          throw new Error.DUPLICATE_BINDING ("You cannot bind a config key (%s) to a property (%s) more than once.",
-                                             binding_key, spec.name);
+          unowned BindingListWrapper object_bindings =
+            (BindingListWrapper) obj_bindings;
+          object_bindings.binding_list.append (binding);
         }
 
         obj.set_property (spec.name, config.get_value (group, key));
@@ -191,21 +318,17 @@ namespace DesktopAgnostic.Config
         bindings_list = this.bindings.get_data (binding_key);
         if (bindings_list == null)
         {
-          List<Binding> new_bindings_list;
+          BindingListWrapper new_bindings_list = new BindingListWrapper ();
+          new_bindings_list.binding_list.append (binding);
 
-          new_bindings_list = new List<Binding> ();
-          new_bindings_list.append ((owned)binding);
-          this.bindings.set_data (binding_key, (owned)new_bindings_list);
-          /* Using the following call will cause bizarre segfaults:
           this.bindings.set_data_full (binding_key, (owned)new_bindings_list,
-                                       (DestroyNotify)g_list_free);
-          */
+                                       (DestroyNotify)Object.unref);
           this.handle_notify_func_with_param_spec (config, group, key, spec,
                                                    config.notify_add);
         }
         else
         {
-          bindings_list.append ((owned)binding);
+          bindings_list.binding_list.append (binding);
         }
       }
       else
@@ -235,46 +358,57 @@ namespace DesktopAgnostic.Config
     remove (Backend config, string group, string key, Object obj,
             string property_name) throws GLib.Error
     {
-      unowned List<Binding> bindings_list;
+      unowned BindingListWrapper? bindings_list;
       SList<uint> bindings_to_remove;
       uint pos = -1;
       string binding_key;
 
-      binding_key = "%s/%s".printf (group, key);
+      unowned BindingListWrapper? obj_bindings = 
+        (BindingListWrapper*) obj.get_data ("lda-bindings");
+      binding_key = "%s/%s/%s".printf (config.instance_id, group, key);
       bindings_list = this.bindings.get_data (binding_key);
       bindings_to_remove = new SList<uint> ();
-      foreach (unowned Binding binding in bindings_list)
+
+      if (bindings_list == null)
+      {
+        // FIXME: throw error / warn_if_reached() ?
+        return;
+      }
+
+      foreach (unowned Binding binding in bindings_list.binding_list)
       {
         pos++;
         if (binding.obj == obj)
         {
           bindings_to_remove.prepend (pos);
+
+          // remove from the per-object list
+          if (obj_bindings != null)
+          {
+            unowned List<Binding> node;
+            
+            node = obj_bindings.binding_list.find (binding);
+            if (node != null)
+            {
+              node.data = null;
+              obj_bindings.binding_list.delete_link (node);
+            }
+          }
         }
       }
       foreach (uint binding_pos in bindings_to_remove)
       {
         unowned List<Binding> node;
 
-        node = bindings_list.nth (binding_pos);
+        node = bindings_list.binding_list.nth (binding_pos);
         node.data = null;
-        bindings_list.delete_link (node);
+        bindings_list.binding_list.delete_link (node);
       }
-      if (bindings_list.length () == 0)
+      if (bindings_list.binding_list.length () == 0)
       {
         this.handle_notify_func (config, group, key, obj, property_name,
                                  config.notify_remove);
         this.bindings.remove_data (binding_key);
-      }
-      else
-      {
-        List<Binding> new_list;
-
-        new_list = bindings_list.copy ();
-        this.bindings.set_data (binding_key, (owned)new_list);
-        /* Using the following call will cause bizarre segfaults:
-        this.bindings.set_data_full (binding_key, (owned)new_list,
-                                     (DestroyNotify)g_list_free);
-        */
       }
     }
 
@@ -282,105 +416,25 @@ namespace DesktopAgnostic.Config
      * Removes all of the bindings related to a specific object.
      */
     public void
-    remove_all_for_object (Backend config, Object obj) throws GLib.Error
+    remove_all_for_object (Backend? config, Object obj) throws GLib.Error
     {
-      unowned List<string> key_list = this.bindings_by_obj.lookup (obj);
-      foreach (unowned string full_key in key_list)
+      void *data = obj.steal_data ("lda-bindings");
+      if (data != null)
       {
-        unowned string property_name;
-        long property_offset;
-        unowned string obj_hash;
-        long obj_hash_offset;
-        unowned string last_slash;
-        long last_slash_offset;
-        string key;
-        string group;
-
-        property_name = full_key.rchr (-1, ':');
-        property_offset = full_key.pointer_to_offset (property_name);
-        property_name = property_name.offset (1);
-        obj_hash = full_key.rchr (property_offset, ':');
-        obj_hash_offset = full_key.pointer_to_offset (obj_hash);
-        last_slash = full_key.rchr (obj_hash_offset, '/');
-        last_slash_offset = full_key.pointer_to_offset (last_slash) + 1;
-        key = full_key.substring (last_slash_offset,
-                                  obj_hash_offset - last_slash_offset);
-        group = full_key.substring (0, last_slash_offset - 1);
-        this.remove (config, group, key, obj, property_name);
-      }
-      this.bindings_by_obj.remove (obj);
-    }
-
-    private void
-    on_simple_value_changed (string group, string key, Value value)
-    {
-      unowned List<Binding> bindings_list;
-      string full_key;
-
-      full_key = "%s/%s".printf (group, key);
-      bindings_list = this.bindings.get_data (full_key);
-      foreach (unowned Binding binding in bindings_list)
-      {
-        if (!binding.read_only)
+        unowned BindingListWrapper obj_bindings = (BindingListWrapper) data;
+        List<Binding> bindings_list = obj_bindings.binding_list.copy ();
+        // we need deep copy, so let's ref the data
+        foreach (Binding b in bindings_list)
         {
-          SignalHandler.block (binding.obj, binding.notify_id);
+          b.@ref ();
         }
-        binding.obj.set_property (binding.property_name, value);
-        if (!binding.read_only)
+
+        // now it's safe to unref the ListWrapper
+        obj_bindings.unref ();
+
+        foreach (Binding b in bindings_list)
         {
-          SignalHandler.unblock (binding.obj, binding.notify_id);
-        }
-      }
-    }
-
-    private void
-    on_list_changed (string group, string key, Value value)
-    {
-      unowned List<Binding> bindings_list;
-      string full_key;
-
-      full_key = "%s/%s".printf (group, key);
-      bindings_list = this.bindings.get_data (full_key);
-      foreach (unowned Binding binding in bindings_list)
-      {
-        if (!binding.read_only)
-        {
-          SignalHandler.block (binding.obj, binding.notify_id);
-        }
-        binding.obj.set (binding.property_name, value.get_boxed ());
-        if (!binding.read_only)
-        {
-          SignalHandler.unblock (binding.obj, binding.notify_id);
-        }
-      }
-    }
-
-    private void
-    on_serialized_object_changed (string group, string key, Value value)
-    {
-      unowned List<Binding> bindings_list;
-      string full_key;
-
-      full_key = "%s/%s".printf (group, key);
-      bindings_list = this.bindings.get_data (full_key);
-      foreach (unowned Binding binding in bindings_list)
-      {
-        ParamSpec spec;
-        SchemaType? st;
-
-        spec = this.get_property_spec (binding.obj, binding.property_name);
-        st = Schema.find_type (spec.value_type);
-        if (st != null)
-        {
-          if (!binding.read_only)
-          {
-            SignalHandler.block (binding.obj, binding.notify_id);
-          }
-          binding.obj.set_property (binding.property_name, value);
-          if (!binding.read_only)
-          {
-            SignalHandler.unblock (binding.obj, binding.notify_id);
-          }
+          this.remove (b.cfg, b.group, b.key, obj, b.property_name);
         }
       }
     }

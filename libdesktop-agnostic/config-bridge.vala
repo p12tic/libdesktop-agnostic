@@ -40,7 +40,7 @@ namespace DesktopAgnostic.Config
       unowned Bridge bridge = Bridge.get_default ();
 
       full_key = "%s/%s/%s".printf (this.config.instance_id, group, key);
-      bindings_list = bridge.bindings.get_data (full_key);
+      bindings_list = bridge.get_all_bindings ().get_data (full_key) as BindingListWrapper;
       return_if_fail (bindings_list != null);
       foreach (unowned Binding binding in bindings_list.binding_list)
       {
@@ -64,7 +64,7 @@ namespace DesktopAgnostic.Config
       unowned Bridge bridge = Bridge.get_default ();
 
       full_key = "%s/%s/%s".printf (this.config.instance_id, group, key);
-      bindings_list = bridge.bindings.get_data (full_key);
+      bindings_list = bridge.get_all_bindings ().get_data (full_key) as BindingListWrapper;
       return_if_fail (bindings_list != null);
       foreach (unowned Binding binding in bindings_list.binding_list)
       {
@@ -88,7 +88,7 @@ namespace DesktopAgnostic.Config
       unowned Bridge bridge = Bridge.get_default ();
 
       full_key = "%s/%s/%s".printf (this.config.instance_id, group, key);
-      bindings_list = bridge.bindings.get_data (full_key);
+      bindings_list = bridge.get_all_bindings ().get_data (full_key) as BindingListWrapper;
       return_if_fail (bindings_list != null);
       foreach (unowned Binding binding in bindings_list.binding_list)
       {
@@ -149,12 +149,18 @@ namespace DesktopAgnostic.Config
    */
   public class Bridge : Object
   {
-    public Datalist<BindingListWrapper> bindings;
+    private Datalist<BindingListWrapper> bindings;
     private static Bridge bridge = null;
 
     private Bridge ()
     {
       this.bindings = Datalist<BindingListWrapper> ();
+    }
+
+    public unowned Datalist<Object>
+    get_all_bindings ()
+    {
+      return this.bindings;
     }
 
     /**

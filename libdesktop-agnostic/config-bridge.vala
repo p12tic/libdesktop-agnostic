@@ -116,7 +116,6 @@ namespace DesktopAgnostic.Config
   private class BindingListWrapper : Object
   {
     public List<Binding> binding_list = null;
-    public unowned Object bound_object = null;
 
     public BindingListWrapper ()
     {
@@ -247,22 +246,14 @@ namespace DesktopAgnostic.Config
     }
 
     private static void
-    object_finalized (BindingListWrapper obj)
+    cleanup_bindings (BindingListWrapper obj)
     {
-      if (obj.bound_object != null)
+      unowned Bridge bridge = Bridge.get_default ();
+      foreach (Binding b in obj.binding_list)
       {
-        unowned Bridge bridge = Bridge.get_default ();
-        //debug ("Cleaning up bindings for object %s [%p]...",
-        //       obj.bound_object.get_type ().name (), obj.bound_object);
-        foreach (Binding b in obj.binding_list)
-        {
-          bridge.remove (b.cfg, b.group, b.key, b.obj, b.property_name);
-        }
+        bridge.remove (b.cfg, b.group, b.key, b.obj, b.property_name);
       }
-      else
-      {
-        warn_if_reached ();
-      }
+
       obj.unref ();
     }
 
@@ -287,8 +278,6 @@ namespace DesktopAgnostic.Config
       {
         string binding_key;
         unowned BindingListWrapper? bindings_list;
-        string full_key;
-        unowned List<string>? key_list;
 
         binding.property_name = spec.name;
 
@@ -299,11 +288,10 @@ namespace DesktopAgnostic.Config
         if (obj_bindings == null)
         {
           BindingListWrapper new_bindings_list = new BindingListWrapper ();
-          new_bindings_list.bound_object = obj;
           new_bindings_list.binding_list.append (binding);
 
           obj.set_data_full ("lda-bindings", new_bindings_list.@ref (),
-                             (DestroyNotify) this.object_finalized);
+                             (DestroyNotify) this.cleanup_bindings);
         }
         else
         {
@@ -428,20 +416,14 @@ namespace DesktopAgnostic.Config
       if (data != null)
       {
         unowned BindingListWrapper obj_bindings = (BindingListWrapper) data;
-        List<Binding> bindings_list = obj_bindings.binding_list.copy ();
-        // we need deep copy, so let's ref the data
-        foreach (Binding b in bindings_list)
+
+        foreach (Binding b in obj_bindings.binding_list)
         {
-          b.@ref ();
+          this.remove (b.cfg, b.group, b.key, obj, b.property_name);
         }
 
         // now it's safe to unref the ListWrapper
         obj_bindings.unref ();
-
-        foreach (Binding b in bindings_list)
-        {
-          this.remove (b.cfg, b.group, b.key, obj, b.property_name);
-        }
       }
     }
 

@@ -175,6 +175,8 @@ Depends:    ${shlibs:Depends},
             ${misc:Depends},
             libdesktop-agnostic0 (= ${binary:Version})
 Recommends:	gobject-introspection, libdesktop-agnostic-dev
+Conflicts: gobject-introspection-libdesktop-agnostic
+Replaces: gobject-introspection-libdesktop-agnostic
 Description:  GObject Introspection data for libdesktop-agnostic
  This library provides an extensible configuration API, a unified virtual file
  system API, and a desktop item editor (all with pluggable backends) for
@@ -206,6 +208,8 @@ Depends:    ${shlibs:Depends},
             libdesktop-agnostic0 (>= ${binary:Version}),
             ${python:Depends}
 Provides: ${python:Provides}
+Conflicts: python-libdesktop-agnostic
+Replaces: python-libdesktop-agnostic
 XB-Python-Version: ${python:Versions}
 Description: Python bindings for libdesktop-agnostic
  This library provides an extensible configuration API, a unified virtual file
@@ -220,6 +224,8 @@ Architecture: all
 Depends:    ${shlibs:Depends},
             ${misc:Depends},
             libdesktop-agnostic0 (>= ${source:Version})
+Conflicts: vala-libdesktop-agnostic
+Replaces: vala-libdesktop-agnostic
 Description: Vala bindings for libdesktop-agnostic
  This library provides an extensible configuration API, a unified virtual file
  system API, and a desktop item editor (all with pluggable backends) for

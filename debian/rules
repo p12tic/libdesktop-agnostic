@@ -1,34 +1,26 @@
 #!/usr/bin/make -f
 
+#Workaround a segfault on amd64 when optimization are O2
 ifeq (amd64,$(shell dpkg-architecture -qDEB_HOST_ARCH))
 	CFLAGS += -O0
 else
 	CFLAGS += -O2
 endif
 
-build:
-	dh $@ --before configure
+%:
+	dh $@
+
+override_dh_auto_configure:
 	LINKFLAGS="${LDFLAGS} -Wl,--as-needed" ./waf --nocache configure --prefix=/usr --enable-debug --config-backends=gconf,keyfile --vfs-backends=gio,gnome-vfs,thunar-vfs --desktop-entry-backends=glib,gnome --with-glade
 	./waf --nocache build
-	dh $@ --remaining
 
-install: build
-	dh $@ --until dh_auto_install
+override_dh_auto_install:
 	./waf --nocache install --destdir=$(CURDIR)/debian/tmp
-	dh $@ --remaining
 
-binary-arch: install
-	dh $@ --remaining --before dh_strip
+override_dh_strip:
 	dh_strip --dbg-package=libdesktop-agnostic0-dbg
-	dh $@ --remaining
 
-binary-indep: install
-	dh binary-indep
-
-binary: binary-arch binary-indep
-
-clean:
-	dh $@
+override_dh_auto_clean:
 	rm -rf build
 	./waf --nocache distclean
 	rm -f configure	# so dh_auto_configure doesn't try to use this broken fallback

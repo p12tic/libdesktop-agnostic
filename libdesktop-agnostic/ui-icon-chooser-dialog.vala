@@ -287,7 +287,7 @@ namespace DesktopAgnostic.UI
     {
       if (response == ResponseType.OK)
       {
-        unowned List<TreePath>? item;
+        List<TreePath>? item;
 
         item = this._viewer.get_selected_items ();
         if (item == null)

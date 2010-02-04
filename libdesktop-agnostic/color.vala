@@ -92,7 +92,7 @@ namespace DesktopAgnostic
         this._color.blue = this.ushortify (value);
       }
     }
-    private ushort _alpha;
+    private ushort _alpha = ushort.MAX;
     public uint alpha
     {
       get
@@ -103,7 +103,6 @@ namespace DesktopAgnostic
       {
         this._alpha = this.ushortify (value);
       }
-      default = ushort.MAX;
     }
     public Color (Gdk.Color color, ushort alpha)
     {

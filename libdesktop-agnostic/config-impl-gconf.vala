@@ -22,10 +22,6 @@
 
 using DesktopAgnostic.Config;
 
-// TODO: remove!
-// temporary fix while leaks in gconf bindings aren't fixed
-private static extern void gconf_entry_unref (GConf.Entry entry);
-
 namespace DesktopAgnostic.Config
 {
   private const string BACKEND_NAME = "GConf";
@@ -116,8 +112,8 @@ namespace DesktopAgnostic.Config
     associate_schemas_in_dir (string schema_dir,
                               string pref_dir) throws GLib.Error
     {
-      unowned SList<GConf.Entry> entries;
-      unowned SList<string> subdirs;
+      SList<GConf.Entry> entries;
+      SList<string> subdirs;
 
       entries = this.client.all_entries (schema_dir);
 
@@ -460,7 +456,7 @@ namespace DesktopAgnostic.Config
         foreach (unowned string key in schema.get_keys (group))
         {
           string full_key;
-          unowned GConf.Value val;
+          GConf.Value val;
 
           full_key = this.generate_key (group, key);
           val = this.client.get_default_from_schema (full_key);
@@ -489,7 +485,6 @@ namespace DesktopAgnostic.Config
       {
         val = this.gconfvalue_to_gvalue (group, key, gc_val);
       }
-      gconf_entry_unref (entry);
 
       return val;
     }
@@ -570,13 +565,13 @@ namespace DesktopAgnostic.Config
     {
       string full_key;
       Type list_type;
-      unowned SList list;
+      GConf.Value gc_val;
 
       this._ensure_key_exists (group, key);
       full_key = this.generate_key (group, key);
       list_type = this.schema.get_option (group, key).list_type;
-      list = this.client.get (full_key).get_list ();
-      return this.slist_to_valuearray (list, list_type);
+      gc_val = this.client.get (full_key);
+      return this.slist_to_valuearray (gc_val.get_list (), list_type);
     }
     public override void
     set_list (string group, string key, GLib.ValueArray value) throws GLib.Error

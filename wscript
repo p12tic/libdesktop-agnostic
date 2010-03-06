@@ -74,7 +74,7 @@ def configure(conf):
 
     conf.check_tool('compiler_cc misc vala python')
 
-    MIN_VALA_VERSION = (0, 7, 7)
+    MIN_VALA_VERSION = (0, 7, 10)
 
     conf.check_cfg(package='gmodule-2.0', uselib_store='GMODULE',
                    atleast_version='2.6.0', mandatory=True,

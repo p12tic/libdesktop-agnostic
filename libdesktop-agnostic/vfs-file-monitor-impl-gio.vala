@@ -60,6 +60,7 @@ namespace DesktopAgnostic.VFS
       switch (event_type)
       {
         case GLib.FileMonitorEvent.CHANGED:
+        case GLib.FileMonitorEvent.CHANGES_DONE_HINT:
           da_event = FileMonitorEvent.CHANGED;
           break;
         case GLib.FileMonitorEvent.CREATED:

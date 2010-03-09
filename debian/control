@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 7.0.50~),
 # for waf
                python,
 # "real" deps
-               valac (>= 0.7.7),
+               valac (>= 0.7.10),
                gobject-introspection (>= 0.6.3),
                libgirepository1.0-dev (>= 0.6.3),
                libglib2.0-dev (>= 2.16.0),

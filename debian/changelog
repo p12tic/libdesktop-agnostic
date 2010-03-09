@@ -1,5 +1,5 @@
 libdesktop-agnostic (0.0.1-1) experimental; urgency=low
 
-  * Initial release. Closes: #
+  * Initial release. Closes: #560367
 
- -- Mark Lee <launchpad-net@lazymalevolence.com>  Tue, 24 Mar 2009 02:40:32 +0100
+ -- Mark Lee <launchpad-net@lazymalevolence.com>  Sat, 02 Jan 2010 17:52:15 +0100

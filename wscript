@@ -7,7 +7,7 @@ import os
 API_VERSION = '1.0'
 
 # the following two variables are used by the target "waf dist"
-VERSION = '0.0.1'
+VERSION = '0.3.9'
 VNUM = '0.4.0'
 if os.path.exists('.bzr'):
     try:

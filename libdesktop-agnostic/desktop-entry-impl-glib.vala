@@ -233,7 +233,7 @@ namespace DesktopAgnostic.FDO
     }
 
     public string?
-    get_localestring (string key, string locale)
+    get_localestring (string key, string? locale)
     {
       try
       {

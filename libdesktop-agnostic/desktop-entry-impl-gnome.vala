@@ -225,8 +225,12 @@ namespace DesktopAgnostic.FDO
     }
 
     public string?
-    get_localestring (string key, string locale)
+    get_localestring (string key, string? locale)
     {
+      if (locale == null)
+      {
+        return this.item.get_localestring (key);
+      }
       return this.item.get_localestring_lang (key, locale);
     }
 

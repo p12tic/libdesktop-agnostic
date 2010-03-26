@@ -134,7 +134,7 @@
   (return-type "char*")
   (parameters
     '("const-char*" "key")
-    '("const-char*" "locale")
+    '("const-char*" "locale" (default "NULL") (null-ok))
   )
 )
 

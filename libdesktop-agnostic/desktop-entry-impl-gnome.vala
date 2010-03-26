@@ -101,7 +101,7 @@ namespace DesktopAgnostic.FDO
           if (this.item == null)
           {
               this.item =
-                new DesktopItem.from_string ("", value, value.len (), 0);
+                new DesktopItem.from_string ("", value, -1, 0);
           }
           else
           {

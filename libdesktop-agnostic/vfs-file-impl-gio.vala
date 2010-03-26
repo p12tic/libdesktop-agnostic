@@ -182,7 +182,7 @@ namespace DesktopAgnostic.VFS
     public override bool
     replace_contents (string contents) throws Error
     {
-      return this._file.replace_contents (contents, contents.len (), null,
+      return this._file.replace_contents (contents, contents.size (), null,
                                           false, 0, null, null);
     }
     public override bool

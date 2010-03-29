@@ -39,7 +39,7 @@ blddir = 'build'
 config_backend = None
 
 def set_options(opt):
-    [opt.tool_options(x) for x in ['compiler_cc']]
+    [opt.tool_options(x) for x in ['compiler_cc', 'gnu_dirs']]
     opt.sub_options('data')
     opt.sub_options('libdesktop-agnostic')
     opt.add_option('--enable-debug', action='store_true',
@@ -72,6 +72,7 @@ def configure(conf):
     conf.env['PROFILING'] = Options.options.profiling
     conf.env['VNUM'] = str(VNUM)
 
+    conf.check_tool('gnu_dirs')
     conf.check_tool('compiler_cc misc vala python')
 
     MIN_VALA_VERSION = (0, 7, 10)

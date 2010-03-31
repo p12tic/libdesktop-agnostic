@@ -116,10 +116,6 @@ namespace DesktopAgnostic.Config
   private class BindingListWrapper : Object
   {
     public List<Binding> binding_list = null;
-
-    public BindingListWrapper ()
-    {
-    }
   }
 
   private class Binding : Object

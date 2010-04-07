@@ -118,6 +118,7 @@ namespace DesktopAgnostic
       this._alpha = alpha;
     }
     /**
+     * Parses color from string.
      * @see Gdk.Color.parse
      */
     public Color.from_string (string spec) throws ColorParseError

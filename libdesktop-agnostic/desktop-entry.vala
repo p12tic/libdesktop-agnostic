@@ -39,7 +39,8 @@ namespace DesktopAgnostic.FDO
   }
   /**
    * The kind of desktop entry.
-   * @see http://standards.freedesktop.org/desktop-entry-spec/latest/ar01s05.html
+   *
+   * [[http://standards.freedesktop.org/desktop-entry-spec/latest/ar01s05.html]]
    */
   public enum DesktopEntryType
   {

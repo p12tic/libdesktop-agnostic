@@ -38,7 +38,7 @@ namespace DesktopAgnostic
   private static Datalist<Module> modules;
   /**
    * Based on the PluginRegistrar class in
-   * <http://live.gnome.org/Vala/TypeModules>.
+   * [[http://live.gnome.org/Vala/TypeModules]].
    */
   public class ModuleLoader : Object
   {

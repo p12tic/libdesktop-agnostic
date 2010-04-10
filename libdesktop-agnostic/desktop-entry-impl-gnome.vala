@@ -101,7 +101,7 @@ namespace DesktopAgnostic.FDO
           if (this.item == null)
           {
               this.item =
-                new DesktopItem.from_string ("", value, value.len (), 0);
+                new DesktopItem.from_string ("", value, -1, 0);
           }
           else
           {
@@ -225,8 +225,12 @@ namespace DesktopAgnostic.FDO
     }
 
     public string?
-    get_localestring (string key, string locale)
+    get_localestring (string key, string? locale)
     {
+      if (locale == null)
+      {
+        return this.item.get_localestring (key);
+      }
       return this.item.get_localestring_lang (key, locale);
     }
 

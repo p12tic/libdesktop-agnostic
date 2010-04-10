@@ -110,7 +110,7 @@ namespace DesktopAgnostic.FDO
           }
           else
           {
-            this._keyfile.load_from_data (value, value.len (),
+            this._keyfile.load_from_data (value, value.size (),
                                           KeyFileFlags.KEEP_TRANSLATIONS);
             this.loaded = true;
           }
@@ -233,7 +233,7 @@ namespace DesktopAgnostic.FDO
     }
 
     public string?
-    get_localestring (string key, string locale)
+    get_localestring (string key, string? locale)
     {
       try
       {

@@ -24,23 +24,30 @@ using DesktopAgnostic;
 
 namespace DesktopAgnostic.Config
 {
-  /**
-   * @GLOBAL: Bind the global only to the property.
-   * @INSTANCE: Bind the instance only to the property.
-   * @FALLBACK: Bind the global to the property if the instance doesn't exist.
-   * @BOTH: Bind the global key to ${property_name}-base, and the instance key
-   * to ${property_name}.
-   */
   public enum BindMethod
   {
+    /**
+     * Bind the global only to the property.
+     */
     GLOBAL,
+    /**
+     * Bind the instance only to the property.
+     */
     INSTANCE,
+    /**
+     * Bind the global to the property if the instance doesn't exist.
+     */
     FALLBACK,
+    /**
+     * Bind the global key to property_name-base, and the instance key
+     * to property_name.
+     */
     BOTH
   }
   /**
-   * A wrapper for #Config.Backend and #Config.Bridge which handles calls to
-   * the global and/or instance objects of #Config.Backend.
+   * A wrapper for {@link Config.Backend} and {@link Config.Bridge}
+   * which handles calls to the global and/or instance objects 
+   * of {@link Config.Backend}.
    *
    * NOTE: Unknown bizarre behavior may occur if one instantiates two instances
    * of this class using the same schema, but different instance IDs.
@@ -279,11 +286,13 @@ namespace DesktopAgnostic.Config
       }
     }
     /**
-     * @param group The configuration group
-     * @param key The configuration key
+     * Binds a config key to a property of an object.
+     *
+     * @param group The configuration group.
+     * @param key The configuration key.
      * @param obj The object to which to bind the config key.
      * @param property_name The name of the property to bind. Has an additional
-     * use if @method is #BindMethod.BOTH.
+     * use if //method// is {@link BindMethod.BOTH}.
      * @param read_only if TRUE, setting the object property does not propagate
      * to the config backend(s).
      * @param method The method of binding the config backend(s) to the object.

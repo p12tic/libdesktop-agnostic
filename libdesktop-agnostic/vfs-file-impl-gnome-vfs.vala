@@ -227,7 +227,7 @@ namespace DesktopAgnostic.VFS
         return false;
       }
       res = GnomeVFS.write (handle, (void*)contents,
-                            (GnomeVFS.FileSize)contents.len (), null);
+                            (GnomeVFS.FileSize)contents.size (), null);
       if (this.handle_error (res))
       {
         return false;

@@ -155,12 +155,12 @@ namespace DesktopAgnostic.VFS
 
   public class TrashGnomeVFS : Trash, Object
   {
-    protected HashTable<GnomeVFS.Volume, TrashVolume> trash_dirs;
+    protected HashTable<unowned GnomeVFS.Volume, TrashVolume> trash_dirs;
 
     construct
     {
       message ("GNOME VFS Impl.");
-      this.trash_dirs = new HashTable<GnomeVFS.Volume, TrashVolume> (direct_hash, direct_equal);
+      this.trash_dirs = new HashTable<unowned GnomeVFS.Volume, TrashVolume> (direct_hash, direct_equal);
       Idle.add (this.search_for_trash_dirs);
     }
 
@@ -170,7 +170,7 @@ namespace DesktopAgnostic.VFS
       get
       {
         uint total = 0;
-        List<TrashVolume> values;
+        List<unowned TrashVolume> values;
         values = this.trash_dirs.get_values ();
         foreach (unowned TrashVolume tv in values)
         {
@@ -209,7 +209,7 @@ namespace DesktopAgnostic.VFS
     public void
     empty ()
     {
-      List<TrashVolume> values;
+      List<unowned TrashVolume> values;
       values = this.trash_dirs.get_values ();
       foreach (unowned TrashVolume tv in values)
       {
@@ -220,7 +220,7 @@ namespace DesktopAgnostic.VFS
     private bool
     search_for_trash_dirs ()
     {
-      GnomeVFS.VolumeMonitor volume_monitor;
+      unowned GnomeVFS.VolumeMonitor volume_monitor;
       unowned List<GnomeVFS.Volume> volumes;
       volume_monitor = get_volume_monitor ();
       volumes = volume_monitor.get_mounted_volumes ();

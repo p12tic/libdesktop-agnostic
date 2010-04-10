@@ -1,8 +1,15 @@
 #! /usr/bin/env python
 # encoding: utf-8
 
-import Utils
+import Options
 import os
+import Scripting
+import shutil
+import sys
+import Utils
+import tarfile
+import Task
+import tempfile
 
 API_VERSION = '1.0'
 
@@ -13,9 +20,9 @@ VNUM = '0.4.0'
 CFG_BACKENDS = ','.join(['gconf', 'keyfile'])
 VFS_BACKENDS = ','.join(['gio', 'gnome-vfs', 'thunar-vfs'])
 FDO_BACKENDS = ','.join(['glib', 'gnome'])
-DISTCHECK_FLAGS = '\t'.join(['--config-backends=' + CFG_BACKENDS,
-                             '--vfs-backends=' + VFS_BACKENDS,
-                             '--desktop-entry-backends=' + FDO_BACKENDS])
+DISTCHECK_FLAGS = '\t'.join(['--config-backends=%s' % CFG_BACKENDS,
+                             '--vfs-backends=%s' % VFS_BACKENDS,
+                             '--desktop-entry-backends=%s' % FDO_BACKENDS])
 GEN_SRC_DIR = 'gen_src'
 
 if os.path.exists('.bzr'):
@@ -41,11 +48,12 @@ elif os.path.exists('BZR_VERSION'):
 
 APPNAME = 'libdesktop-agnostic'
 
-# these variables are mandatory ('/' are converted automatically)
+# these variables are mandatory ('/' is converted automatically)
 srcdir = '.'
 blddir = 'build'
 
 config_backend = None
+
 
 def set_options(opt):
     [opt.tool_options(x) for x in ['compiler_cc', 'gnu_dirs']]
@@ -62,10 +70,10 @@ def set_options(opt):
                    help='Enables the library to be built so that it is '
                         'instrumented to measure performance.')
 
+
 def configure(conf):
     print 'Configuring %s %s' % (APPNAME, VERSION)
 
-    import Options
     if len(Options.options.config_backends) == 0:
         conf.fatal('At least one configuration backend needs to be built.')
     conf.env['BACKENDS_CFG'] = Options.options.config_backends.split(',')
@@ -129,16 +137,17 @@ def configure(conf):
     # make sure we have the proper Vala version
     if conf.env['VALAC_VERSION'] < MIN_VALA_VERSION and \
         not os.path.isdir(os.path.join(conf.curdir, GEN_SRC_DIR)):
-        conf.fatal('Your Vala compiler version %s ' % str(conf.env['VALAC_VERSION']) +
-                   'is too old. The project requires at least ' +
-                   'version %d.%d.%d' % MIN_VALA_VERSION)
+        conf.fatal('Your Vala compiler version %s is too old. The project ' \
+                   'requires at least version %d.%d.%d' % \
+                   (str(conf.env['VALAC_VERSION']),) + MIN_VALA_VERSION)
 
     # check for gobject-introspection
     conf.check_cfg(package='gobject-introspection-1.0',
                    atleast_version='0.6.3', mandatory=True,
                    args='--cflags --libs')
-    conf.env['G_IR_COMPILER'] = Utils.cmd_output('pkg-config --variable g_ir_compiler gobject-introspection-1.0',
-                                                 silent=1).strip()
+    pkgconfig = 'pkg-config --variable g_ir_compiler ' \
+                'gobject-introspection-1.0'
+    conf.env['G_IR_COMPILER'] = Utils.cmd_output(pkgconfig, silent=1).strip()
 
     conf.sub_config('data')
 
@@ -168,12 +177,11 @@ def configure(conf):
 
     conf.write_config_header('build-config.h')
 
+
 def build(bld):
     # process subfolders from here
     bld.add_subdirs('libdesktop-agnostic tools tests data python')
 
-    import shutil
-    import Task
     cls = Task.TaskBase.classes['valac']
     old = cls.run
 
@@ -187,8 +195,9 @@ def build(bld):
             d = bld.path.abspath()
             latest_input = 0
             for x in self.inputs:
-                 timestamp = os.path.getmtime(x.abspath(self.env))
-                 if timestamp > latest_input: latest_input = timestamp
+                timestamp = os.path.getmtime(x.abspath(self.env))
+                if timestamp > latest_input:
+                    latest_input = timestamp
             # we need two passes to check that we have up-to-date C sources
             try:
                 for x in self.outputs:
@@ -197,7 +206,7 @@ def build(bld):
                     timestamp = os.path.getmtime(src)
                     if timestamp < latest_input:
                         raise Exception("Source file needs to be regenerated!")
-            except:
+            except Exception:
                 return old(self)
 
             for x in self.outputs:
@@ -208,23 +217,21 @@ def build(bld):
     cls.run = run
 
 
-def dist(appname='',version=''):
-    import Scripting, Options
+def dist(appname='', version=''):
     # we need to reconfigure to include all backends
     Options.options.config_backends = CFG_BACKENDS
     Options.options.vfs_backends = VFS_BACKENDS
     Options.options.de_backends = FDO_BACKENDS
     Scripting.commands += ['configure', 'build', 'dist2']
 
+
 def dist2(ctx):
-    import Scripting
-    import shutil
     src_dir = os.path.abspath('.')
-    bld_dir = os.path.join(src_dir, getattr(Utils.g_module,Scripting.BLDDIR,None))
+    bld_dir = os.path.join(src_dir, getattr(Utils.g_module, Scripting.BLDDIR))
     gen_src_dir = os.path.join(src_dir, GEN_SRC_DIR)
     try:
         shutil.rmtree(gen_src_dir)
-    except(OSError,IOError):
+    except (OSError, IOError):
         pass
 
     os.makedirs(gen_src_dir)
@@ -236,7 +243,8 @@ def dist2(ctx):
                 if ext in ['.c', '.h', '.gir', '.vapi', '.deps']:
                     src = os.path.join(dir, filename)
                     dst = os.path.join(gen_src_dir, dir_basename)
-                    if not os.path.exists(dst): os.makedirs(dst)
+                    if not os.path.exists(dst):
+                        os.makedirs(dst)
                     shutil.copy2(src, os.path.join(dst, filename))
 
     tarball = Scripting.dist()
@@ -244,34 +252,32 @@ def dist2(ctx):
     shutil.rmtree(gen_src_dir)
     return tarball
 
-'''no support for extra configure flags in distcheck, we need to add it'''
-def distcheck(ctx):
-    import Scripting
-    dist()
-    Scripting.commands.pop() # get rid of dist2, we'll call it ourselves
-    Scripting.commands += ['distcheck2']
-    
-def distcheck2(ctx):
-    import tempfile,tarfile,shutil,sys
-    import Scripting
-    appname=getattr(Utils.g_module,Scripting.APPNAME,'noname')
-    version=getattr(Utils.g_module,Scripting.VERSION,'1.0')
-    waf=os.path.abspath(sys.argv[0])
-    # we need to call dist2(), dist() just appends to Scripting.commands list
-    tarball=dist2(ctx)
-    t=tarfile.open(tarball)
-    for x in t:t.extract(x)
-    t.close()
-    path=appname+'-'+version
-    instdir=tempfile.mkdtemp('.inst','%s-%s'%(appname,version))
-    conf_flags = DISTCHECK_FLAGS
-    popen_params = [waf, 'configure']
-    popen_params += conf_flags.split()
-    popen_params += ['build', 'install','uninstall','--destdir='+instdir]
-    ret=Utils.pproc.Popen(popen_params,cwd=path).wait()
-    if ret:
-        raise Utils.WafError('distcheck failed with code %i'%ret)
-    if os.path.exists(instdir):
-        raise Utils.WafError('distcheck succeeded, but files were left in %s'%instdir)
-    shutil.rmtree(path)
 
+def distcheck(ctx):
+    # no support for extra configure flags in distcheck, we need to add it
+    dist()
+    Scripting.commands.pop()  # get rid of dist2, we'll call it ourselves
+    Scripting.commands += ['distcheck2']
+
+
+def distcheck2(ctx):
+    appname = getattr(Utils.g_module, Scripting.APPNAME, 'noname')
+    version = getattr(Utils.g_module, Scripting.VERSION, '1.0')
+    waf = os.path.abspath(sys.argv[0])
+    # we need to call dist2(), dist() just appends to Scripting.commands list
+    tarball = dist2(ctx)
+    tgz = tarfile.open(tarball)
+    [tgz.extract(filename) for filename in tgz]
+    tgz.close()
+    path = '%s-%s' % (appname, version)
+    instdir = tempfile.mkdtemp('.inst', '%s-%s' % (appname, version))
+    conf_flags = DISTCHECK_FLAGS
+    popen_params = [waf, 'configure'] + conf_flags.split() + \
+                   ['build', 'install', 'uninstall', '--destdir=%s' % instdir]
+    ret = Utils.pproc.Popen(popen_params, cwd=path).wait()
+    if ret:
+        raise Utils.WafError('distcheck failed with code %i' % ret)
+    if os.path.exists(instdir):
+        raise Utils.WafError('''\
+distcheck succeeded, but files were left in %s''' % instdir)
+    shutil.rmtree(path)

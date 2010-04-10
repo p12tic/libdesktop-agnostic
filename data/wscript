@@ -5,19 +5,23 @@ import Options
 import Utils
 import misc
 
+
 def set_options(opt):
     opt.add_option('--with-glade', action='store_true',
                    dest='glade', default=False,
-                   help='Installs the Glade catalog for the desktop-agnostic GTK widgets.')
+                   help='Installs the Glade catalog for the ' \
+                        'desktop-agnostic GTK widgets.')
+
 
 def configure(conf):
     conf.env['GLADE_SUPPORT'] = Options.options.glade
     if conf.env['GLADE_SUPPORT']:
         conf.check_cfg(package='gladeui-1.0', uselib_store='GLADEUI',
                        mandatory=True, args='--cflags --libs')
+        pkgconfig = 'pkg-config --variable catalogdir gladeui-1.0'
         conf.env['GLADEUI_CATALOGDIR'] = \
-                Utils.cmd_output('pkg-config --variable catalogdir gladeui-1.0',
-                                 silent=1).strip()
+                Utils.cmd_output(pkgconfig, silent=1).strip()
+
 
 def build(bld):
     pc = bld.new_task_gen('subst')
@@ -28,7 +32,7 @@ def build(bld):
         'LIBDIR': bld.env['LIBDIR'],
         'VERSION': bld.env['VERSION'],
         'prefix': bld.env['PREFIX'],
-        'datarootdir': bld.env['DATADIR']
+        'datarootdir': bld.env['DATADIR'],
         }
     pc.fun = misc.subst_func
     pc.install_path = '${LIBDIR}/pkgconfig'
@@ -39,7 +43,7 @@ def build(bld):
     ini.dict = {
         'CONFIG_BACKEND': bld.env['BACKENDS_CFG'][0],
         'VFS_BACKEND': bld.env['BACKENDS_VFS'][0],
-        'DESKTOP_ENTRY_BACKEND': bld.env['BACKENDS_DE'][0]
+        'DESKTOP_ENTRY_BACKEND': bld.env['BACKENDS_DE'][0],
     }
     ini.fun = misc.subst_func
     ini.install_path = '${SYSCONFDIR}/xdg/libdesktop-agnostic'

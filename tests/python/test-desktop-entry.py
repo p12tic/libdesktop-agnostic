@@ -21,6 +21,7 @@ import gtk
 from desktopagnostic import fdo
 from desktopagnostic import vfs
 
+
 def main(args):
     vfs.init()
     try:
@@ -40,7 +41,8 @@ def main(args):
             entry.props.name = 'hosts file'
             entry.props.entry_type = fdo.DESKTOP_ENTRY_TYPE_LINK
             entry.set_string('URL', 'file:///etc/hosts')
-            desktop_file = vfs.File.for_path('/tmp/desktop-agnostic-test.desktop')
+            test_filename = '/tmp/desktop-agnostic-test.desktop'
+            desktop_file = vfs.File.for_path(test_filename)
             entry.save(desktop_file)
     finally:
         vfs.shutdown()

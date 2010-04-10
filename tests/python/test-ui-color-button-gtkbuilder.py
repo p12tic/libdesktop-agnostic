@@ -22,9 +22,10 @@ import gtk
 import desktopagnostic
 from desktopagnostic.ui import ColorButton
 
+
 def on_color_set(button):
     print str(button.props.da_color)
-    gtk.main_quit();
+    gtk.main_quit()
 
 if __name__ == '__main__':
     builder = gtk.Builder()

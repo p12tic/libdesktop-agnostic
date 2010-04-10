@@ -20,9 +20,11 @@ import sys
 import gobject
 from desktopagnostic import vfs
 
+
 def on_file_count_changed(trash, mainloop):
     print 'Number of files in the trash: %u' % trash.props.file_count
     mainloop.quit()
+
 
 def main():
     vfs.init()

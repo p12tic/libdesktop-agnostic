@@ -8,8 +8,9 @@ The following document details how to install libdesktop-agnostic.
 Debian/Ubuntu
 -------------
 
-For Ubuntu users, there is a PPA with semi-regular releases:
-https://launchpad.net/~malept/+archive/experimental
+For Ubuntu users, there is a `PPA`_ with semi-regular releases:
+
+.. _PPA: https://launchpad.net/~malept/+archive/experimental
 
 If you wish to build from source, the preferred method is to use the Debian
 packaging method:
@@ -19,6 +20,24 @@ packaging method:
 2. Run ``debuild binary``.
 3. Install the built packages with ``sudo dpkg -i``. The packages should be in
    the parent directory of the source directory.
+
+------
+Gentoo
+------
+
+For Gentoo users, an SCM version is available at the desktop-effects overlay.
+You can add it by installing `layman`_ and running the following commands
+(with administrative privileges)::
+
+    layman -a desktop-effects
+    echo ** x11-libs/libdesktop-agnostic >> /etc/portage/package.keywords
+    emerge libdesktop-agnostic
+
+There are several USE flags for libdesktop-agnostic. Please consult the
+``metadata.xml`` file in the directly where the
+``libdesktop-agnostic-9999.ebuild`` is located for flag descriptions.
+
+.. _layman: http://layman.sf.net/
 
 -------------
 Prerequisites
@@ -31,15 +50,16 @@ Build-only
   bindings)
 * GObject Introspection 0.6.3 or later (requires the development files, to
   properly detect the correct version)
+* Vala 0.7.10 or later
 
 Build/Runtime (*required*)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-* Vala 0.7.7 or later
 * GLib 2.12 or later
 * GTK 2.12 or later
 
 For the Python bindings:
+
 * PyGObject 2.12 or later
 * PyGTK 2.12 or later
 

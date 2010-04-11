@@ -21,11 +21,13 @@ def configure(conf):
                    args='--cflags --libs')
     if not conf.find_program('pygobject-codegen-2.0', var='CODEGEN'):
         if not conf.find_program('pygtk-codegen-2.0', var='CODEGEN'):
-            conf.fatal('Could not find the PyGObject/PyGTK code generator script')
-    conf.env['PYGTK_DEFSDIR'] = Utils.cmd_output('pkg-config --variable defsdir pygtk-2.0',
-                                                 silent=1).strip()
+            conf.fatal('Could not find the PyGObject/PyGTK code generator ' \
+                       'script')
+    pkgconfig = 'pkg-config --variable defsdir pygtk-2.0'
+    conf.env['PYGTK_DEFSDIR'] = Utils.cmd_output(pkgconfig, silent=1).strip()
     conf.check_cfg(package='pygobject-2.0', uselib_store='PYGLIB',
                    atleast_version='2.15.2')
+
 
 def run_pyg_codegen(self):
     # stolen from TaskGen.exec_rule
@@ -36,6 +38,7 @@ def run_pyg_codegen(self):
     func(self)
 
 Task.task_type_from_func('pyg_codegen', run_pyg_codegen, ext_out='.c')
+
 
 @extension('.defs')
 def defs_hook(self, node):
@@ -49,7 +52,8 @@ def defs_hook(self, node):
         rule += [' --py_ssize_t-clean']
     for load in getattr(self, 'local_load_types', ()):
         sources += [node.parent.find_resource(load)]
-        rule += ['--load-types', '${SRC[%i].abspath(env)}' % (len(sources) - 1)]
+        rule += ['--load-types',
+                 '${SRC[%i].abspath(env)}' % (len(sources) - 1)]
     for reg in getattr(self, 'local_register', ()):
         sources += [node.parent.find_resource(reg)]
         rule += ['--register', '${SRC[%i].abspath(env)}' % (len(sources) - 1)]
@@ -69,6 +73,7 @@ def defs_hook(self, node):
     task.outputs = [c_node]
 
     self.allnodes.append(c_node)
+
 
 def pyg_module(bld, module, dependencies, prefix=None, local_register=None):
     pyext = bld.new_task_gen('cc', 'shlib', 'pyext')
@@ -92,6 +97,7 @@ def pyg_module(bld, module, dependencies, prefix=None, local_register=None):
                        '%s.defs' % module, env=pyext.env)
 
     return pyext
+
 
 def build(bld):
     # Attach the 'codegen' and pyg_module methods to the build context

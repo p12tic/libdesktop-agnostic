@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# vim: set ts=4 sts=4 sw=4 et :
 #
 # Copyright (c) 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>
 #
@@ -24,6 +25,7 @@ import gtk
 
 CONTENT = 'Desktop Agnostic Library'
 
+
 def main():
     gtk.init_check()
     vfs.init()
@@ -41,23 +43,24 @@ def main():
         print 'URI: %s' % tmp.props.uri
         print 'Path: %s' % tmp.props.path
         print '# of files: %d' % len(tmp.enumerate_children())
-        file_path = os.path.join(path, '%s-lda-test' % tempfile.gettempprefix())
-        tmp_file = vfs.File.for_path(file_path);
+        file_path = os.path.join(path,
+                                 '%s-lda-test' % tempfile.gettempprefix())
+        tmp_file = vfs.File.for_path(file_path)
         assert tmp_file.props.parent is not None and \
                tmp_file.props.parent.props.uri == tmp.props.uri
         tmp_file.replace_contents(CONTENT)
         assert tmp_file.load_contents() == CONTENT
         if test_launch:
-          assert tmp_file.launch()
+            assert tmp_file.launch()
         file_copy_path = '%s-copy' % file_path
-        file_copy = vfs.File.for_path (file_copy_path)
-        assert tmp_file.copy (file_copy, True)
+        file_copy = vfs.File.for_path(file_copy_path)
+        assert tmp_file.copy(file_copy, True)
         assert CONTENT == file_copy.load_contents()
         if not test_launch:
-          assert file_copy.remove()
-          assert not file_copy.exists()
-          assert tmp_file.remove()
-          assert not tmp_file.exists()
+            assert file_copy.remove()
+            assert not file_copy.exists()
+            assert tmp_file.remove()
+            assert not tmp_file.exists()
     finally:
         vfs.shutdown()
 

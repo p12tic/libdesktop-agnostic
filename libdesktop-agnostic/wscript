@@ -10,36 +10,37 @@ deps = {
         'gconf': {
             'uselib': 'GCONF',
             'packages': 'gconf-2.0',
-            'packages_private': 'config-notify-delegate'
+            'packages_private': 'config-notify-delegate',
         },
         'keyfile': {
-            'packages_private': 'config-notify-delegate'
+            'packages_private': 'config-notify-delegate',
         },
         'memory': {
-            'packages_private': 'config-notify-delegate'
+            'packages_private': 'config-notify-delegate',
         }
     },
     'vfs': {
         'gio': {
             'uselib': 'GIO',
-            'packages': 'gio-2.0'
+            'packages': 'gio-2.0',
         },
         'thunar-vfs': {
             'uselib': 'THUNAR_VFS DBUS_GLIB',
-            'packages': 'thunar-vfs-1 dbus-glib-1'
+            'packages': 'thunar-vfs-1 dbus-glib-1',
         },
         'gnome-vfs': {
             'uselib': 'GNOME_VFS',
-            'packages': 'gnome-vfs-2.0'
+            'packages': 'gnome-vfs-2.0',
         }
     },
     'fdo': {
         'gnome': {
             'uselib': 'GNOME_DESKTOP',
-            'packages': 'gnome-desktop-2.0'
+            'packages': 'gnome-desktop-2.0',
         }
     }
 }
+
 
 @taskgen
 @feature('cc')
@@ -60,12 +61,14 @@ def generate_typelib(self):
         bld.install_files('${LIBDIR}/girepository-1.0',
                           tnode.abspath(task.env), task.env)
 
+
 def create_typelib_task():
     rule = 'LD_LIBRARY_PATH="${CURRENT_BUILD_DIR}" ${G_IR_COMPILER} ' + \
            '-o ${TGT} ${SRC}'
     Task.simple_task_type('typelib', rule, after='cc_link')
 
 create_typelib_task()
+
 
 def task_module(type_name, src_prefix):
     def build_module(bld, name):
@@ -75,7 +78,8 @@ def task_module(type_name, src_prefix):
         if type_name in deps and name in deps[type_name]:
             module.uselib = deps[type_name][name].get('uselib', '')
             module.packages = deps[type_name][name].get('packages', '')
-            module.packages_private = deps[type_name][name].get('packages_private', '')
+            module.packages_private = deps[type_name][name] \
+                                      .get('packages_private', '')
         ftype, sep, tail = type_name.partition('-')
         module.uselib_local = 'desktop-agnostic-%s' % ftype
         module.target = 'da-%s-%s' % (type_name, name)
@@ -86,16 +90,20 @@ def task_module(type_name, src_prefix):
                           bld.env['shlib_PATTERN'] % module.target)
     return build_module
 
+
 def set_options(opt):
     opt.add_option('--config-backends', type='string',
-                   help='Determines which configuration backend(s) will be built.',
+                   help='Determines which configuration backend(s) will be ' \
+                        'built.',
                    dest='config_backends', default='')
     opt.add_option('--vfs-backends', type='string',
                    help='Determines which VFS backend(s) will be built.',
                    dest='vfs_backends', default='')
     opt.add_option('--desktop-entry-backends', type='string',
-                   help='Determines which desktop entry backend(s) will be built.',
+                   help='Determines which desktop entry backend(s) will be ' \
+                        'built.',
                    dest='de_backends', default='')
+
 
 def build(bld):
     lib = bld.new_task_gen('cc', 'shlib')
@@ -108,7 +116,7 @@ def build(bld):
     lib.gir = 'DesktopAgnostic-1.0'
     lib.uselib = 'M GDK GMODULE'
     lib.packages_private = 'build'
-    lib.includes='..'
+    lib.includes = '..'
     lib.vapi_dirs = '../vapi'
     lib.vnum = bld.env['VNUM']
 
@@ -128,7 +136,7 @@ def build(bld):
     vfs.gir = 'DesktopAgnosticVFS-1.0'
     vfs.uselib_local = 'desktop-agnostic'
     vfs.packages_private = 'posix-glob'
-    vfs.includes='..'
+    vfs.includes = '..'
     vfs.vapi_dirs = '../vapi .'
     vfs.vnum = bld.env['VNUM']
 
@@ -147,7 +155,7 @@ def build(bld):
     cfg.gir = 'DesktopAgnosticConfig-1.0'
     cfg.uselib_local = 'desktop-agnostic-vfs'
     cfg.packages_private = 'hashtable-gtype-key'
-    cfg.includes='..'
+    cfg.includes = '..'
     cfg.vapi_dirs = '../vapi .'
     cfg.vnum = bld.env['VNUM']
 
@@ -161,7 +169,7 @@ def build(bld):
     fdo.gir = 'DesktopAgnosticFDO-1.0'
     fdo.uselib_local = 'desktop-agnostic-vfs'
     fdo.vapi_dirs = '.'
-    fdo.includes='..'
+    fdo.includes = '..'
     fdo.vnum = bld.env['VNUM']
 
     ui = bld.new_task_gen('cc', 'shlib')
@@ -179,7 +187,7 @@ def build(bld):
     ui.uselib = 'GTK'
     ui.uselib_local = 'desktop-agnostic-fdo'
     ui.vapi_dirs = '. ../vapi'
-    ui.includes='..'
+    ui.includes = '..'
     ui.vnum = bld.env['VNUM']
 
     [task_module('cfg', 'config-impl')(bld, name)

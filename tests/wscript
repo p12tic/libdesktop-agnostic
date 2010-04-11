@@ -3,6 +3,7 @@
 
 NEEDS_GDK = ['test-desktop-entry', 'test-vfs-file']
 
+
 def build_test_program(bld, name, suffix):
     test = bld.new_task_gen('cc', 'program')
     test.source = name + '.vala'
@@ -17,6 +18,7 @@ def build_test_program(bld, name, suffix):
     test.includes = '..'
     test.target = name
     test.install_path = ''
+
 
 def build(bld):
     [build_test_program(bld, 'test-' + name, 'cfg')

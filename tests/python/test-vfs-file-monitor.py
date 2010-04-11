@@ -23,12 +23,14 @@ from desktopagnostic import vfs
 
 
 class TestFileMonitor:
+
     def __init__(self, path):
         self.vfile = vfs.File.for_path(path)
         self.monitor = self.vfile.monitor()
         self.monitor.connect('changed', self.on_change)
         if self.vfile.props.file_type == vfs.FILE_TYPE_DIRECTORY:
             gobject.timeout_add_seconds(2, self.do_emit)
+
     def on_change(self, monitor, vfile, other, event):
         print '%s: %s' % (event.value_nick, vfile.props.uri)
         if other is not None:
@@ -38,6 +40,7 @@ class TestFileMonitor:
         path = os.path.join(self.vfile.props.path, 'test-vfs-file.txt')
         other = vfs.File.for_path(path)
         self.monitor.changed(other, vfs.FILE_MONITOR_EVENT_CREATED)
+
 
 def main(args):
     if len(args) < 2:

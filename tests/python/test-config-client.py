@@ -28,8 +28,8 @@ type_key_map = {
     'bool': ('numeric', 'boolean', True, False),
     'int': ('numeric', 'integer', 3, 10),
     'float': ('numeric', 'float', 3.14, 2.718),
-    'string': ('misc', 'string', 'Foo bar', 'Quux baz')
-    }
+    'string': ('misc', 'string', 'Foo bar', 'Quux baz'),
+}
 
 '''
 Map format: type name => (default, set value)
@@ -38,21 +38,28 @@ list_value_map = {
     'bool': ([True, False], [False, True, False]),
     'int': ([1, 2, 3], [10, 20, 30]),
     'float': ([1.618, 2.718, 3.141], [10.5, 20.6, 30.7]),
-    'string': (['foo', 'bar'], ['Quux', 'Baz', 'Foo'])
-    }
+    'string': (['foo', 'bar'], ['Quux', 'Baz', 'Foo']),
+}
+
 
 def create_type_tests(type_name, group, key, default, set_val):
     list_default, list_set_val = list_value_map[type_name]
+
     def test_default(self):
         self.check_values(group, key, default, type_name)
+
     def test_default_list(self):
         self.check_values('list', key, list_default, 'list')
+
     def test_set(self):
         self.check_set_values(group, key, set_val, type_name, False)
+
     def test_set_list(self):
         self.check_set_values('list', key, list_set_val, 'list', False)
+
     def test_set_value(self):
         self.check_set_values(group, key, set_val, type_name, True)
+
     def test_set_list_value(self):
         self.check_set_values('list', key, list_set_val, 'list', True)
     return {

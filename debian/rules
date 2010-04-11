@@ -11,7 +11,7 @@ endif
 	dh $@
 
 override_dh_auto_configure:
-	LINKFLAGS="${LDFLAGS} -Wl,--as-needed" ./waf --nocache configure --prefix=/usr --enable-debug --config-backends=gconf,keyfile --vfs-backends=gio,gnome-vfs,thunar-vfs --desktop-entry-backends=glib,gnome --with-glade
+	LINKFLAGS="${LDFLAGS} -Wl,--as-needed" ./waf --nocache configure --prefix=/usr --enable-debug --config-backends=gconf,keyfile --vfs-backends=gio,gnome-vfs,thunar-vfs --desktop-entry-backends=glib,gnome --with-glade --enable-docs
 	./waf --nocache build
 
 override_dh_auto_install:

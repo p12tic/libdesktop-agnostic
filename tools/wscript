@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # encoding: utf-8
 
+
 def build(bld):
     if 'gconf' in bld.env['BACKENDS_CFG']:
         schema = bld.new_task_gen('cc', 'program')

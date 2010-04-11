@@ -22,11 +22,12 @@ from desktopagnostic.ui import ColorButton
 
 
 class TestColorButton(gtk.Window):
+
     def __init__(self):
         super(TestColorButton, self).__init__()
         self.connect('delete-event', gtk.main_quit)
         color = desktopagnostic.Color.from_string('green')
-        color.props.alpha = 2**15 - 1
+        color.props.alpha = 2 ** 15 - 1
         button = ColorButton.with_color(color)
         button.connect('color-set', self.on_color_set)
         self.add(button)
@@ -34,7 +35,7 @@ class TestColorButton(gtk.Window):
 
     def on_color_set(self, button):
         print str(button.props.da_color)
-        gtk.main_quit();
+        gtk.main_quit()
 
 if __name__ == '__main__':
     tcb = TestColorButton()

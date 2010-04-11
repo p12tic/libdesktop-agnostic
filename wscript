@@ -137,9 +137,9 @@ def configure(conf):
     # make sure we have the proper Vala version
     if conf.env['VALAC_VERSION'] < MIN_VALA_VERSION and \
         not os.path.isdir(os.path.join(conf.curdir, GEN_SRC_DIR)):
-        conf.fatal('Your Vala compiler version %s is too old. The project ' \
-                   'requires at least version %d.%d.%d' % \
-                   (str(conf.env['VALAC_VERSION']),) + MIN_VALA_VERSION)
+        conf.fatal('''\
+Your Vala compiler version %s is too old. The project requires at least
+version %d.%d.%d''' % ((str(conf.env['VALAC_VERSION']),) + MIN_VALA_VERSION))
 
     # check for gobject-introspection
     conf.check_cfg(package='gobject-introspection-1.0',

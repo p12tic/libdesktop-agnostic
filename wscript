@@ -248,6 +248,7 @@ def dist2(ctx):
                         os.makedirs(dst)
                     shutil.copy2(src, os.path.join(dst, filename))
 
+    Scripting.g_gz = 'gz'
     tarball = Scripting.dist()
     # clean up
     shutil.rmtree(gen_src_dir)
@@ -267,9 +268,9 @@ def distcheck2(ctx):
     waf = os.path.abspath(sys.argv[0])
     # we need to call dist2(), dist() just appends to Scripting.commands list
     tarball = dist2(ctx)
-    tgz = tarfile.open(tarball)
-    [tgz.extract(filename) for filename in tgz]
-    tgz.close()
+    tbp = tarfile.open(tarball)  # as in, tarball pointer
+    [tbp.extract(filename) for filename in tbp]
+    tbp.close()
     path = '%s-%s' % (appname, version)
     instdir = tempfile.mkdtemp('.inst', '%s-%s' % (appname, version))
     conf_flags = DISTCHECK_FLAGS

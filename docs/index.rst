@@ -10,6 +10,7 @@ Contents:
    install
    config-metadata
    known-issues
+   todo
 
 * :ref:`search`
 

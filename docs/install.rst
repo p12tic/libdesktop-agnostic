@@ -50,7 +50,7 @@ Build-only
   bindings)
 * GObject Introspection 0.6.3 or later (requires the development files, to
   properly detect the correct version)
-* Vala 0.7.10 or later
+* Vala 0.7.10
 
 Build/Runtime (*required*)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~

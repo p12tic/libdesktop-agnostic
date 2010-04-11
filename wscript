@@ -135,10 +135,10 @@ def configure(conf):
                        uselib_store='GNOME_DESKTOP', mandatory=True,
                        args='--cflags --libs')
     # make sure we have the proper Vala version
-    if conf.env['VALAC_VERSION'] < MIN_VALA_VERSION and \
+    if conf.env['VALAC_VERSION'] != MIN_VALA_VERSION and \
         not os.path.isdir(os.path.join(conf.curdir, GEN_SRC_DIR)):
         conf.fatal('''\
-Your Vala compiler version %s is too old. The project requires at least
+Your Vala compiler version %s is too old. The project requires
 version %d.%d.%d''' % ((str(conf.env['VALAC_VERSION']),) + MIN_VALA_VERSION))
 
     # check for gobject-introspection

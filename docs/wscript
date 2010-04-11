@@ -20,5 +20,7 @@ def configure(conf):
 
 def build(bld):
     # sphinx
-    bld.new_task_gen(features='sphinx', source=['index', 'config-metadata',
-                                                'install', 'known-issues'])
+    if bld.env['BUILD_DOCS']:
+        sources = ['index', 'config-metadata', 'install', 'known-issues',
+                   'todo']
+        bld.new_task_gen(features='sphinx', source=sources)

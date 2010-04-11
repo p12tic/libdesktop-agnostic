@@ -57,7 +57,7 @@ config_backend = None
 
 def set_options(opt):
     [opt.tool_options(x) for x in ['compiler_cc', 'gnu_dirs']]
-    opt.sub_options('data')
+    opt.sub_options('data docs')
     opt.sub_options('libdesktop-agnostic')
     opt.add_option('--enable-debug', action='store_true',
                    dest='debug', default=False,
@@ -150,6 +150,7 @@ def configure(conf):
     conf.env['G_IR_COMPILER'] = Utils.cmd_output(pkgconfig, silent=1).strip()
 
     conf.sub_config('data')
+    conf.sub_config('docs')
 
     # manual Python bindings
     conf.sub_config('python')
@@ -180,7 +181,7 @@ def configure(conf):
 
 def build(bld):
     # process subfolders from here
-    bld.add_subdirs('libdesktop-agnostic tools tests data python')
+    bld.add_subdirs('libdesktop-agnostic tools tests data python docs')
 
     cls = Task.TaskBase.classes['valac']
     old = cls.run

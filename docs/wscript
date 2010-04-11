@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+# encoding: utf-8
+# vim: set ts=4 sts=4 sw=4 et :
+
+import Options
+
+
+def set_options(opt):
+    opt.add_option('--enable-docs', action='store_true',
+                   dest='docs', default=False,
+                   help='Enables support for building the documentation '
+                        '(requires Sphinx).')
+
+
+def configure(conf):
+    conf.env['BUILD_DOCS'] = Options.options.docs
+    if conf.env['BUILD_DOCS']:
+        conf.check_tool('sphinx')
+
+
+def build(bld):
+    # sphinx
+    bld.new_task_gen(features='sphinx', source=['index', 'config-metadata',
+                                                'install', 'known-issues'])

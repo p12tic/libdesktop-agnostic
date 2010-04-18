@@ -1,0 +1,103 @@
+# Translatable strings for libdesktop-agnostic.
+# Copyright (C) 2009, 2010 Mark Lee
+# This file is distributed under the BSD license.
+#
+# Translators:
+# Mark Lee <libdesktop-agnostic@lazymalevolence.com>, 2010.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: libdesktop-agnostic-0.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-04-18 11:20-0700\n"
+"PO-Revision-Date: 2010-04-18 12:46-0800\n"
+"Last-Translator: Mark Lee <libdesktop-agnostic@lazymalevolence.com>\n"
+"Language-Team: Pig Latin <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: English\n"
+"X-Poedit-Country: UNITED STATES\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: ../libdesktop-agnostic/ui-icon-chooser-dialog.vala:64
+msgid "Select Icon"
+msgstr "Elect-say Icon-way"
+
+#: ../libdesktop-agnostic/ui-icon-chooser-dialog.vala:75
+msgid "From File"
+msgstr "Om-fray Ile-fay"
+
+#: ../libdesktop-agnostic/ui-icon-chooser-dialog.vala:78
+msgid "From Theme"
+msgstr "Om-fray Eme-thay"
+
+#: ../libdesktop-agnostic/ui-icon-chooser-dialog.vala:85
+msgid "Select icon folder"
+msgstr "Elect-say icon-way older-fay"
+
+#: ../libdesktop-agnostic/ui-icon-chooser-dialog.vala:298
+msgid "Please select an icon."
+msgstr "Ease-play elect-say an icon-way."
+
+#: ../libdesktop-agnostic/ui-icon-chooser-dialog.vala:301
+msgid "Error"
+msgstr "Error-way"
+
+#: ../libdesktop-agnostic/ui-launcher-editor-dialog.vala:92
+msgid "Desktop Entry Editor"
+msgstr "Esktop-day Entry-way Editor-way"
+
+#. Name
+#: ../libdesktop-agnostic/ui-launcher-editor-dialog.vala:149
+msgid "_Name:"
+msgstr "Ame-_nay:"
+
+#. Description
+#: ../libdesktop-agnostic/ui-launcher-editor-dialog.vala:161
+msgid "_Description:"
+msgstr "Escription-_day:"
+
+#. Exec
+#: ../libdesktop-agnostic/ui-launcher-editor-dialog.vala:173
+msgid "_Command:"
+msgstr "Ommand-_cay:"
+
+#: ../libdesktop-agnostic/ui-launcher-editor-dialog.vala:184
+msgid "_Browse..."
+msgstr "Owse-_bray..."
+
+#. Advanced options
+#. TODO look into ResizeMode so that the window shrinks when the expander
+#. is un-expanded.
+#: ../libdesktop-agnostic/ui-launcher-editor-dialog.vala:194
+msgid "_Advanced"
+msgstr "_Advanced-way"
+
+#: ../libdesktop-agnostic/ui-launcher-editor-dialog.vala:196
+msgid "Run in _terminal"
+msgstr "Un-ray in erminal-_tay"
+
+#: ../libdesktop-agnostic/ui-launcher-editor-dialog.vala:203
+msgid "Use _startup notification"
+msgstr "Use-way artup-_stay otification-nay"
+
+#: ../libdesktop-agnostic/ui-launcher-editor-dialog.vala:249
+msgid "Locate Command"
+msgstr "Ocate-lay Ommand-cay"
+
+#: ../libdesktop-agnostic/ui-launcher-editor-dialog.vala:283
+msgid "Save As"
+msgstr "Ave-say As"
+
+#: ../libdesktop-agnostic/ui-launcher-editor-dialog.vala:341
+#, c-format
+msgid ""
+"An error occurred while trying to save the desktop entry:\n"
+"\n"
+"%s"
+msgstr ""
+"An error-way occurred-way ile-whay ying-tray to ave-say the esktop-day entry-way:\n"
+"\n"
+"%s"
+

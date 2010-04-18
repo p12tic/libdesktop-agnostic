@@ -1,0 +1,5 @@
+# List of source files containing translatable strings.
+# Please keep this file sorted alphabetically.
+[encoding: UTF-8]
+libdesktop-agnostic/ui-icon-chooser-dialog.vala
+libdesktop-agnostic/ui-launcher-editor-dialog.vala

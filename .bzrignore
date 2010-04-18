@@ -8,4 +8,5 @@ debian/files
 debian/*.substvars
 debian/*libdesktop-agnostic*/
 gmon.out
+po/*.mo
 *.schemas

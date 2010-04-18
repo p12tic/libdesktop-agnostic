@@ -1,0 +1,6 @@
+# -*- coding: utf-8 -*-
+# vim: set ft=python
+
+
+def build(bld):
+    bld.new_task_gen(features='intltool_po', appname='libdesktop-agnostic')

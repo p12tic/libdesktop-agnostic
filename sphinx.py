@@ -72,8 +72,15 @@ class sphinx_task(Task.Task):
                              for x in glob.split()])
         glob_base = generate_glob('*', True)
         glob_static = generate_glob('_static/*')
+        glob_sources = ' '.join([os.path.join('docs', x)
+                                 for x in self.generator.path \
+                                              .ant_glob('*.rst').split()])
         self.generator.bld.install_files('${HTMLDIR}', glob_base)
         self.generator.bld.install_files('${HTMLDIR}/_static', glob_static)
+        for rst in glob_sources.split():
+            basename = os.path.splitext(os.path.basename(rst))[0]
+            self.generator.bld.install_as('${HTMLDIR}/_sources/%s.txt' % \
+                                          basename, rst)
 
 
 @TaskGen.extension('.rst')

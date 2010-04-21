@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 # encoding: utf-8
 
+import intltool
 import Options
 import os
 import Scripting
@@ -90,7 +91,7 @@ def configure(conf):
     conf.env['VNUM'] = str(VNUM)
 
     conf.check_tool('gnu_dirs')
-    conf.check_tool('compiler_cc misc vala python')
+    conf.check_tool('compiler_cc intltool misc python vala')
 
     MIN_VALA_VERSION = (0, 8, 1)
 
@@ -182,6 +183,9 @@ version %d.%d.%d''' % ((str(conf.env['VALAC_VERSION']),) + MIN_VALA_VERSION))
 def build(bld):
     # process subfolders from here
     bld.add_subdirs('libdesktop-agnostic tools tests data python docs')
+
+    if bld.env['INTLTOOL']:
+        bld.add_subdirs('po')
 
     cls = Task.TaskBase.classes['valac']
     old = cls.run

@@ -160,7 +160,7 @@ namespace DesktopAgnostic.UI
         if (this._themed_viewer == null)
         {
           unowned IconTheme icon_theme;
-          unowned List<string> context_list;
+          List<string> context_list;
 
           this._themed_context = new ComboBox.text ();
           this._themed_context.changed.connect (this.on_icon_context_changed);
@@ -246,7 +246,7 @@ namespace DesktopAgnostic.UI
     {
       unowned ListStore model;
       unowned IconTheme icon_theme;
-      unowned List<string> icon_list;
+      List<string> icon_list;
 
       model = this._themed_viewer.model as ListStore;
       model.clear ();

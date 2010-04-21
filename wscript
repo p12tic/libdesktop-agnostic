@@ -92,7 +92,7 @@ def configure(conf):
     conf.check_tool('gnu_dirs')
     conf.check_tool('compiler_cc misc vala python')
 
-    MIN_VALA_VERSION = (0, 7, 10)
+    MIN_VALA_VERSION = (0, 8, 1)
 
     conf.check_cfg(package='gmodule-2.0', uselib_store='GMODULE',
                    atleast_version='2.6.0', mandatory=True,
@@ -135,7 +135,7 @@ def configure(conf):
                        uselib_store='GNOME_DESKTOP', mandatory=True,
                        args='--cflags --libs')
     # make sure we have the proper Vala version
-    if conf.env['VALAC_VERSION'] != MIN_VALA_VERSION and \
+    if conf.env['VALAC_VERSION'] < MIN_VALA_VERSION and \
         not os.path.isdir(os.path.join(conf.curdir, GEN_SRC_DIR)):
         conf.fatal('''\
 Your Vala compiler version %s is too old. The project requires

@@ -211,7 +211,7 @@ namespace DesktopAgnostic.VFS
       this.monitor = GLib.VolumeMonitor.get ();
       this._volumes = new HashTable<GLib.Volume,VFS.Volume> (direct_hash,
                                                              direct_equal);
-      unowned List<GLib.Volume> vols = this.monitor.get_volumes ();
+      List<GLib.Volume> vols = this.monitor.get_volumes ();
       foreach (unowned GLib.Volume gvol in vols)
       {
         VFS.Volume vol = this.create_volume (gvol);

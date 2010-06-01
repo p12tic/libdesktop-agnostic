@@ -46,9 +46,13 @@ _wrap_desktop_agnostic_u_i_color_button_with_color (PyObject *self,
                                                     PyGObject *color)
 {
     DesktopAgnosticUIColorButton *ret;
+    PyObject *py_ret;
 
     ret = desktop_agnostic_ui_color_button_new_with_color (DESKTOP_AGNOSTIC_COLOR(color->obj));
 
     /* pygobject_new handles NULL checking */
-    return pygobject_new((GObject *)ret);
+    py_ret = pygobject_new ((GObject *)ret);
+    if (ret != NULL)
+        g_object_unref (ret);
+    return py_ret;
 }

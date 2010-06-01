@@ -117,6 +117,7 @@ _wrap_desktop_agnostic_v_f_s_file_for_path (PyObject *self, PyObject *arg)
 {
   char *path;
   DesktopAgnosticVFSFile *ret;
+  PyObject *py_ret;
   GError *error = NULL;
 
   if (!PyString_Check (arg))
@@ -136,16 +137,20 @@ _wrap_desktop_agnostic_v_f_s_file_for_path (PyObject *self, PyObject *arg)
   }
 
   /* pygobject_new handles NULL checking */
-  return pygobject_new ((GObject *)ret);
+  py_ret = pygobject_new ((GObject *)ret);
+  if (ret != NULL)
+      g_object_unref (ret);
+  return py_ret;
 }
 %%
 define DesktopAgnosticVFSFile.for_uri onearg staticmethod
 static PyObject *
 _wrap_desktop_agnostic_v_f_s_file_for_uri (PyObject *self, PyObject *arg)
 {
-    char *uri;
-    DesktopAgnosticVFSFile *ret;
-    GError *error = NULL;
+  char *uri;
+  DesktopAgnosticVFSFile *ret;
+  PyObject *py_ret;
+  GError *error = NULL;
 
   if (!PyString_Check (arg))
   {
@@ -164,7 +169,10 @@ _wrap_desktop_agnostic_v_f_s_file_for_uri (PyObject *self, PyObject *arg)
   }
 
   /* pygobject_new handles NULL checking */
-  return pygobject_new ((GObject *)ret);
+  py_ret = pygobject_new ((GObject *)ret);
+  if (ret != NULL)
+      g_object_unref (ret);
+  return py_ret;
 }
 %%
 override desktop_agnostic_vfs_file_enumerate_children noargs

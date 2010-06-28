@@ -122,7 +122,7 @@ namespace DesktopAgnostic.Config
 }
 [ModuleInit]
 public Type
-register_plugin ()
+register_plugin (GLib.TypeModule module)
 {
   Value.register_transform_func (typeof (DesktopAgnostic.Color),
                                  typeof (string),

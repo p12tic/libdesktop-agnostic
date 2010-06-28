@@ -307,7 +307,7 @@ namespace DesktopAgnostic.FDO
 
 [ModuleInit]
 public Type
-register_plugin ()
+register_plugin (GLib.TypeModule module)
 {
   return typeof (DesktopAgnostic.FDO.DesktopEntryGNOME);
 }

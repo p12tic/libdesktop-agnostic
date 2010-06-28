@@ -770,7 +770,7 @@ namespace DesktopAgnostic.Config
 }
 [ModuleInit]
 public Type
-register_plugin ()
+register_plugin (GLib.TypeModule module)
 {
   return typeof (DesktopAgnostic.Config.GKeyFile);
 }

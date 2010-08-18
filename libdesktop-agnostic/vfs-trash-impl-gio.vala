@@ -77,7 +77,7 @@ namespace DesktopAgnostic.VFS
 
       try
       {
-        file_info = dir.query_info_finish (res);
+        file_info = dir.query_info_async.end (res);
         this._file_count = file_info.get_attribute_uint32 (FILE_ATTRIBUTE_TRASH_ITEM_COUNT);
         this.file_count_changed ();
       }

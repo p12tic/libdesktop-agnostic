@@ -121,7 +121,7 @@ namespace DesktopAgnostic.VFS
       bool result = false;
       try
       {
-        result = this.vol.mount_finish (this.async_result);
+        result = this.vol.mount.end (this.async_result);
       }
       catch (GLib.Error err)
       {
@@ -156,7 +156,7 @@ namespace DesktopAgnostic.VFS
       bool result = false;
       try
       {
-        result = this.vol.get_mount ().unmount_finish (this.async_result);
+        result = this.vol.get_mount ().unmount.end (this.async_result);
       }
       catch (GLib.Error err)
       {
@@ -192,7 +192,7 @@ namespace DesktopAgnostic.VFS
       bool result = false;
       try
       {
-        result = this.vol.eject_finish (this.async_result);
+        result = this.vol.eject.end (this.async_result);
       }
       catch (GLib.Error err)
       {

@@ -89,9 +89,8 @@ namespace DesktopAgnostic.VFS
     }
   }
 }
-[ModuleInit]
 public Type
-register_plugin (GLib.TypeModule module)
+register_plugin ()
 {
   return typeof (DesktopAgnostic.VFS.GIOImplementation);
 }

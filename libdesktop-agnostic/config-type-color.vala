@@ -120,9 +120,8 @@ namespace DesktopAgnostic.Config
     dest_value = ct.deserialize ((string)src_value);
   }
 }
-[ModuleInit]
 public Type
-register_plugin (GLib.TypeModule module)
+register_plugin ()
 {
   Value.register_transform_func (typeof (DesktopAgnostic.Color),
                                  typeof (string),

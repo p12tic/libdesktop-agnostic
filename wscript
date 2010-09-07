@@ -70,6 +70,8 @@ def set_options(opt):
                    dest='profiling', default=False,
                    help='Enables the library to be built so that it is '
                         'instrumented to measure performance.')
+    opt.add_option('--disable-gi', action='store_true',
+                   dest='no_gi', default=False)
 
 
 def configure(conf):
@@ -88,6 +90,7 @@ def configure(conf):
     conf.env['DEBUG'] = Options.options.debug
     conf.env['EXTRA_WARNINGS'] = Options.options.extra_warnings
     conf.env['PROFILING'] = Options.options.profiling
+    conf.env['INTROSPECTION'] = not Options.options.no_gi
     conf.env['VNUM'] = str(VNUM)
 
     conf.check_tool('gnu_dirs')

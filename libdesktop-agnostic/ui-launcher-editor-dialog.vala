@@ -70,20 +70,9 @@ namespace DesktopAgnostic.UI
 
     public LauncherEditorDialog (VFS.File file, VFS.File? output, bool standalone)
     {
-      WindowType type;
-
-      if (standalone)
-      {
-        type = WindowType.TOPLEVEL;
-      }
-      else
-      {
-        type = WindowType.POPUP;
-      }
-      this.type = type;
+      GLib.Object (type: standalone ? WindowType.TOPLEVEL : WindowType.POPUP,
+                   file: file, output: output);
       this._standalone = standalone;
-      this.file = file;
-      this.output = output;
     }
 
     private override void

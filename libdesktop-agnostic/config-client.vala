@@ -101,13 +101,12 @@ namespace DesktopAgnostic.Config
     // constructors
     public Client (string schema_filename)
     {
-      this.schema_filename = schema_filename;
+      GLib.Object (schema_filename: schema_filename);
     }
     public Client.for_instance (string schema_filename,
                                 string instance_id) throws GLib.Error
     {
-      this.schema_filename = schema_filename;
-      this.instance_id = instance_id;
+      GLib.Object (schema_filename: schema_filename, instance_id: instance_id);
     }
     /**
      * Auto-determines whether an instance config object should be created.

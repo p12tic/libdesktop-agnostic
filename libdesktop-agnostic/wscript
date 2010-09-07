@@ -34,6 +34,10 @@ deps = {
         }
     },
     'fdo': {
+        'gio': {
+            'uselib': 'GIO_UNIX',
+            'packages': 'gio-unix-2.0',
+        },
         'gnome': {
             'uselib': 'GNOME_DESKTOP',
             'packages': 'gnome-desktop-2.0',

@@ -134,6 +134,10 @@ def configure(conf):
         conf.check_cfg(package='gnome-vfs-2.0', uselib_store='GNOME_VFS',
                        atleast_version='2.6.0', mandatory=True,
                        args='--cflags --libs')
+    if 'gio' in conf.env['BACKENDS_DE']:
+        conf.check_cfg(package='gio-unix-2.0', uselib_store='GIO_UNIX',
+                       atleast_version='2.18.0', mandatory=True,
+                       args='--cflags --libs')
     if 'gnome' in conf.env['BACKENDS_DE']:
         conf.check_cfg(package='gnome-desktop-2.0',
                        uselib_store='GNOME_DESKTOP', mandatory=True,

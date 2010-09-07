@@ -531,6 +531,59 @@ namespace DesktopAgnostic.FDO
         throw new DesktopEntryError.NOT_LAUNCHABLE ("Could not parse Exec key.");
       }
 
+      if (this._keyfile.has_key (GROUP, "Terminal") &&
+          this.get_boolean ("Terminal"))
+      {
+        string[] term_argv = new string[argv.length + 2];
+
+        // based on the code for GDesktopAppInfo
+        string? check = null;
+        check = Environment.find_program_in_path ("gnome-terminal");
+        if (check != null)
+        {
+          term_argv[0] = check;
+          term_argv[1] = "-x";
+        }
+        else
+        {
+          if (check == null)
+          {
+            check = Environment.find_program_in_path ("nxterm");
+          }
+          if (check == null)
+          {
+            check = Environment.find_program_in_path ("color-xterm");
+          }
+          if (check == null)
+          {
+            check = Environment.find_program_in_path ("rxvt");
+          }
+          if (check == null)
+          {
+            check = Environment.find_program_in_path ("xterm");
+          }
+          if (check == null)
+          {
+            check = Environment.find_program_in_path ("dtterm");
+          }
+          if (check == null)
+          {
+            check = "xterm";
+            warning ("couldn't find a terminal, falling back to xterm");
+          }
+
+          term_argv[0] = check;
+          term_argv[1] = "-e";
+        }
+
+        for (int i = 0; i < argv.length; i++)
+        {
+          term_argv[i+2] = argv[i];
+        }
+
+        argv = (owned) term_argv;
+      }
+
       Process.spawn_async_with_pipes (working_dir, argv, null, flags, null, out pid);
       return pid;
     }

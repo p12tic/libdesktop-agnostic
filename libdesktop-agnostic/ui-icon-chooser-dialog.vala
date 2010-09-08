@@ -35,13 +35,40 @@ namespace DesktopAgnostic.UI
     FILE
   }
 
+  private class LazyPixbufRenderer : CellRendererPixbuf
+  {
+    public bool item_ready { get; set; default = false; }
+
+    public signal void prepare_pixbuf (TreePath path);
+
+    public override void render (Gdk.Window window,
+                                 Gtk.Widget widget,
+                                 Gdk.Rectangle background_area,
+                                 Gdk.Rectangle cell_area,
+                                 Gdk.Rectangle expose_area,
+                                 Gtk.CellRendererState flags)
+    {
+      if (!item_ready)
+      {
+        int x, y;
+        var view = widget as Gtk.IconView;
+        x = cell_area.x + cell_area.width / 2;
+        y = cell_area.y + cell_area.height / 2;
+        var path = view.get_path_at_pos (x, y);
+        prepare_pixbuf (path);
+      }
+      base.render (window, widget,
+                   background_area, cell_area, expose_area, flags);
+    }
+  }
+
   public class IconChooserDialog : Dialog
   {
     private RadioButton _file;
     private RadioButton _themed;
     private FileChooserButton _directory;
     private ComboBox _themed_context;
-    private IconView _file_viewer;
+    private IconView? _file_viewer = null;
     private IconView? _themed_viewer = null;
     private unowned IconView _viewer;
     public string selected_icon { get; private set; default = null; }
@@ -53,16 +80,26 @@ namespace DesktopAgnostic.UI
       PIXBUF,
       NAME,
       DATA,
+      PIXBUF_READY,
       COUNT
     }
 
     public signal void icon_selected ();
+
+    private static Gdk.Pixbuf NO_ICON;
+
+    static construct
+    {
+      var flags = IconLookupFlags.FORCE_SIZE | IconLookupFlags.GENERIC_FALLBACK;
+      NO_ICON = IconTheme.get_default ().load_icon ("gtk-file", 48, flags);
+    }
 
     construct
     {
       this.response.connect (this.on_response);
       this.title = _ ("Select Icon");
       this.icon_name = STOCK_FIND;
+      this.set_default_size (375, 375);
       this.create_ui ();
     }
 
@@ -72,27 +109,17 @@ namespace DesktopAgnostic.UI
       HBox choices;
 
       choices = new HBox (false, 5);
-      this._file = new RadioButton.with_mnemonic (null, _ ("From File"));
-      choices.add (this._file);
-      this._themed = new RadioButton.with_mnemonic_from_widget (this._file,
-                                                                _ ("From Theme"));
-      this._themed.active = false;
-      this._themed.toggled.connect (this.on_icon_type_toggled);
+      this._themed = new RadioButton.with_mnemonic (null, _ ("From Theme"));
       choices.add (this._themed);
+      this._file = new RadioButton.with_mnemonic_from_widget (this._themed,
+                                                              _ ("From File"));
+      this._themed.active = true;
+      this._themed.toggled.connect (this.on_icon_type_toggled);
+      choices.add (this._file);
       this.vbox.pack_start (choices, false, false, 5);
       choices.show_all ();
 
-      this._directory = new FileChooserButton (_ ("Select icon folder"),
-                                               FileChooserAction.SELECT_FOLDER);
-      this._directory.current_folder_changed.connect (this.on_folder_changed);
-      this.vbox.pack_start (this._directory, false, false, 5);
-      this._directory.show ();
-
-      this.add_icon_viewer (ref this._file_viewer, false);
-      this._file_viewer.parent.show_all ();
-      this._viewer = this._file_viewer;
-
-      this.on_folder_changed (this._directory);
+      this.on_icon_type_toggled ();
 
       this.add_buttons (STOCK_CANCEL, ResponseType.CANCEL,
                         STOCK_OK, ResponseType.OK);
@@ -115,30 +142,64 @@ namespace DesktopAgnostic.UI
     create_icon_viewer (bool themed)
     {
       IconView viewer;
-      CellRendererPixbuf cell_pixbuf;
+      LazyPixbufRenderer cell_pixbuf;
       CellRendererText cell_text;
 
       viewer = new IconView.with_model (this.create_model ());
-      viewer.item_width = 72;
-      viewer.columns = 4;
-      viewer.column_spacing = 5;
-      viewer.set_size_request (325, 300);
-      viewer.tooltip_column = Column.DATA;
-      cell_pixbuf = new CellRendererPixbuf ();
+      // without this the IconView is not shrinkable after expanding it
+      viewer.set_size_request (108, -1);
+      viewer.set_item_width (108);
+      viewer.set_column_spacing (5);
+      viewer.set_tooltip_column (Column.DATA);
+
+      cell_pixbuf = new LazyPixbufRenderer ();
       cell_pixbuf.xalign = 0.5f;
       cell_pixbuf.yalign = 0.5f;
       cell_pixbuf.width = 48;
+
       viewer.pack_start (cell_pixbuf, false);
       viewer.add_attribute (cell_pixbuf, "pixbuf", Column.PIXBUF);
+      viewer.add_attribute (cell_pixbuf, "item-ready", Column.PIXBUF_READY);
+
+      cell_pixbuf.prepare_pixbuf.connect ((p) =>
+      {
+        TreeIter iter;
+        Value val;
+        var store = this._viewer.model as ListStore;
+        store.get_iter (out iter, p);
+        store.get_value (iter, Column.DATA, out val);
+
+        string icon_name = val.get_string ();
+        IconTheme icon_theme = IconTheme.get_default ();
+        var info = icon_theme.lookup_icon (icon_name, 48, 0);
+        string? name = info.get_display_name ();
+        if (name == null)
+        {
+          name = icon_name.replace ("-", " ");
+        }
+        try
+        {
+          var pixbuf = info.load_icon ();
+          store.set (iter, Column.NAME, name, Column.PIXBUF, pixbuf,
+                     Column.PIXBUF_READY, true, -1);
+        }
+        catch (Error err)
+        {
+          warning ("Could not load %s: %s", icon_name, err.message);
+          store.set (iter, Column.NAME, name, Column.PIXBUF_READY, true, -1);
+        }
+      });
+
       cell_text = new CellRendererText ();
       cell_text.xalign = 0.5f;
-      cell_text.yalign = 0;
+      cell_text.yalign = 0.0f;
       cell_text.wrap_mode = Pango.WrapMode.WORD;
-      cell_text.wrap_width = 72;
-      cell_text.width = 72;
-      cell_text.ellipsize = Pango.EllipsizeMode.START;
+      int wrap_width = viewer.item_width - viewer.item_padding * 2;
+      cell_text.wrap_width = wrap_width;
+      cell_text.width = wrap_width;
+      cell_text.ellipsize = Pango.EllipsizeMode.MIDDLE;
       viewer.pack_start (cell_text, true);
-      viewer.add_attribute (cell_text, "text", 1);
+      viewer.add_attribute (cell_text, "text", Column.NAME);
       viewer.selection_mode = SelectionMode.SINGLE;
 
       return viewer;
@@ -148,12 +209,15 @@ namespace DesktopAgnostic.UI
     create_model ()
     {
       // icon, name, data
-      return new ListStore (Column.COUNT, typeof (Gdk.Pixbuf), typeof (string),
-                            typeof (string));
+      return new ListStore (Column.COUNT,
+                            typeof (Gdk.Pixbuf),
+                            typeof (string),
+                            typeof (string),
+                            typeof (bool));
     }
 
     private void
-    on_icon_type_toggled (ToggleButton themed)
+    on_icon_type_toggled ()
     {
       if (this._themed.active)
       {
@@ -162,6 +226,7 @@ namespace DesktopAgnostic.UI
           unowned IconTheme icon_theme;
           List<string> context_list;
 
+          // "From Theme" widgets -> context combobox + icon view
           this._themed_context = new ComboBox.text ();
           this._themed_context.changed.connect (this.on_icon_context_changed);
           this.vbox.pack_start (this._themed_context, false, false, 5);
@@ -171,21 +236,52 @@ namespace DesktopAgnostic.UI
           icon_theme = IconTheme.get_default ();
           context_list = icon_theme.list_contexts ();
           context_list.sort ((CompareFunc)strcmp);
+
+          int active_index = 0;
+          int cur_index = 0;
           foreach (unowned string context in context_list)
           {
             this._themed_context.append_text (context);
+            // try to make "Applications" context active by default
+            if (context == "Applications")
+            {
+              active_index = cur_index;
+            }
+            cur_index++;
           }
+          this._themed_context.set_active (active_index);
         }
-        this._file_viewer.parent.hide ();
-        this._directory.hide ();
+
+        if (this._file_viewer != null)
+        {
+          this._file_viewer.parent.hide ();
+          this._directory.hide ();
+        }
         this._themed_viewer.parent.show ();
         this._themed_context.show ();
         this._viewer = this._themed_viewer;
       }
       else
       {
-        this._themed_viewer.parent.hide ();
-        this._themed_context.hide ();
+        if (this._file_viewer == null)
+        {
+          // "From File" widgets -> directory chooser + icon view
+          this._directory = new FileChooserButton (_ ("Select icon folder"),
+                                                   FileChooserAction.SELECT_FOLDER);
+          this._directory.current_folder_changed.connect (this.on_folder_changed);
+          this.vbox.pack_start (this._directory, false, false, 5);
+          this._directory.show ();
+
+          this.add_icon_viewer (ref this._file_viewer, false);
+
+          this.on_folder_changed (this._directory);
+        }
+
+        if (this._themed_viewer != null)
+        {
+          this._themed_viewer.parent.hide ();
+          this._themed_context.hide ();
+        }
         this._file_viewer.parent.show ();
         this._directory.show ();
         this._viewer = this._file_viewer;
@@ -225,7 +321,9 @@ namespace DesktopAgnostic.UI
             pixbuf = new Gdk.Pixbuf.from_file_at_scale (path, 48, -1, true);
 
             model.append (out iter);
-            model.set (iter, Column.PIXBUF, pixbuf,
+            model.set (iter,
+                       Column.PIXBUF, pixbuf,
+                       Column.PIXBUF_READY, true,
                        Column.NAME, Path.get_basename (path),
                        Column.DATA, path);
           }
@@ -256,29 +354,14 @@ namespace DesktopAgnostic.UI
       icon_list.sort ((CompareFunc)strcmp);
       foreach (unowned string icon_name in icon_list)
       {
-        try
-        {
-          IconInfo info;
-          Gdk.Pixbuf pixbuf;
-          string? name;
-          TreeIter iter;
+        TreeIter iter;
 
-          info = icon_theme.lookup_icon (icon_name, 48, 0);
-          pixbuf = info.load_icon ();
-          name = info.get_display_name ();
-          if (name == null)
-          {
-            name = icon_name.replace ("-", " ");
-          }
-          model.append (out iter);
-          model.set (iter, Column.PIXBUF, pixbuf,
-                     Column.NAME, name,
-                     Column.DATA, icon_name);
-        }
-        catch (Error err)
-        {
-          warning ("Could not load %s: %s", icon_name, err.message);
-        }
+        model.append (out iter);
+        model.set (iter,
+                   Column.PIXBUF, NO_ICON,
+                   Column.PIXBUF_READY, false,
+                   Column.NAME, icon_name,
+                   Column.DATA, icon_name);
       }
     }
 
@@ -297,7 +380,7 @@ namespace DesktopAgnostic.UI
 
           msg = _ ("Please select an icon.");
           dialog = new MessageDialog (this, DialogFlags.MODAL, MessageType.ERROR,
-                                      ButtonsType.OK, msg);
+                                      ButtonsType.OK, "%s", msg);
           dialog.title = _ ("Error");
           dialog.run ();
           dialog.destroy ();

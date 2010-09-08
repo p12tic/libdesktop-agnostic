@@ -19,7 +19,7 @@ The following compile warnings are known (line numbers may not be accurate):
     config-bridge.vala:164: warning: pointer targets in passing argument 2 of ‘g_object_class_list_properties’ differ in signedness
     desktop-entry-impl-glib.c:306: warning: pointer targets in passing argument 4 of ‘g_key_file_get_string_list’ differ in signedness
 
-.. [1] See `GNOME Bug #582092`_.
+.. [1] See `GNOME Bug #582092`_ (fixed in Vala 0.9.1).
 .. [2] See `GNOME Bug #529866`_ (fixed in Vala 0.7.6).
 .. [3] See `GNOME Bug #592108`_ (fixed in Vala 0.7.6).
 

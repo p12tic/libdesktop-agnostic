@@ -199,6 +199,14 @@ namespace DesktopAgnostic.UI
       advanced.add (advanced_vbox);
       table.attach_fill (advanced, 0, 3, 3, 4);
 
+      List<unowned Widget> focus_chain_list = new List<unowned Widget> ();
+      focus_chain_list.append (this._name);
+      focus_chain_list.append (this._desc);
+      focus_chain_list.append (exec_hbox);
+      focus_chain_list.append (this._icon);
+      focus_chain_list.append (advanced);
+      table.set_focus_chain (focus_chain_list);
+
       this.vbox.add (table);
     }
 

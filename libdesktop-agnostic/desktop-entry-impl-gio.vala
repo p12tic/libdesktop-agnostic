@@ -322,24 +322,44 @@ namespace DesktopAgnostic.FDO
     launch (DesktopEntryLaunchFlags flags,
             SList<string>? documents) throws GLib.Error
     {
-      DesktopAppInfo info;
-      if (this._file != null)
-      {
-        info = new DesktopAppInfo.from_filename (this._file.path);
-      }
-      else
-      {
-        info = new DesktopAppInfo.from_keyfile (this._keyfile);
-      }
-
       List<unowned string> uris = new List<unowned string> ();
       foreach (unowned string s in documents)
       {
         uris.append (s);
       }
 
-      //var context = new AppLaunchContext ();
-      info.launch_uris (uris, null);
+      // interesting that GIO 2.26 supports only APPLICATION
+      switch (this.entry_type)
+      {
+        case DesktopEntryType.APPLICATION:
+          AppInfo info;
+          if (this._file != null)
+          {
+            info = new DesktopAppInfo.from_filename (this._file.path);
+          }
+          else
+          {
+            info = new DesktopAppInfo.from_keyfile (this._keyfile);
+          }
+
+          //var context = new AppLaunchContext ();
+          info.launch_uris (uris, null);
+
+          break;
+        case DesktopEntryType.LINK:
+          if (this._keyfile.has_key (GROUP, "URL"))
+          {
+            string uri = this._keyfile.get_string (GROUP, "URL");
+            AppInfo.launch_default_for_uri (uri, null);
+          }
+          else
+          {
+            throw new DesktopEntryError.NOT_LAUNCHABLE ("Invalid desktop entry.");
+          }
+          break;
+        default:
+          throw new DesktopEntryError.NOT_LAUNCHABLE ("Unknown desktop entry type.");
+      }
 
       return (Pid) 0;
     }

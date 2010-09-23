@@ -63,7 +63,7 @@ namespace DesktopAgnostic.VFS
     }
     public VolumeThunarVFS.for_implementation (ThunarVfs.Volume impl)
     {
-      this.implementation = impl;
+      GLib.Object (implementation: impl);
     }
     public bool
     is_mounted ()

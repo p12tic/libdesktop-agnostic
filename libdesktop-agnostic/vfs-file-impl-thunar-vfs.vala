@@ -255,13 +255,13 @@ namespace DesktopAgnostic.VFS
     }
 
     public override string
-    get_mime_type ()
+    get_mime_type () throws Error
     {
       return this._info.mime_info.get_name ();
     }
 
     public override string[]
-    get_icon_names ()
+    get_icon_names () throws Error
     {
       string[] names = null;
 

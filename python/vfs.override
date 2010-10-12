@@ -217,6 +217,34 @@ _wrap_desktop_agnostic_vfs_file_load_contents (PyGObject *self)
   return PyString_FromStringAndSize (data, length);
 }
 %%
+override desktop_agnostic_vfs_file_get_icon_names noargs
+static PyObject *
+_wrap_desktop_agnostic_vfs_file_get_icon_names (PyGObject *self)
+{
+  int i, res_length;
+  char **result;
+  PyObject *py_result;
+  GError *error = NULL;
+
+  result = desktop_agnostic_vfs_file_get_icon_names (DESKTOP_AGNOSTIC_VFS_FILE (self->obj),
+                                                     &res_length, &error);
+
+  if (pyg_error_check (&error))
+  {
+    return NULL;
+  }
+
+  py_result = PyList_New (res_length);
+  for (i=0; i<res_length; i++)
+  {
+    PyList_SetItem (py_result, i, PyString_FromString (result[i]));
+    g_free (result[i]);
+  }
+  if (result != NULL) g_free (result);
+
+  return py_result;
+}
+%%
 define DesktopAgnosticVFSTrash.get_default noargs staticmethod
 static PyObject *
 _wrap_desktop_agnostic_v_f_s_trash_get_default (PyObject *self)

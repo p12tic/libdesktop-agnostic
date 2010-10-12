@@ -199,6 +199,30 @@
   )
 )
 
+(define-method is_native
+  (of-object "DesktopAgnosticVFSFile")
+  (c-name "desktop_agnostic_vfs_file_is_native")
+  (return-type "gboolean")
+)
+
+(define-method get_mime_type
+  (of-object "DesktopAgnosticVFSFile")
+  (c-name "desktop_agnostic_vfs_file_get_mime_type")
+  (return-type "char*")
+  (parameters
+    '("GError**" "error")
+  )
+)
+
+(define-method get_icon_names
+  (of-object "DesktopAgnosticVFSFile")
+  (c-name "desktop_agnostic_vfs_file_get_icon_names")
+  (return-type "GStrv")
+  (parameters
+    '("GError**" "error")
+  )
+)
+
 (define-function file_new_for_path
   (c-name "desktop_agnostic_vfs_file_new_for_path")
   (return-type "DesktopAgnosticVFSFile*")

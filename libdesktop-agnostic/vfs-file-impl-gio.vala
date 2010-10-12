@@ -245,14 +245,14 @@ namespace DesktopAgnostic.VFS
       return this._file.is_native ();
     }
 
-    public override string get_mime_type ()
+    public override string get_mime_type () throws Error
     {
       var fi = this._file.query_info (FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
                                       0, null);
       return fi.get_content_type ();
     }
 
-    public override string[] get_icon_names ()
+    public override string[] get_icon_names () throws Error
     {
       var fi = this._file.query_info (FILE_ATTRIBUTE_STANDARD_ICON,
                                       0, null);

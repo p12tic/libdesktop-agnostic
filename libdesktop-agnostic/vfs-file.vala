@@ -201,13 +201,13 @@ namespace DesktopAgnostic.VFS
      * Gets the file's mime type. (might block)
      * @return String containing file's mime type.
      */
-    public abstract string get_mime_type ();
+    public abstract string get_mime_type () throws Error;
 
     /**
      * Gets list of possible icon names representing this file. (might block)
      * @return List of possible icon names.
      */
-    public abstract string[] get_icon_names ();
+    public abstract string[] get_icon_names () throws Error;
   }
 
   public File?

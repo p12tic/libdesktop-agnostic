@@ -190,6 +190,24 @@ namespace DesktopAgnostic.VFS
      * @return %TRUE on success, %FALSE on failure.
      */
     public abstract bool remove () throws Error;
+
+    /**
+     * Checks to see if a file is native to the platform.
+     * @return %TRUE if file is native, %FALSE otherwise.
+     */
+    public abstract bool is_native ();
+
+    /**
+     * Gets the file's mime type. (might block)
+     * @return String containing file's mime type.
+     */
+    public abstract string get_mime_type ();
+
+    /**
+     * Gets list of possible icon names representing this file. (might block)
+     * @return List of possible icon names.
+     */
+    public abstract string[] get_icon_names ();
   }
 
   public File?

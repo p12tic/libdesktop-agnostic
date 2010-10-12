@@ -247,6 +247,36 @@ namespace DesktopAgnostic.VFS
       }
       return (FileUtils.unlink (this.impl_path) == 0);
     }
+
+    public override bool
+    is_native ()
+    {
+      return this._uri.has_prefix ("file:");
+    }
+
+    public override string
+    get_mime_type ()
+    {
+      return this._info.mime_info.get_name ();
+    }
+
+    public override string[]
+    get_icon_names ()
+    {
+      string[] names = null;
+
+      string mime_type = get_mime_type ();
+      return_val_if_fail (mime_type != null, null);
+
+      names += mime_type.replace ("/", "-");
+      names += "gnome-mime-%s".printf (names[0]);
+      if (mime_type != "")
+      {
+        names += "%s-x-generic".printf (Regex.split_simple ("/.*", mime_type)[0]);
+      }
+
+      return names;
+    }
   }
 }
 

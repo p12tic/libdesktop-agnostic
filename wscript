@@ -15,7 +15,7 @@ import tempfile
 API_VERSION = '1.0'
 
 # the following two variables are used by the target "waf dist"
-VERSION = '0.3.90'
+VERSION = '0.3.91'
 VNUM = '0.4.0'
 
 CFG_BACKENDS = ','.join(['gconf', 'keyfile'])

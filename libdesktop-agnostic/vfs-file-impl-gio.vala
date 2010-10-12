@@ -239,6 +239,52 @@ namespace DesktopAgnostic.VFS
       }
       return this._file.delete (null);
     }
+
+    public override bool is_native ()
+    {
+      return this._file.is_native ();
+    }
+
+    public override string get_mime_type ()
+    {
+      var fi = this._file.query_info (FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
+                                      0, null);
+      return fi.get_content_type ();
+    }
+
+    public override string[] get_icon_names ()
+    {
+      var fi = this._file.query_info (FILE_ATTRIBUTE_STANDARD_ICON,
+                                      0, null);
+      GLib.Icon icon = fi.get_icon ();
+      if (icon != null)
+      {
+        if (icon is ThemedIcon)
+        {
+          // wow! Vala sucks!
+          Value v = Value (typeof (string[]));
+          icon.get_property ("names", ref v);
+          string[] names = (string[]) v;
+          
+          // this should be fixed in vala 0.12
+          //names = (icon as ThemedIcon).get_names ();
+
+          return names;
+        }
+
+        if (icon is FileIcon)
+        {
+          string path = (icon as FileIcon).get_file ().get_path ();
+          string[] result = { path };
+
+          return result;
+        }
+      }
+
+      // hmm... what now?
+      string[] unknown = {};
+      return unknown;
+    }
   }
 }
 

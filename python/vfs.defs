@@ -223,6 +223,12 @@
   )
 )
 
+(define-method get_thumbnail_path
+  (of-object "DesktopAgnosticVFSFile")
+  (c-name "desktop_agnostic_vfs_file_get_thumbnail_path")
+  (return-type "char*")
+)
+
 (define-function file_new_for_path
   (c-name "desktop_agnostic_vfs_file_new_for_path")
   (return-type "DesktopAgnosticVFSFile*")
@@ -238,6 +244,14 @@
   (parameters
     '("const-char*" "uri")
     '("GError**" "error")
+  )
+)
+
+(define-function get_icon_names_for_mime_type
+  (c-name "desktop_agnostic_vfs_get_icon_names_for_mime_type")
+  (return-type "char*")
+  (parameters
+    '("const-char*" "mime_type")
   )
 )
 

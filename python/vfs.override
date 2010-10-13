@@ -175,6 +175,34 @@ _wrap_desktop_agnostic_v_f_s_file_for_uri (PyObject *self, PyObject *arg)
   return py_ret;
 }
 %%
+override desktop_agnostic_vfs_get_icon_names_for_mime_type kwargs
+static PyObject *
+_wrap_desktop_agnostic_vfs_get_icon_names_for_mime_type(PyObject *self, PyObject *args, PyObject *kwargs)
+{
+    static char *kwlist[] = { "mime_type", NULL };
+    char *mime_type;
+    gchar **ret;
+    int ret_length = 0;
+    int i;
+    PyObject *py_ret;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs,"s:get_icon_names_for_mime_type", kwlist, &mime_type))
+        return NULL;
+
+    ret = desktop_agnostic_vfs_get_icon_names_for_mime_type(mime_type, &ret_length);
+
+    py_ret = PyList_New (ret_length);
+    if (ret) {
+        for (i=0; i<ret_length; i++) {
+            PyList_SetItem (py_ret, i, PyString_FromString (ret[i]));
+            g_free (ret[i]);
+        }
+        g_free(ret);
+    }
+    return py_ret;
+}
+
+%%
 override desktop_agnostic_vfs_file_enumerate_children noargs
 static PyObject *
 _wrap_desktop_agnostic_vfs_file_enumerate_children (PyGObject *self)

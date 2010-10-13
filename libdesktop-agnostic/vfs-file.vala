@@ -208,6 +208,16 @@ namespace DesktopAgnostic.VFS
      * @return List of possible icon names.
      */
     public abstract string[] get_icon_names () throws Error;
+
+    /**
+     * Get path to thumbnail representing this file. (might block)
+     * @return Path to file with thumbnail or %null if thumbnail cannot be
+     * found or backend doesn't support it.
+     */
+    public virtual string? get_thumbnail_path ()
+    {
+      return null;
+    }
   }
 
   public File?
@@ -236,6 +246,20 @@ namespace DesktopAgnostic.VFS
     {
       return (File)Object.new (vfs.file_type, "uri", uri);
     }
+  }
+
+  public static string[]
+  get_icon_names_for_mime_type (string mime_type)
+  {
+    string[] names = null;
+
+    return_val_if_fail (mime_type != "", null);
+
+    names += mime_type.replace ("/", "-");
+    names += "gnome-mime-%s".printf (names[0]);
+    names += "%s-x-generic".printf (Regex.split_simple ("/.*", mime_type)[0]);
+
+    return names;
   }
 }
 

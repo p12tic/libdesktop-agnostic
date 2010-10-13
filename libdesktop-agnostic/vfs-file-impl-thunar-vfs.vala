@@ -263,19 +263,7 @@ namespace DesktopAgnostic.VFS
     public override string[]
     get_icon_names () throws Error
     {
-      string[] names = null;
-
-      string mime_type = get_mime_type ();
-      return_val_if_fail (mime_type != null, null);
-
-      names += mime_type.replace ("/", "-");
-      names += "gnome-mime-%s".printf (names[0]);
-      if (mime_type != "")
-      {
-        names += "%s-x-generic".printf (Regex.split_simple ("/.*", mime_type)[0]);
-      }
-
-      return names;
+      return get_icon_names_for_mime_type (this.get_mime_type ());
     }
   }
 }

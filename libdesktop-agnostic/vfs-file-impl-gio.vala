@@ -285,6 +285,25 @@ namespace DesktopAgnostic.VFS
       string[] unknown = {};
       return unknown;
     }
+
+    public override string?
+    get_thumbnail_path ()
+    {
+      try
+      {
+        var fi = this._file.query_info (FILE_ATTRIBUTE_THUMBNAIL_PATH,
+                                        0, null);
+        if (fi.has_attribute (FILE_ATTRIBUTE_THUMBNAIL_PATH))
+        {
+          return fi.get_attribute_byte_string (FILE_ATTRIBUTE_THUMBNAIL_PATH);
+        }
+      }
+      catch (GLib.Error err)
+      {
+        warning ("%s", err.message);
+      }
+      return null;
+    }
   }
 }
 

@@ -87,7 +87,7 @@ namespace DesktopAgnostic.UI
                    entry_type_sensitive: entry_type_sensitive);
     }
 
-    private override void
+    protected override void
     constructed ()
     {
       this.title = _ ("Desktop Entry Editor");

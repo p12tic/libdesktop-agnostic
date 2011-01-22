@@ -38,7 +38,7 @@ namespace DesktopAgnostic.UI
       this.on_color_set ();
     }
 
-    private override void
+    protected override void
     constructed ()
     {
       this.use_alpha = true;

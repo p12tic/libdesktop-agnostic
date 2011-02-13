@@ -697,6 +697,10 @@ namespace DesktopAgnostic.Config
 
       if (value.n_values == 0)
       {
+        if (!this._data.has_group (group))
+        {
+          return;
+        }
         if (this._data.has_key (group, key))
         {
           // set_*_list() doesn't like NULL lists, so just unset the key.
@@ -764,7 +768,6 @@ namespace DesktopAgnostic.Config
     }
   }
 }
-[ModuleInit]
 public Type
 register_plugin ()
 {

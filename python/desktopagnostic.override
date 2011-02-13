@@ -98,19 +98,23 @@ static PyObject *
 _wrap_desktop_agnostic_color_from_values (PyObject *self, PyObject *args,
                                           PyObject *kwargs)
 {
-    static char *kwlist[] = { "red", "green", "blue", "alpha", NULL };
-    int red, green, blue, alpha;
-    DesktopAgnosticColor *ret;
+  static char *kwlist[] = { "red", "green", "blue", "alpha", NULL };
+  int red, green, blue, alpha;
+  DesktopAgnosticColor *ret;
+  PyObject *py_ret;
 
-    if (!PyArg_ParseTupleAndKeywords (args, kwargs,
-                                      "iiii:color_new_from_values", kwlist,
-                                      &red, &green, &blue, &alpha))
-        return NULL;
+  if (!PyArg_ParseTupleAndKeywords (args, kwargs,
+                                    "iiii:color_new_from_values", kwlist,
+                                    &red, &green, &blue, &alpha))
+    return NULL;
 
-    ret = desktop_agnostic_color_new_from_values (red, green, blue, alpha);
+  ret = desktop_agnostic_color_new_from_values (red, green, blue, alpha);
 
-    /* pygobject_new handles NULL checking */
-    return pygobject_new ((GObject *)ret);
+  /* pygobject_new handles NULL checking */
+  py_ret = pygobject_new ((GObject *)ret);
+  if (ret != NULL)
+      g_object_unref (ret);
+  return py_ret;
 }
 %%
 define DesktopAgnosticColor.from_string kwargs staticmethod
@@ -122,6 +126,7 @@ _wrap_desktop_agnostic_color_from_string (PyObject *self, PyObject *args,
   char *spec;
   GError *error = NULL;
   DesktopAgnosticColor *ret;
+  PyObject *py_ret;
 
   if (!PyArg_ParseTupleAndKeywords (args, kwargs, "s:color_new_from_string",
                                     kwlist, &spec))
@@ -137,7 +142,10 @@ _wrap_desktop_agnostic_color_from_string (PyObject *self, PyObject *args,
   }
 
   /* pygobject_new handles NULL checking */
-  return pygobject_new ((GObject *)ret);
+  py_ret = pygobject_new ((GObject *)ret);
+  if (ret != NULL)
+    g_object_unref (ret);
+  return py_ret;
 }
 %%
 override-slot DesktopAgnosticColor.tp_str

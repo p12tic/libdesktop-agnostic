@@ -247,6 +247,24 @@ namespace DesktopAgnostic.VFS
       }
       return (FileUtils.unlink (this.impl_path) == 0);
     }
+
+    public override bool
+    is_native ()
+    {
+      return this._uri.has_prefix ("file:");
+    }
+
+    public override string
+    get_mime_type () throws Error
+    {
+      return this._info.mime_info.get_name ();
+    }
+
+    public override string[]
+    get_icon_names () throws Error
+    {
+      return get_icon_names_for_mime_type (this.get_mime_type ());
+    }
   }
 }
 

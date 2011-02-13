@@ -202,14 +202,13 @@ namespace DesktopAgnostic.Config
                                         string key, ParamSpec spec,
                                         NotifyFuncHandler func) throws GLib.Error
     {
-      unowned BindingNotifier notifier;
-      notifier = (BindingNotifier*) config.get_data ("lda-binding-notifier");
+      unowned BindingNotifier? notifier;
+      notifier = config.get_data ("lda-binding-notifier");
       if (notifier == null)
       {
         BindingNotifier new_notifier = new BindingNotifier (config);
         notifier = new_notifier;
-        config.set_data_full ("lda-binding-notifier", notifier.@ref (),
-                              Object.unref);
+        config.set_data ("lda-binding-notifier", notifier);
       }
 
       if (spec.value_type == typeof (bool) ||
@@ -353,8 +352,7 @@ namespace DesktopAgnostic.Config
       uint pos = -1;
       string binding_key;
 
-      unowned BindingListWrapper? obj_bindings = 
-        (BindingListWrapper*) obj.get_data ("lda-bindings");
+      unowned BindingListWrapper? obj_bindings = obj.get_data ("lda-bindings");
       binding_key = "%s/%s/%s".printf (config.instance_id, group, key);
       bindings_list = this.bindings.get_data (binding_key);
       bindings_to_remove = new SList<uint> ();

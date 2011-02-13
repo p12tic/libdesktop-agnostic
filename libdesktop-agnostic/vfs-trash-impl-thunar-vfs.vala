@@ -53,7 +53,7 @@ namespace DesktopAgnostic.VFS
     {
       Monitor monitor;
       this.trash = ThunarVfs.Path.get_for_trash ();
-      this.dbus = Bus.get (BusType.SESSION);
+      this.dbus = DBus.Bus.get (DBus.BusType.SESSION);
       this.xfce_trash =
         (Xfce.Trash)this.dbus.get_object ("org.xfce.Thunar",
                                           "/org/xfce/FileManager");

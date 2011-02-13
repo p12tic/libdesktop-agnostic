@@ -190,8 +190,7 @@ namespace DesktopAgnostic.VFS
       this.monitor = GnomeVFS.get_volume_monitor ();
       this._volumes = new HashTable<GnomeVFS.Drive,VFS.Volume> (direct_hash,
                                                                 direct_equal);
-      unowned List<GnomeVFS.Drive> drives =
-        this.monitor.get_connected_drives ();
+      List<GnomeVFS.Drive> drives = this.monitor.get_connected_drives ();
       foreach (unowned GnomeVFS.Drive drive in drives)
       {
         VFS.Volume vol = this.create_volume (drive);

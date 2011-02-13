@@ -1,7 +1,7 @@
 /*
  * Desktop Agnostic Library: Desktop Entry implementation using GLib.
  *
- * Copyright (C) 2009 Mark Lee <libdesktop-agnostic@lazymalevolence.com>
+ * Copyright (C) 2010 Michal Hruby <michal.mhr@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- * Author : Mark Lee <libdesktop-agnostic@lazymalevolence.com>
+ * Author : Michal Hruby <michal.mhr@gmail.com>
  */
 
 using DesktopAgnostic;
@@ -25,7 +25,7 @@ using DesktopAgnostic;
 namespace DesktopAgnostic.FDO
 {
   private const string GROUP = "Desktop Entry";
-  public class DesktopEntryGLib : DesktopEntry, Object
+  public class DesktopEntryGio : DesktopEntry, Object
   {
     private KeyFile _keyfile = new KeyFile ();
     private bool loaded = false;
@@ -315,335 +315,53 @@ namespace DesktopAgnostic.FDO
     }
 
     /**
-     * Ported from EggDesktopFile.
-     */
-    private string
-    get_quoted_word (string word, bool in_single_quotes, bool in_double_quotes)
-    {
-      string result = "";
-
-      if (!in_single_quotes && !in_double_quotes)
-      {
-        result += "'";
-      }
-      else if (!in_single_quotes && in_double_quotes)
-      {
-        result += "\"'";
-      }
-
-      if (word.contains ("'"))
-      {
-        for (string s = word; s != null && s.len () > 0; s = s.next_char ())
-        {
-          string chr = s.substring (0, 1);
-          if (chr == "'")
-          {
-            result += "'\\''";
-          }
-          else
-          {
-            result += chr;
-          }
-        }
-      }
-      else
-      {
-        result += word;
-      }
-
-      if (!in_single_quotes && !in_double_quotes)
-      {
-        result += "'";
-      }
-      else if (!in_single_quotes && in_double_quotes)
-      {
-        result += "'\"";
-      }
-
-      return result;
-    }
-
-    /**
-     * Ported from EggDesktopFile.
-     */
-    private string
-    do_percent_subst (string code, SList<string>? documents, bool in_single_quotes,
-                      bool in_double_quotes)
-    {
-      switch (code)
-      {
-        case "%":
-          return "%";
-        case "F":
-        case "U":
-          string result = "";
-          foreach (unowned string doc in documents)
-          {
-            result += " " + this.get_quoted_word (doc, in_single_quotes,
-                                                  in_double_quotes);
-          }
-          return result;
-        case "f":
-        case "u":
-          if (documents == null)
-          {
-            return "";
-          }
-          else
-          {
-            return " " + this.get_quoted_word (documents.data, in_single_quotes,
-                                               in_double_quotes);
-          }
-        case "i":
-          string? icon = this.icon;
-          if (icon == null)
-          {
-            return "";
-          }
-          else
-          {
-            return "--icon " + this.get_quoted_word (icon, in_single_quotes,
-                                                     in_double_quotes);
-          }
-        case "c":
-          string? name = this.name;
-          if (name == null)
-          {
-            return "";
-          }
-          else
-          {
-            return this.get_quoted_word (name, in_single_quotes, in_double_quotes);
-          }
-        case "k":
-          if (this._file == null)
-          {
-            return "";
-          }
-          else
-          {
-            return this._file.uri;
-          }
-        case "D":
-        case "N":
-        case "d":
-        case "n":
-        case "v":
-        case "m":
-          // deprecated, skip
-          return "";
-        default:
-          warning ("Unrecognized %%-code '%%%s' in Exec.", code);
-          return "";
-      }
-    }
-
-    /**
-     * Ported from EggDesktopFile.
-     */
-    private string?
-    parse_exec (SList<string>? documents)
-    {
-      string exec;
-      string command = "";
-      bool escape, single_quot, double_quot;
-
-      if (!this._keyfile.has_key (GROUP, "Exec"))
-      {
-        return null;
-      }
-
-      exec = this.get_string ("Exec");
-
-      escape = single_quot = double_quot = false;
-
-      for (string s = exec; s != null && s.len () > 0; s = s.next_char ())
-      {
-        string chr = s.substring (0, 1);
-        if (escape)
-        {
-          escape = false;
-          command += chr;
-        }
-        else if (chr == "\\")
-        {
-          if (!single_quot)
-          {
-            escape = true;
-          }
-          command += chr;
-        }
-        else if (chr == "'")
-        {
-          command += chr;
-
-          if (!single_quot && !double_quot)
-          {
-            single_quot = true;
-          }
-          else if (single_quot)
-          {
-            single_quot = false;
-          }
-        }
-        else if (chr == "\"")
-        {
-          command += chr;
-          if (!single_quot && !double_quot)
-          {
-            double_quot = true;
-          }
-          else if (double_quot)
-          {
-            double_quot = false;
-          }
-        }
-        else if (chr == "%")
-        {
-          string? pchr = s.substring (1, 1);
-          if (pchr == null)
-          {
-            command += chr;
-          }
-          else
-          {
-            command += this.do_percent_subst (pchr, documents, single_quot, double_quot);
-            s = s.next_char ();
-          }
-        }
-        else
-        {
-          command += chr;
-        }
-      }
-      return command;
-    }
-
-    private Pid
-    do_app_launch (string? working_dir, SpawnFlags flags,
-                   SList<string>? documents) throws GLib.Error
-    {
-      string[] argv;
-      Pid pid;
-
-      if (!Shell.parse_argv (this.parse_exec (documents), out argv))
-      {
-        throw new DesktopEntryError.NOT_LAUNCHABLE ("Could not parse Exec key.");
-      }
-
-      if (this._keyfile.has_key (GROUP, "Terminal") &&
-          this.get_boolean ("Terminal"))
-      {
-        string[] term_argv = new string[argv.length + 2];
-
-        // based on the code for GDesktopAppInfo
-        string? check = null;
-        check = Environment.find_program_in_path ("gnome-terminal");
-        if (check != null)
-        {
-          term_argv[0] = check;
-          term_argv[1] = "-x";
-        }
-        else
-        {
-          if (check == null)
-          {
-            check = Environment.find_program_in_path ("nxterm");
-          }
-          if (check == null)
-          {
-            check = Environment.find_program_in_path ("color-xterm");
-          }
-          if (check == null)
-          {
-            check = Environment.find_program_in_path ("rxvt");
-          }
-          if (check == null)
-          {
-            check = Environment.find_program_in_path ("xterm");
-          }
-          if (check == null)
-          {
-            check = Environment.find_program_in_path ("dtterm");
-          }
-          if (check == null)
-          {
-            check = "xterm";
-            warning ("couldn't find a terminal, falling back to xterm");
-          }
-
-          term_argv[0] = check;
-          term_argv[1] = "-e";
-        }
-
-        for (int i = 0; i < argv.length; i++)
-        {
-          term_argv[i+2] = argv[i];
-        }
-
-        argv = (owned) term_argv;
-      }
-
-      Process.spawn_async_with_pipes (working_dir, argv, null, flags, null, out pid);
-      return pid;
-    }
-
-    /**
-     * Based on EggDesktopFile's egg_desktop_file_launch().
-     * @return the PID of the last process launched.
+     * Launch desktop entry.
+     * @return always zero.
      */
     public Pid
     launch (DesktopEntryLaunchFlags flags,
             SList<string>? documents) throws GLib.Error
     {
+      List<unowned string> uris = new List<unowned string> ();
+      foreach (unowned string s in documents)
+      {
+        uris.append (s);
+      }
+
+      // interesting that GIO 2.26 supports only APPLICATION
       switch (this.entry_type)
       {
         case DesktopEntryType.APPLICATION:
-          SpawnFlags sflags = SpawnFlags.SEARCH_PATH;
-          string working_dir;
-          Pid pid;
-
-          if ((flags & DesktopEntryLaunchFlags.DO_NOT_REAP_CHILD) != 0)
+          AppInfo info;
+          if (this._file != null)
           {
-            sflags |= SpawnFlags.DO_NOT_REAP_CHILD;
-          }
-          if ((flags & DesktopEntryLaunchFlags.USE_CWD) != 0)
-          {
-            working_dir = Environment.get_current_dir ();
+            info = new DesktopAppInfo.from_filename (this._file.path);
           }
           else
           {
-            working_dir = Environment.get_home_dir ();
+            info = new DesktopAppInfo.from_keyfile (this._keyfile);
           }
 
-          if ((flags & DesktopEntryLaunchFlags.ONLY_ONE) == 0 &&
-              documents != null)
-          {
-            pid = (Pid)0;
-            foreach (unowned string doc in documents)
-            {
-              SList<string> docs = new SList<string> ();
-              docs.append (doc);
-              pid = this.do_app_launch (working_dir, sflags, docs);
-            }
-          }
-          else
-          {
-            pid = this.do_app_launch (working_dir, sflags, documents);
-          }
-          return pid;
+          //var context = new AppLaunchContext ();
+          info.launch_uris (uris, null);
+
+          break;
         case DesktopEntryType.LINK:
-          if (documents != null)
+          if (this._keyfile.has_key (GROUP, "URL"))
           {
-            throw new DesktopEntryError.NOT_LAUNCHABLE ("Cannot pass documents to a 'Link' desktop entry.");
+            string uri = this._keyfile.get_string (GROUP, "URL");
+            AppInfo.launch_default_for_uri (uri, null);
           }
-          string uri = this._keyfile.get_string (GROUP, "URL");
-          VFS.File file = VFS.file_new_for_uri (uri);
-          file.launch ();
-          return (Pid)0;
+          else
+          {
+            throw new DesktopEntryError.NOT_LAUNCHABLE ("Invalid desktop entry.");
+          }
+          break;
         default:
-          throw new DesktopEntryError.NOT_LAUNCHABLE ("The desktop entry is unlaunchable.");
+          throw new DesktopEntryError.NOT_LAUNCHABLE ("Unknown desktop entry type.");
       }
+
+      return (Pid) 0;
     }
 
     public void
@@ -670,7 +388,7 @@ namespace DesktopAgnostic.FDO
 public Type
 register_plugin ()
 {
-  return typeof (DesktopAgnostic.FDO.DesktopEntryGLib);
+  return typeof (DesktopAgnostic.FDO.DesktopEntryGio);
 }
 
 // vim: set ts=2 sts=2 sw=2 et ai cindent :

@@ -92,7 +92,6 @@ namespace DesktopAgnostic.VFS
     }
   }
 }
-[ModuleInit]
 public Type
 register_plugin ()
 {

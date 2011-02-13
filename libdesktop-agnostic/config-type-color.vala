@@ -120,7 +120,6 @@ namespace DesktopAgnostic.Config
     dest_value = ct.deserialize ((string)src_value);
   }
 }
-[ModuleInit]
 public Type
 register_plugin ()
 {

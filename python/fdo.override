@@ -197,6 +197,7 @@ _wrap_desktop_agnostic_f_d_o_desktop_entry_new (PyObject *self)
 {
   DesktopAgnosticFDODesktopEntry *ret;
   GError *error = NULL;
+  PyObject *py_ret;
 
   ret = desktop_agnostic_fdo_desktop_entry_new (&error);
 
@@ -206,7 +207,10 @@ _wrap_desktop_agnostic_f_d_o_desktop_entry_new (PyObject *self)
   }
 
   /* pygobject_new handles NULL checking */
-  return pygobject_new ((GObject *)ret);
+  py_ret = pygobject_new ((GObject *)ret);
+  if (ret != NULL)
+      g_object_unref (ret);
+  return py_ret;
 }
 %%
 define DesktopAgnosticFDODesktopEntry.for_data kwargs staticmethod
@@ -218,6 +222,7 @@ _wrap_desktop_agnostic_f_d_o_desktop_entry_for_data (PyObject *self,
   static char *kwlist[] = { "data", NULL };
   char *data;
   DesktopAgnosticFDODesktopEntry *ret;
+  PyObject *py_ret;
   GError *error = NULL;
 
   if (!PyArg_ParseTupleAndKeywords (args, kwargs,
@@ -235,7 +240,10 @@ _wrap_desktop_agnostic_f_d_o_desktop_entry_for_data (PyObject *self,
   }
 
   /* pygobject_new handles NULL checking */
-  return pygobject_new ((GObject *)ret);
+  py_ret = pygobject_new ((GObject *)ret);
+  if (ret != NULL)
+      g_object_unref (ret);
+  return py_ret;
 }
 %%
 define DesktopAgnosticFDODesktopEntry.for_file onearg staticmethod
@@ -244,6 +252,7 @@ _wrap_desktop_agnostic_f_d_o_desktop_entry_for_file (PyObject *self,
                                                      PyGObject *file)
 {
   DesktopAgnosticFDODesktopEntry *ret;
+  PyObject *py_ret;
   GError *error = NULL;
 
   ret = desktop_agnostic_fdo_desktop_entry_new_for_file (DESKTOP_AGNOSTIC_VFS_FILE(file->obj),
@@ -255,7 +264,10 @@ _wrap_desktop_agnostic_f_d_o_desktop_entry_for_file (PyObject *self,
   }
 
   /* pygobject_new handles NULL checking */
-  return pygobject_new ((GObject *)ret);
+  py_ret = pygobject_new ((GObject *)ret);
+  if (ret != NULL)
+      g_object_unref (ret);
+  return py_ret;
 }
 %%
 define DesktopAgnosticFDODesktopEntry.type_to_string onearg staticmethod

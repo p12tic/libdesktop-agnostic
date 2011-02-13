@@ -188,7 +188,8 @@ namespace DesktopAgnostic.Config
      */
     public Schema (string filename) throws GLib.Error
     {
-      this.filename = filename;
+      GLib.Object (filename: filename);
+
       unowned HashTable<string,Value?> backend_metadata_keys;
       this.options = Datalist<SchemaOption> ();
       this.keys = new HashTable<string,List<string>> (str_hash, str_equal);

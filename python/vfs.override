@@ -117,6 +117,7 @@ _wrap_desktop_agnostic_v_f_s_file_for_path (PyObject *self, PyObject *arg)
 {
   char *path;
   DesktopAgnosticVFSFile *ret;
+  PyObject *py_ret;
   GError *error = NULL;
 
   if (!PyString_Check (arg))
@@ -136,16 +137,20 @@ _wrap_desktop_agnostic_v_f_s_file_for_path (PyObject *self, PyObject *arg)
   }
 
   /* pygobject_new handles NULL checking */
-  return pygobject_new ((GObject *)ret);
+  py_ret = pygobject_new ((GObject *)ret);
+  if (ret != NULL)
+      g_object_unref (ret);
+  return py_ret;
 }
 %%
 define DesktopAgnosticVFSFile.for_uri onearg staticmethod
 static PyObject *
 _wrap_desktop_agnostic_v_f_s_file_for_uri (PyObject *self, PyObject *arg)
 {
-    char *uri;
-    DesktopAgnosticVFSFile *ret;
-    GError *error = NULL;
+  char *uri;
+  DesktopAgnosticVFSFile *ret;
+  PyObject *py_ret;
+  GError *error = NULL;
 
   if (!PyString_Check (arg))
   {
@@ -164,8 +169,39 @@ _wrap_desktop_agnostic_v_f_s_file_for_uri (PyObject *self, PyObject *arg)
   }
 
   /* pygobject_new handles NULL checking */
-  return pygobject_new ((GObject *)ret);
+  py_ret = pygobject_new ((GObject *)ret);
+  if (ret != NULL)
+      g_object_unref (ret);
+  return py_ret;
 }
+%%
+override desktop_agnostic_vfs_get_icon_names_for_mime_type kwargs
+static PyObject *
+_wrap_desktop_agnostic_vfs_get_icon_names_for_mime_type(PyObject *self, PyObject *args, PyObject *kwargs)
+{
+    static char *kwlist[] = { "mime_type", NULL };
+    char *mime_type;
+    gchar **ret;
+    int ret_length = 0;
+    int i;
+    PyObject *py_ret;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs,"s:get_icon_names_for_mime_type", kwlist, &mime_type))
+        return NULL;
+
+    ret = desktop_agnostic_vfs_get_icon_names_for_mime_type(mime_type, &ret_length);
+
+    py_ret = PyList_New (ret_length);
+    if (ret) {
+        for (i=0; i<ret_length; i++) {
+            PyList_SetItem (py_ret, i, PyString_FromString (ret[i]));
+            g_free (ret[i]);
+        }
+        g_free(ret);
+    }
+    return py_ret;
+}
+
 %%
 override desktop_agnostic_vfs_file_enumerate_children noargs
 static PyObject *
@@ -207,6 +243,34 @@ _wrap_desktop_agnostic_vfs_file_load_contents (PyGObject *self)
   }
 
   return PyString_FromStringAndSize (data, length);
+}
+%%
+override desktop_agnostic_vfs_file_get_icon_names noargs
+static PyObject *
+_wrap_desktop_agnostic_vfs_file_get_icon_names (PyGObject *self)
+{
+  int i, res_length;
+  char **result;
+  PyObject *py_result;
+  GError *error = NULL;
+
+  result = desktop_agnostic_vfs_file_get_icon_names (DESKTOP_AGNOSTIC_VFS_FILE (self->obj),
+                                                     &res_length, &error);
+
+  if (pyg_error_check (&error))
+  {
+    return NULL;
+  }
+
+  py_result = PyList_New (res_length);
+  for (i=0; i<res_length; i++)
+  {
+    PyList_SetItem (py_result, i, PyString_FromString (result[i]));
+    g_free (result[i]);
+  }
+  if (result != NULL) g_free (result);
+
+  return py_result;
 }
 %%
 define DesktopAgnosticVFSTrash.get_default noargs staticmethod

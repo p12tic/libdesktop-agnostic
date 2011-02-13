@@ -121,7 +121,7 @@ namespace DesktopAgnostic.VFS
       bool result = false;
       try
       {
-        result = this.vol.mount_finish (this.async_result);
+        result = this.vol.mount.end (this.async_result);
       }
       catch (GLib.Error err)
       {
@@ -156,7 +156,7 @@ namespace DesktopAgnostic.VFS
       bool result = false;
       try
       {
-        result = this.vol.get_mount ().unmount_finish (this.async_result);
+        result = this.vol.get_mount ().unmount.end (this.async_result);
       }
       catch (GLib.Error err)
       {
@@ -192,7 +192,7 @@ namespace DesktopAgnostic.VFS
       bool result = false;
       try
       {
-        result = this.vol.eject_finish (this.async_result);
+        result = this.vol.eject.end (this.async_result);
       }
       catch (GLib.Error err)
       {
@@ -211,7 +211,7 @@ namespace DesktopAgnostic.VFS
       this.monitor = GLib.VolumeMonitor.get ();
       this._volumes = new HashTable<GLib.Volume,VFS.Volume> (direct_hash,
                                                              direct_equal);
-      unowned List<GLib.Volume> vols = this.monitor.get_volumes ();
+      List<GLib.Volume> vols = this.monitor.get_volumes ();
       foreach (unowned GLib.Volume gvol in vols)
       {
         VFS.Volume vol = this.create_volume (gvol);

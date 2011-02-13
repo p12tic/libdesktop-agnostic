@@ -51,9 +51,9 @@ main (string[] args)
     {
       output = VFS.file_new_for_path (args[2]);
     }
-    editor = new LauncherEditorDialog (file, output, true);
+    editor = new LauncherEditorDialog (file, output);
     editor.show_all ();
-    Gtk.main ();
+    editor.run ();
 
     VFS.shutdown ();
   }

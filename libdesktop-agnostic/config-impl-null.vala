@@ -121,7 +121,6 @@ namespace DesktopAgnostic.Config
     }
   }
 }
-[ModuleInit]
 public Type
 register_plugin ()
 {

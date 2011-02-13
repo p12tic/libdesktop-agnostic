@@ -322,6 +322,24 @@ namespace DesktopAgnostic.VFS
       }
       return (GnomeVFS.unlink_from_uri (this._uri) == GnomeVFS.Result.OK);
     }
+
+    public override bool
+    is_native ()
+    {
+      return this._uri_str.has_prefix ("file:");
+    }
+
+    public override string
+    get_mime_type () throws Error
+    {
+      return GnomeVFS.get_mime_type_from_uri (this._uri);
+    }
+
+    public override string[]
+    get_icon_names () throws Error
+    {
+      return get_icon_names_for_mime_type (this.get_mime_type ());
+    }
   }
 }
 

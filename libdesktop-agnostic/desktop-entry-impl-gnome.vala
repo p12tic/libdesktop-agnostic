@@ -305,7 +305,6 @@ namespace DesktopAgnostic.FDO
   }
 }
 
-[ModuleInit]
 public Type
 register_plugin ()
 {

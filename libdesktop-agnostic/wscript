@@ -117,7 +117,8 @@ def build(bld):
         ])
     lib.packages = 'gdk-2.0 gmodule-2.0'
     lib.target = 'desktop-agnostic'
-    if bld.env['INTROSPECTION']: lib.gir = 'DesktopAgnostic-1.0'
+    if bld.env['INTROSPECTION']:
+        lib.gir = 'DesktopAgnostic-1.0'
     lib.uselib = 'M GDK GMODULE'
     lib.packages_private = 'build'
     lib.includes = '..'
@@ -137,7 +138,8 @@ def build(bld):
     vfs.packages = 'desktop-agnostic posix'
     vfs.target = 'desktop-agnostic-vfs'
     vfs.header = 'vfs'
-    if bld.env['INTROSPECTION']: vfs.gir = 'DesktopAgnosticVFS-1.0'
+    if bld.env['INTROSPECTION']:
+        vfs.gir = 'DesktopAgnosticVFS-1.0'
     vfs.uselib_local = 'desktop-agnostic'
     vfs.packages_private = 'posix-glob'
     vfs.includes = '..'
@@ -156,7 +158,8 @@ def build(bld):
     cfg.packages = 'desktop-agnostic-vfs'
     cfg.target = 'desktop-agnostic-cfg'
     cfg.header = 'config'
-    if bld.env['INTROSPECTION']: cfg.gir = 'DesktopAgnosticConfig-1.0'
+    if bld.env['INTROSPECTION']:
+        cfg.gir = 'DesktopAgnosticConfig-1.0'
     cfg.uselib_local = 'desktop-agnostic-vfs'
     cfg.packages_private = 'hashtable-gtype-key'
     cfg.includes = '..'
@@ -170,7 +173,8 @@ def build(bld):
     fdo.packages = 'desktop-agnostic-vfs'
     fdo.target = 'desktop-agnostic-fdo'
     fdo.header = 'fdo'
-    if bld.env['INTROSPECTION']: fdo.gir = 'DesktopAgnosticFDO-1.0'
+    if bld.env['INTROSPECTION']:
+        fdo.gir = 'DesktopAgnosticFDO-1.0'
     fdo.uselib_local = 'desktop-agnostic-vfs'
     fdo.vapi_dirs = '.'
     fdo.includes = '..'
@@ -187,7 +191,8 @@ def build(bld):
     ui.packages_private = 'build'
     ui.target = 'desktop-agnostic-ui'
     ui.header = 'ui'
-    if bld.env['INTROSPECTION']: ui.gir = 'DesktopAgnosticUI-1.0'
+    if bld.env['INTROSPECTION']:
+        ui.gir = 'DesktopAgnosticUI-1.0'
     ui.uselib = 'GTK'
     ui.uselib_local = 'desktop-agnostic-fdo'
     ui.vapi_dirs = '. ../vapi'

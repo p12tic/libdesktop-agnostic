@@ -20,7 +20,7 @@ VNUM = '0.4.0'
 
 CFG_BACKENDS = ','.join(['gconf', 'keyfile'])
 VFS_BACKENDS = ','.join(['gio', 'gnome-vfs', 'thunar-vfs'])
-FDO_BACKENDS = ','.join(['glib', 'gnome'])
+FDO_BACKENDS = ','.join(['glib', 'gnome', 'gio'])
 DISTCHECK_FLAGS = '\t'.join(['--config-backends=%s' % CFG_BACKENDS,
                              '--vfs-backends=%s' % VFS_BACKENDS,
                              '--desktop-entry-backends=%s' % FDO_BACKENDS])

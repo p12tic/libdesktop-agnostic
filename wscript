@@ -71,7 +71,7 @@ def set_options(opt):
                    help='Enables the library to be built so that it is '
                         'instrumented to measure performance.')
     opt.add_option('--disable-gi', action='store_true',
-                   dest='no_gi', default=False)
+                   dest='no_gi', default=True)
 
 
 def configure(conf):

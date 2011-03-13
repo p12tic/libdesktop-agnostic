@@ -96,7 +96,7 @@ def configure(conf):
     conf.check_tool('gnu_dirs')
     conf.check_tool('compiler_cc intltool misc python vala')
 
-    MIN_VALA_VERSION = (0, 8, 1)
+    MIN_VALA_VERSION = (0, 10, 0)
 
     conf.check_cfg(package='gmodule-2.0', uselib_store='GMODULE',
                    atleast_version='2.6.0', mandatory=True,

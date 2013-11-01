@@ -62,7 +62,7 @@ namespace DesktopAgnostic.VFS
     update_file_count ()
     {
       GLib.File dir = (GLib.File)this.trash.implementation;
-      dir.query_info_async (FILE_ATTRIBUTE_TRASH_ITEM_COUNT,
+      dir.query_info_async (FileAttribute.TRASH_ITEM_COUNT,
                             FileQueryInfoFlags.NONE,
                             Priority.DEFAULT,
                             null,
@@ -78,7 +78,7 @@ namespace DesktopAgnostic.VFS
       try
       {
         file_info = dir.query_info_async.end (res);
-        this._file_count = file_info.get_attribute_uint32 (FILE_ATTRIBUTE_TRASH_ITEM_COUNT);
+        this._file_count = file_info.get_attribute_uint32 (FileAttribute.TRASH_ITEM_COUNT);
         this.file_count_changed ();
       }
       catch (Error err)
@@ -95,8 +95,8 @@ namespace DesktopAgnostic.VFS
 
       try
       {
-        string attrs = FILE_ATTRIBUTE_STANDARD_NAME + "," +
-                       FILE_ATTRIBUTE_STANDARD_TYPE;
+        string attrs = FileAttribute.STANDARD_NAME + "," +
+                       FileAttribute.STANDARD_TYPE;
         files = dir.enumerate_children (attrs,
                                         FileQueryInfoFlags.NOFOLLOW_SYMLINKS,
                                         null);

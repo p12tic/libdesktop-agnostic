@@ -64,10 +64,10 @@ namespace DesktopAgnostic.VFS
 
           try
           {
-            info = this._file.query_info (FILE_ATTRIBUTE_STANDARD_TYPE,
+            info = this._file.query_info (FileAttribute.STANDARD_TYPE,
                                           FileQueryInfoFlags.NOFOLLOW_SYMLINKS,
                                           null);
-            gft = (GLib.FileType)info.get_attribute_uint32 (FILE_ATTRIBUTE_STANDARD_TYPE);
+            gft = (GLib.FileType)info.get_attribute_uint32 (FileAttribute.STANDARD_TYPE);
             switch (gft)
             {
               case GLib.FileType.REGULAR:
@@ -112,20 +112,20 @@ namespace DesktopAgnostic.VFS
           {
             string attrs;
 
-            attrs = "%s,%s,%s".printf (FILE_ATTRIBUTE_ACCESS_CAN_READ,
-                                       FILE_ATTRIBUTE_ACCESS_CAN_WRITE,
-                                       FILE_ATTRIBUTE_ACCESS_CAN_EXECUTE);
+            attrs = "%s,%s,%s".printf (FileAttribute.ACCESS_CAN_READ,
+                                       FileAttribute.ACCESS_CAN_WRITE,
+                                       FileAttribute.ACCESS_CAN_EXECUTE);
             info = this._file.query_info (attrs, FileQueryInfoFlags.NONE,
                                           null);
-            if (info.get_attribute_boolean (FILE_ATTRIBUTE_ACCESS_CAN_READ))
+            if (info.get_attribute_boolean (FileAttribute.ACCESS_CAN_READ))
             {
               flags |= AccessFlags.READ;
             }
-            if (info.get_attribute_boolean (FILE_ATTRIBUTE_ACCESS_CAN_WRITE))
+            if (info.get_attribute_boolean (FileAttribute.ACCESS_CAN_WRITE))
             {
               flags |= AccessFlags.WRITE;
             }
-            if (info.get_attribute_boolean (FILE_ATTRIBUTE_ACCESS_CAN_EXECUTE))
+            if (info.get_attribute_boolean (FileAttribute.ACCESS_CAN_EXECUTE))
             {
               flags |= AccessFlags.EXECUTE;
             }
@@ -177,12 +177,17 @@ namespace DesktopAgnostic.VFS
     public override bool
     load_contents (out string contents, out size_t length) throws Error
     {
-      return this._file.load_contents (null, out contents, out length, null);
+      uint8[] bytes;
+      bool ret = this._file.load_contents (null, out bytes, null);
+      contents = (string)bytes;
+      length = bytes.length;
+      g_free(bytes);
+      return ret;
     }
     public override bool
     replace_contents (string contents) throws Error
     {
-      return this._file.replace_contents (contents, contents.size (), null,
+      return this._file.replace_contents (contents.data, null,
                                           false, 0, null, null);
     }
     public override bool
@@ -203,7 +208,7 @@ namespace DesktopAgnostic.VFS
       FileInfo info;
 
       children = new SList<File> ();
-      enumerator = this._file.enumerate_children (FILE_ATTRIBUTE_STANDARD_NAME,
+      enumerator = this._file.enumerate_children (FileAttribute.STANDARD_NAME,
                                                   FileQueryInfoFlags.NONE,
                                                   null);
       while ((info = enumerator.next_file (null)) != null)
@@ -247,14 +252,14 @@ namespace DesktopAgnostic.VFS
 
     public override string get_mime_type () throws Error
     {
-      var fi = this._file.query_info (FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
+      var fi = this._file.query_info (FileAttribute.STANDARD_CONTENT_TYPE,
                                       0, null);
       return fi.get_content_type ();
     }
 
     public override string[] get_icon_names () throws Error
     {
-      var fi = this._file.query_info (FILE_ATTRIBUTE_STANDARD_ICON,
+      var fi = this._file.query_info (FileAttribute.STANDARD_ICON,
                                       0, null);
       GLib.Icon icon = fi.get_icon ();
       if (icon != null)
@@ -291,11 +296,11 @@ namespace DesktopAgnostic.VFS
     {
       try
       {
-        var fi = this._file.query_info (FILE_ATTRIBUTE_THUMBNAIL_PATH,
+        var fi = this._file.query_info (FileAttribute.THUMBNAIL_PATH,
                                         0, null);
-        if (fi.has_attribute (FILE_ATTRIBUTE_THUMBNAIL_PATH))
+        if (fi.has_attribute (FileAttribute.THUMBNAIL_PATH))
         {
-          return fi.get_attribute_byte_string (FILE_ATTRIBUTE_THUMBNAIL_PATH);
+          return fi.get_attribute_byte_string (FileAttribute.THUMBNAIL_PATH);
         }
       }
       catch (GLib.Error err)

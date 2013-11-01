@@ -36,7 +36,7 @@ namespace DesktopAgnostic.VFS
     /**
      * The name of the volume.
      */
-    public abstract string name { get; }
+    public abstract string name { owned get; }
     /**
      * Usually, the mount point of the volume.
      */

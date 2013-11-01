@@ -185,7 +185,7 @@ namespace DesktopAgnostic.FDO
       }
     }
 
-    private override void
+    private void
     constructed ()
     {
       if (this.item == null)

@@ -25,6 +25,7 @@
 typedef struct _DesktopAgnosticConfigNotifyDelegate
 {
   DesktopAgnosticConfigNotifyFunc callback;
+  void* callback_target; // unused
   gpointer target;
 } DesktopAgnosticConfigNotifyDelegate;
 

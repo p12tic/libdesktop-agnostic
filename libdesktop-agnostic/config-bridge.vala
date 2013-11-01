@@ -216,7 +216,7 @@ namespace DesktopAgnostic.Config
           spec.value_type == typeof (double) ||
           spec.value_type == typeof (int) ||
           spec.value_type == typeof (long) ||
-          spec is ParamSpecEnum ||
+          spec.value_type.is_enum() ||
           spec.value_type == typeof (string))
       {
         func (config, group, key, notifier.on_simple_value_changed);

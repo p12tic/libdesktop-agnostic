@@ -36,7 +36,7 @@ namespace DesktopAgnostic.VFS
     }
     public string name
     {
-      get
+      owned get
       {
         return this.vol.get_name ();
       }
@@ -142,7 +142,7 @@ namespace DesktopAgnostic.VFS
     {
       if (this._unmount_callback == null)
       {
-        unowned Mount? mount;
+        Mount? mount;
         this._unmount_callback = callback;
         mount = this.vol.get_mount ();
         if (mount != null)

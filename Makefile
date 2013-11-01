@@ -1,0 +1,49 @@
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
+#
+#  On Debian systems, the full text of the GNU General Public License version 2
+#  can be found in the file '/usr/share/common-licenses/GPL-2'.
+#
+
+CFLAGS += -O0
+
+configure:
+	LINKFLAGS="${LDFLAGS} -Wl,--as-needed" ./waf --nocache configure \
+	    --prefix=/usr \
+	    --enable-debug \
+	    --config-backends=gconf,keyfile \
+	    --vfs-backends=gio \
+	    --desktop-entry-backends=glib,gnome,gio \
+	    --with-glade \
+	    --enable-docs
+
+all: configure
+	./waf --nocache build
+
+dist: configure
+	./waf -vv --nocache dist
+
+install:
+	./waf --nocache install --destdir=$(DESTDIR)
+
+distclean: clean
+
+check:
+
+clean:
+	rm -rf build sphinx.pyc
+	./waf --nocache distclean
+	find wafadmin -name "*.pyc" -delete
+	rm -f configure	# so dh_auto_configure doesn't try to use this broken fallback

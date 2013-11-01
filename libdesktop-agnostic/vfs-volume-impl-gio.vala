@@ -217,10 +217,10 @@ namespace DesktopAgnostic.VFS
         VFS.Volume vol = this.create_volume (gvol);
         this._volumes.insert (gvol, vol);
       }
-      this.monitor.mount_added += this.on_mount_added;
-      this.monitor.mount_removed += this.on_mount_removed;
-      this.monitor.volume_added += this.on_volume_added;
-      this.monitor.volume_removed += this.on_volume_removed;
+      this.monitor.mount_added.connect(this.on_mount_added);
+      this.monitor.mount_removed.connect(this.on_mount_removed);
+      this.monitor.volume_added.connect(this.on_volume_added);
+      this.monitor.volume_removed.connect(this.on_volume_removed);
     }
     private VFS.Volume
     create_volume (GLib.Volume vol)

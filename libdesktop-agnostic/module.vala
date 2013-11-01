@@ -128,7 +128,7 @@ namespace DesktopAgnostic
       string path;
       Type module_type = Type.INVALID;
 
-      foreach (unowned string prefix in this.paths)
+      foreach (unowned string prefix in paths)
       {
         if (prefix == null || !FileUtils.test (prefix, FileTest.IS_DIR))
         {
@@ -181,7 +181,7 @@ namespace DesktopAgnostic
       if (this.module_guesser == null)
       {
         // load the module guesser
-        foreach (unowned string prefix in this.paths)
+        foreach (unowned string prefix in paths)
         {
           if (prefix == null || !FileUtils.test (prefix, FileTest.IS_DIR))
           {

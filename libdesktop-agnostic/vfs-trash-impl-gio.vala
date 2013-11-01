@@ -36,7 +36,7 @@ namespace DesktopAgnostic.VFS
         critical ("trash is NULL!!!!");
       }
       this.monitor = this.trash.monitor ();
-      this.monitor.changed += this.on_trash_changed;
+      this.monitor.changed.connect(this.on_trash_changed);
       this._file_count = 0;
       this.update_file_count ();
     }

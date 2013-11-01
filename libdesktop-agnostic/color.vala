@@ -129,9 +129,9 @@ namespace DesktopAgnostic
       if (spec.get_char () == '#')
       {
         size_t cd_len = 0;
-        unowned string color_hex = spec.offset (1);
+        string color_hex = spec.substring (1);
         // adapted from pango_color_parse (), licensed under the LGPL2.1+.
-        cd_len = (size_t)color_hex.size ();
+        cd_len = (size_t)color_hex.length;
         if (cd_len % 4 != 0 || cd_len < 4 || cd_len > 16)
         {
           throw new ColorParseError.INVALID_INPUT ("Invalid input size.");

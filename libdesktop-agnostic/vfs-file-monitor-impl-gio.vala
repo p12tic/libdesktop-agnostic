@@ -45,7 +45,7 @@ namespace DesktopAgnostic.VFS
       {
         this.monitor = impl.monitor_file (FileMonitorFlags.NONE, null);
       }
-      this.monitor.changed += this.monitor_callback;
+      this.monitor.changed.connect(this.monitor_callback);
     }
     private void monitor_callback (GLib.FileMonitor monitor, GLib.File file,
                                    GLib.File? other,

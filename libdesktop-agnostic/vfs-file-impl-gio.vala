@@ -270,7 +270,7 @@ namespace DesktopAgnostic.VFS
           Value v = Value (typeof (string[]));
           icon.get_property ("names", ref v);
           string[] names = (string[]) v;
-          
+
           // this should be fixed in vala 0.12
           //names = (icon as ThemedIcon).get_names ();
 

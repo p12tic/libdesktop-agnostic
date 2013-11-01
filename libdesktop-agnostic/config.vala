@@ -168,7 +168,7 @@ namespace DesktopAgnostic.Config
       }
       else
       {
-        SchemaType st = this.schema.find_type (option_type);
+        SchemaType st = schema.find_type (option_type);
         if (st == null)
         {
           throw new Error.INVALID_TYPE ("Invalid config value type.");

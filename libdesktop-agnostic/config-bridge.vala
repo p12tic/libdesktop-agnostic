@@ -178,6 +178,7 @@ namespace DesktopAgnostic.Config
       return obj_cls.find_property (property_name);
     }
 
+
     private static delegate void NotifyFuncHandler (Config.Backend config,
                                                     string group, string key,
                                                     NotifyFunc func) throws GLib.Error;
@@ -374,7 +375,7 @@ namespace DesktopAgnostic.Config
           if (obj_bindings != null)
           {
             unowned List<Binding> node;
-            
+
             node = obj_bindings.binding_list.find (binding);
             if (node != null)
             {

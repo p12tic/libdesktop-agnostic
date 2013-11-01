@@ -64,11 +64,9 @@ For the Python bindings:
 * PyGObject 2.12 or later
 * PyGTK 2.12 or later
 
-One of the following VFS libraries:
+The following VFS library:
 
-* GIO 2.16 or later (recommended)
-* GNOME VFS 2.6 or later
-* Thunar VFS (also requires the D-Bus bindings for GLib [``dbus-glib``])
+* GIO 2.16 or later
 
 Build/Runtime (*optional*)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -108,8 +106,6 @@ VFS
 ~~~
 
 * ``gio`` (recommended)
-* ``gnome-vfs``
-* ``thunar-vfs``
 
 Desktop Entry
 ~~~~~~~~~~~~~

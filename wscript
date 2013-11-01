@@ -19,7 +19,7 @@ VERSION = '0.3.93'
 VNUM = '0.4.0'
 
 CFG_BACKENDS = ','.join(['gconf', 'keyfile'])
-VFS_BACKENDS = ','.join(['gio', 'gnome-vfs', 'thunar-vfs'])
+VFS_BACKENDS = ','.join(['gio'])
 FDO_BACKENDS = ','.join(['glib', 'gnome', 'gio'])
 DISTCHECK_FLAGS = '\t'.join(['--config-backends=%s' % CFG_BACKENDS,
                              '--vfs-backends=%s' % VFS_BACKENDS,
@@ -124,15 +124,6 @@ def configure(conf):
     if 'gio' in conf.env['BACKENDS_VFS']:
         conf.check_cfg(package='gio-2.0', uselib_store='GIO',
                        atleast_version='2.16.0', mandatory=True,
-                       args='--cflags --libs')
-    if 'thunar-vfs' in conf.env['BACKENDS_VFS']:
-        conf.check_cfg(package='thunar-vfs-1', uselib_store='THUNAR_VFS',
-                       mandatory=True, args='--cflags --libs')
-        conf.check_cfg(package='dbus-glib-1', uselib_store='DBUS_GLIB',
-                       mandatory=True, args='--cflags --libs')
-    if 'gnome-vfs' in conf.env['BACKENDS_VFS']:
-        conf.check_cfg(package='gnome-vfs-2.0', uselib_store='GNOME_VFS',
-                       atleast_version='2.6.0', mandatory=True,
                        args='--cflags --libs')
     if 'gio' in conf.env['BACKENDS_DE']:
         conf.check_cfg(package='gio-unix-2.0', uselib_store='GIO_UNIX',

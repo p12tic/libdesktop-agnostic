@@ -24,14 +24,6 @@ deps = {
             'uselib': 'GIO',
             'packages': 'gio-2.0',
         },
-        'thunar-vfs': {
-            'uselib': 'THUNAR_VFS DBUS_GLIB',
-            'packages': 'thunar-vfs-1 dbus-glib-1',
-        },
-        'gnome-vfs': {
-            'uselib': 'GNOME_VFS',
-            'packages': 'gnome-vfs-2.0',
-        }
     },
     'fdo': {
         'gio': {

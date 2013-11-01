@@ -27,10 +27,6 @@ The following compile warnings are known (line numbers may not be accurate):
 .. _GNOME Bug #529866: http://bugzilla.gnome.org/show_bug.cgi?id=529866
 .. _GNOME Bug #592108: http://bugzilla.gnome.org/show_bug.cgi?id=592108
 
-* This kind of error is usually due to a limitation in Vala API generation::
-
-    libdesktop-agnostic/vfs-file-impl-thunar-vfs.vala:107.15-110.9: warning: unreachable catch clause detected
-
 Runtime
 -------
 

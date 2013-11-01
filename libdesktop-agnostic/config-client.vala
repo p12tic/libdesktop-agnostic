@@ -133,8 +133,8 @@ namespace DesktopAgnostic.Config
     private bool
     create_instance_config (string instance_id) throws GLib.Error
     {
-      Value single_instance = this._schema.get_metadata_option ("single_instance");
-      if ((bool)single_instance)
+      Value? single_instance = this._schema.get_metadata_option ("single_instance");
+      if ((single_instance != null) && (single_instance.get_boolean()) )
       {
         return false;
       }

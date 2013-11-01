@@ -423,10 +423,8 @@ namespace DesktopAgnostic.Config
       unowned SList<NotifyDelegate> funcs = this._notifiers.get_data (full_key);
       foreach (unowned NotifyDelegate data in funcs)
       {
-        if (data != null && data.callback != null)
-        {
+          // Modified according to config-impl-gconf.vala
           data.execute (group, key, value);
-        }
       }
     }
 

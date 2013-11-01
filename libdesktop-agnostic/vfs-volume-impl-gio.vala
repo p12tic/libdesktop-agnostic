@@ -27,6 +27,7 @@ namespace DesktopAgnostic.VFS
   public class VolumeGIO : Object, Volume
   {
     private GLib.Volume vol;
+    private string? _name;
     public GLib.Volume implementation
     {
       construct
@@ -38,7 +39,9 @@ namespace DesktopAgnostic.VFS
     {
       owned get
       {
-        return this.vol.get_name ();
+        if (_name == null)
+            _name = (string)this.vol.get_name ();
+        return _name;
       }
     }
     private File _uri;

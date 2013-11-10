@@ -1,1 +1,6 @@
 *.pyc
+.lock-wscript
+build
+gmon.out
+po/*.mo
+*.schemas

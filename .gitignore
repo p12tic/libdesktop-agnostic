@@ -4,3 +4,4 @@ build
 gmon.out
 po/*.mo
 *.schemas
+*.creator.user*

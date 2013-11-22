@@ -177,12 +177,17 @@ namespace DesktopAgnostic.VFS
     public override bool
     load_contents (out string contents, out size_t length) throws Error
     {
-      uint8[] bytes;
-      bool ret = this._file.load_contents (null, out bytes, null);
-      contents = (string)bytes;
-      length = bytes.length;
-      g_free(bytes);
-      return ret;
+      uint8 [] glib_contents;
+      if (this._file.load_contents (null, out glib_contents, null))
+      {
+        contents = (string)(owned)glib_contents;
+        length = contents.length;
+        return true;
+      }
+      else
+      {
+        return false;
+      }
     }
     public override bool
     replace_contents (string contents) throws Error

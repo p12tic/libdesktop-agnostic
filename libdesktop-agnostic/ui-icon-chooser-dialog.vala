@@ -126,7 +126,7 @@ namespace DesktopAgnostic.UI
     }
 
     private void
-    add_icon_viewer (ref IconView viewer, bool themed)
+    add_icon_viewer (out IconView viewer, bool themed)
     {
       ScrolledWindow scrolled;
 
@@ -231,7 +231,7 @@ namespace DesktopAgnostic.UI
           this._themed_context.changed.connect (this.on_icon_context_changed);
           this.vbox.pack_start (this._themed_context, false, false, 5);
 
-          this.add_icon_viewer (ref this._themed_viewer, true);
+          this.add_icon_viewer (out this._themed_viewer, true);
 
           icon_theme = IconTheme.get_default ();
           context_list = icon_theme.list_contexts ();
@@ -272,7 +272,7 @@ namespace DesktopAgnostic.UI
           this.vbox.pack_start (this._directory, false, false, 5);
           this._directory.show ();
 
-          this.add_icon_viewer (ref this._file_viewer, false);
+          this.add_icon_viewer (out this._file_viewer, false);
 
           this.on_folder_changed (this._directory);
         }

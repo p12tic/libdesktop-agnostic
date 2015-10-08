@@ -57,14 +57,15 @@ namespace DesktopAgnostic.Config
      * suppressing the "changed" signal from the file monitor.
      */
     private void
-    save_config () throws GLib.Error
+    save_config (bool calc_chksum = true) throws GLib.Error
     {
       string data;
-      size_t length;
+      data = this._data.to_data (null);
+      if (calc_chksum)
+      {
+        this._checksum = calculate_checksum_from_data (data);
+      }
 
-      data = this._data.to_data (out length);
-      this._checksum = Checksum.compute_for_string (ChecksumType.SHA256,
-                                                    data, length);
       if (this._monitor_changed_id != 0)
       {
         // block changed signal
@@ -77,6 +78,20 @@ namespace DesktopAgnostic.Config
         // unblock changed signal
         SignalHandler.unblock (this._keyfile_monitor, this._monitor_changed_id);
       }
+    }
+
+    private string
+    calculate_checksum_from_data (string data)
+    {
+      return Checksum.compute_for_string (ChecksumType.SHA256, data, data.length);
+    }
+
+    private void
+    calculate_checksum ()
+    {
+      string data;
+      data = this._data.to_data (null);
+      this._checksum = calculate_checksum_from_data (data);
     }
 
     /**
@@ -94,22 +109,35 @@ namespace DesktopAgnostic.Config
     }
 
     private void
-    get_data_from_file (VFS.File file, out string contents, out size_t length,
-                        out string checksum) throws GLib.Error
+    load_data (VFS.File file)
     {
-      file.load_contents (out contents, out length);
-      checksum = Checksum.compute_for_string (ChecksumType.SHA256,
-                                              contents, length);
-    }
+      try
+      {
+        string data;
+        size_t length;
 
-    private void
-    load_data (VFS.File file) throws GLib.Error
-    {
-      string data;
-      size_t length;
-
-      this.get_data_from_file (file, out data, out length, out this._checksum);
-      this._data.load_from_data (data, (ulong)length, KeyFileFlags.NONE);
+        // Load the keyfile and update _data. If the keyfile can't be loaded
+        // then regenerate it based on the current configuration.
+        if(file.load_contents (out data, out length))
+        {
+          this.update_from_keyfile(data);
+        }
+        else
+        {
+          this.save_config ();
+        }
+      }
+      catch (KeyFileError.PARSE e)
+      {
+        // Keyfile is invalid. Recover by overwriting the keyfile with the
+        // current configuration.
+        warning ("File is invalid: %s", e.message);
+        this.save_config ();
+      }
+      catch (GLib.Error e)
+      {
+        critical ("Failed to load the keyfile: %s Code:%d", e.message, e.code);
+      }
     }
 
     private void
@@ -119,29 +147,74 @@ namespace DesktopAgnostic.Config
       Type type = option.option_type;
       if (type == typeof (bool))
       {
-        this.set_bool (group, key, keyfile.get_boolean (group, key));
+        bool val;
+        try
+        {
+          val = keyfile.get_boolean (group, key);
+        }
+        catch (KeyFileError e)
+        {
+          return;
+        }
+        this._data.set_boolean (group, key, val);
+        this.update_config (group, key);
       }
       else if (type == typeof (int))
       {
-        this.set_int (group, key, keyfile.get_integer (group, key));
+        int val;
+        try
+        {
+          val = keyfile.get_integer (group, key);
+        }
+        catch (KeyFileError e)
+        {
+          return;
+        }
+        this._data.set_integer (group, key, val);
+        this.update_config (group, key);
       }
       else if (type == typeof (float))
       {
-        this.set_float (group, key, (float)keyfile.get_double (group, key));
+        float val;
+        try
+        {
+          val = (float)keyfile.get_double (group, key);
+        }
+        catch (KeyFileError e)
+        {
+          return;
+        }
+        this._data.set_double (group, key, val);
+        this.update_config (group, key);
       }
       else if (type == typeof (string))
       {
-        this.set_string (group, key, keyfile.get_string (group, key));
+        string val;
+        try
+        {
+          val = keyfile.get_string (group, key);
+        }
+        catch (KeyFileError e)
+        {
+          return;
+        }
+        this._data.set_string (group, key, val);
+        this.update_config (group, key);
       }
       else if (type == typeof (ValueArray))
       {
         ValueArray arr;
-
-        arr = this.generate_valuearray_from_keyfile (keyfile, group, key);
-
+        try
+        {
+          arr = this.generate_valuearray_from_keyfile (keyfile, group, key);
+        }
+        catch (KeyFileError e)
+        {
+          return;
+        }
         this.set_list (group, key, arr);
       }
-      else
+      else // Treat it as a string.
       {
         SchemaType? st = Schema.find_type (type);
         if (st == null)
@@ -150,10 +223,65 @@ namespace DesktopAgnostic.Config
                                         type.name ());
         }
 
-        Value val;
+        string val;
+        try
+        {
+          val = keyfile.get_string (group, key);
+        }
+        catch (KeyFileError e)
+        {
+          return;
+        }
+        this._data.set_string (group, key, val);
+        this.update_config (group, key);
+      }
+    }
 
-        val = st.deserialize (keyfile.get_string (group, key));
-        this.set_value (group, key, val);
+    private void
+    update_from_keyfile (string data) throws GLib.Error
+    {
+      string checksum = calculate_checksum_from_data (data);
+
+      if (this._checksum != checksum)
+      {
+        unowned Schema? schema = this.schema;
+        if (schema == null)
+        {
+          throw new Error.NO_SCHEMA ("The schema was not loaded.");
+        }
+
+        KeyFile new_data = new KeyFile ();
+        new_data.load_from_data (data, data.length, KeyFileFlags.NONE);
+
+        this._autosave = false;
+        foreach (unowned string group in schema.get_groups ())
+        {
+          if(this._data.has_group (group) && new_data.has_group (group))
+          {
+            foreach (unowned string key in schema.get_keys (group))
+            {
+              // Only add if there is a new key/value pair.
+              if (new_data.has_key (group, key))
+              {
+                // If it's a ValueArray defer checking if it's updated to set_list().
+                if (schema.get_option (group, key).option_type == typeof (ValueArray) ||
+                    (this._data.has_key (group, key) &&
+                     this._data.get_value (group, key) != new_data.get_value (group, key)))
+                {
+                  this.set_value_from_keyfile (new_data, group, key);
+                }
+              }
+            }
+          }
+        }
+        this._autosave = true;
+
+        calculate_checksum ();
+        if (this._checksum != checksum)
+        {
+          // Only save if they are still different after the update.
+          this.save_config(false);
+        }
       }
     }
 
@@ -256,47 +384,35 @@ namespace DesktopAgnostic.Config
     {
       switch (event)
       {
-        case VFS.FileMonitorEvent.CREATED:
-          // just set the data
+        /**
+         * The keyfile always gets created on startup if there is none.
+         *
+         * - If the user modifies the keyfile this will trigger a DELETED ->
+         *   CREATED -> CHANGED sequence. In this case the keyfile always exists
+         *   so ignore the DELETED/CREATED event and go directly to the CHANGED
+         *   event to update the settings if there were any.
+         *
+         * - If the user deletes the keyfile then only a DELETED event occurs.
+         *   Regenerate it based on the default configuration.
+         */
+        case VFS.FileMonitorEvent.CHANGED:
           this.load_data (file);
           break;
-        case VFS.FileMonitorEvent.CHANGED:
-          // check to see if the contents have changed
-          string data;
-          size_t length;
-          string checksum;
-
-          this.get_data_from_file (file, out data, out length, out checksum);
-          if (this._checksum != checksum)
-          {
-            // iterate through the config keys and determine which ones have changed
-            unowned Schema schema = this.schema;
-            KeyFile new_data = new KeyFile ();
-
-            new_data.load_from_data (data, length, KeyFileFlags.NONE);
-
-            this._autosave = false;
-            foreach (unowned string group in schema.get_groups ())
-            {
-              foreach (unowned string key in schema.get_keys (group))
-              {
-                if (this._data.has_group (group))
-                {
-                  if ((this._data.has_key (group, key) &&
-                       this._data.get_value (group, key) != new_data.get_value (group, key)) ||
-                      schema.get_option (group, key).option_type == typeof (ValueArray))
-                  {
-                    this.set_value_from_keyfile (new_data, group, key);
-                  }
-                }
-              }
-            }
-            this._autosave = true;
-          }
-          break;
         case VFS.FileMonitorEvent.DELETED:
-          // reset & save to disk
-          this.reset ();
+          if (!this._keyfile.exists ())
+          {
+            GLib.File impl = (GLib.File)this._keyfile.implementation;
+            this.ensure_directory (Path.get_dirname (impl.get_path()));
+            try
+            {
+              this.reset ();
+            }
+            catch (GLib.Error e)
+            {
+              critical ("Failed to regenerate the default configuration: %s Code:%d",
+                         e.message, e.code);
+            }
+          }
           break;
         default:
           // do nothing
@@ -351,11 +467,14 @@ namespace DesktopAgnostic.Config
                                     "%s-%s.ini".printf (schema.app_name,
                                                         this.instance_id));
       }
-      this._keyfile = VFS.file_new_for_path (path);
+
       try
       {
+        this._keyfile = VFS.file_new_for_path (path);
         if (this._keyfile.exists ())
         {
+          this.reset_nosave();
+          calculate_checksum ();
           this.load_data (this._keyfile);
         }
         else
@@ -364,9 +483,13 @@ namespace DesktopAgnostic.Config
           this.reset ();
         }
       }
-      catch (GLib.Error err)
+      catch (GLib.Error e)
       {
-        critical ("Config error: %s", err.message);
+        critical ("Configuration error: %s Code:%d", e.message, e.code);
+        // Can't really recover from this. If we can't access the keyfile or
+        // the settings in the schemas during initialization then we are done.
+        // Can't throw from a GLib.Object.constructed.
+        //Process.abort();
       }
       // don't immediately create the file monitor, otherwise it will catch
       // the "config file created" signal.
@@ -380,8 +503,8 @@ namespace DesktopAgnostic.Config
                                 this._monitor_changed_id);
     }
 
-    public override void
-    reset () throws GLib.Error
+    private void
+    reset_nosave () throws GLib.Error
     {
       unowned Schema? schema = this.schema;
       if (schema == null)
@@ -402,6 +525,12 @@ namespace DesktopAgnostic.Config
         }
       }
       this._autosave = true;
+    }
+
+    public override void
+    reset () throws GLib.Error
+    {
+      this.reset_nosave ();
       this.save_config ();
     }
 
@@ -446,14 +575,13 @@ namespace DesktopAgnostic.Config
     }
 
     /**
-     * Removes the config file from the file system. Implies reset(), but does
-     * not save to disk.
+     * Removes the config file from the file system.
      */
     public override void
     remove () throws GLib.Error
     {
+      // Let the FileMonitor code regenerate the file.
       this._keyfile.remove ();
-      this.reset ();
     }
 
     public override Value
@@ -493,7 +621,7 @@ namespace DesktopAgnostic.Config
       }
       else
       {
-        SchemaType st = this.schema.find_type (option_type);
+        SchemaType st = Schema.find_type (option_type);
         if (st == null)
         {
           throw new Error.INVALID_TYPE ("'%s' is an invalid config type.",
@@ -540,7 +668,7 @@ namespace DesktopAgnostic.Config
     }
 
     public override float
-    get_float (string group, string key) throws Error
+    get_float (string group, string key) throws GLib.Error
     {
       try
       {
@@ -693,16 +821,23 @@ namespace DesktopAgnostic.Config
         }
       }
 
-      if (value.n_values == 0)
+      if (value.n_values == 0 &&
+          (list_type == typeof (bool) || list_type == typeof (int) || list_type == typeof (float)))
       {
+        warning ("Discarding empty key: %s", key);
         if (!this._data.has_group (group))
         {
-          return;
-        }
-        if (this._data.has_key (group, key))
-        {
-          // set_*_list() doesn't like NULL lists, so just unset the key.
+          // Create the group since it could be the only element in the group
+          // but discard the key.
+          this._data.set_boolean (group, key, true);
           this._data.remove_key (group, key);
+        }
+        else
+        {
+          // set_string_list needs NULL the rest of them don't like NULL lists.
+          // Keep the last valid value since some values can be mandatory.
+          // If the key never existed then discard the key/value pair.
+          return;
         }
       }
       else if (list_type == typeof (bool))

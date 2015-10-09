@@ -98,7 +98,7 @@ namespace DesktopAgnostic.UI
     {
       this.response.connect (this.on_response);
       this.title = _ ("Select Icon");
-      this.icon_name = STOCK_FIND;
+      this.icon_name = Gtk.Stock.FIND;
       this.set_default_size (375, 375);
       this.create_ui ();
     }
@@ -121,8 +121,8 @@ namespace DesktopAgnostic.UI
 
       this.on_icon_type_toggled ();
 
-      this.add_buttons (STOCK_CANCEL, ResponseType.CANCEL,
-                        STOCK_OK, ResponseType.OK);
+      this.add_buttons (Gtk.Stock.CANCEL, ResponseType.CANCEL,
+                        Gtk.Stock.OK, ResponseType.OK);
     }
 
     private void

@@ -94,9 +94,11 @@ def configure(conf):
     conf.env['VNUM'] = str(VNUM)
 
     conf.check_tool('gnu_dirs')
-    conf.check_tool('compiler_cc intltool misc python vala')
+    conf.check_tool('compiler_cc misc python vala')
+    try: conf.check_tool('intltool')
+    except: pass
 
-    MIN_VALA_VERSION = (0, 10, 0)
+    MIN_VALA_VERSION = (0, 16, 0)
 
     conf.check_cfg(package='gmodule-2.0', uselib_store='GMODULE',
                    atleast_version='2.6.0', mandatory=True,

@@ -98,7 +98,7 @@ namespace DesktopAgnostic.UI
     {
       this.response.connect (this.on_response);
       this.title = _ ("Select Icon");
-      this.icon_name = STOCK_FIND;
+      this.icon_name = Gtk.Stock.FIND;
       this.set_default_size (375, 375);
       this.create_ui ();
     }
@@ -121,8 +121,8 @@ namespace DesktopAgnostic.UI
 
       this.on_icon_type_toggled ();
 
-      this.add_buttons (STOCK_CANCEL, ResponseType.CANCEL,
-                        STOCK_OK, ResponseType.OK);
+      this.add_buttons (Gtk.Stock.CANCEL, ResponseType.CANCEL,
+                        Gtk.Stock.OK, ResponseType.OK);
     }
 
     private void
@@ -165,7 +165,7 @@ namespace DesktopAgnostic.UI
       {
         TreeIter iter;
         Value val;
-        var store = this._viewer.model as ListStore;
+        var store = this._viewer.model as Gtk.ListStore;
         store.get_iter (out iter, p);
         store.get_value (iter, Column.DATA, out val);
 
@@ -205,11 +205,11 @@ namespace DesktopAgnostic.UI
       return viewer;
     }
 
-    private ListStore
+    private Gtk.ListStore
     create_model ()
     {
       // icon, name, data
-      return new ListStore (Column.COUNT,
+      return new Gtk.ListStore (Column.COUNT,
                             typeof (Gdk.Pixbuf),
                             typeof (string),
                             typeof (string),
@@ -291,12 +291,12 @@ namespace DesktopAgnostic.UI
     private void
     on_folder_changed (FileChooser chooser)
     {
-      unowned ListStore model;
+      unowned Gtk.ListStore model;
       string uri;
       VFS.File directory;
       SList<VFS.File> children;
 
-      model = this._file_viewer.model as ListStore;
+      model = this._file_viewer.model as Gtk.ListStore;
       model.clear ();
 
       uri = chooser.get_uri ();
@@ -342,11 +342,11 @@ namespace DesktopAgnostic.UI
     private void
     on_icon_context_changed (ComboBox box)
     {
-      unowned ListStore model;
+      unowned Gtk.ListStore model;
       unowned IconTheme icon_theme;
       List<string> icon_list;
 
-      model = this._themed_viewer.model as ListStore;
+      model = this._themed_viewer.model as Gtk.ListStore;
       model.clear ();
 
       icon_theme = IconTheme.get_default ();

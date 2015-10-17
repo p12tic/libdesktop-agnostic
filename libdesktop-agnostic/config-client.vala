@@ -73,7 +73,7 @@ namespace DesktopAgnostic.Config
       }
       construct
       {
-        if (value != null && !this.create_instance_config (value))
+        if (value != null &&  this._schema != null && !this.create_instance_config (value))
         {
           warning ("The configuration schema has declared that there can only be a single configuration instance.");
           warning ("Not creating an instance config object.");
@@ -133,6 +133,11 @@ namespace DesktopAgnostic.Config
     private bool
     create_instance_config (string instance_id) throws GLib.Error
     {
+      if (this._schema == null)
+      {
+        return false;
+      }
+
       Value? single_instance = this._schema.get_metadata_option ("single_instance");
       if ((single_instance != null) && (single_instance.get_boolean()) )
       {

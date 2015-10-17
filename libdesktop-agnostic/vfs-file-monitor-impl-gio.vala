@@ -47,19 +47,43 @@ namespace DesktopAgnostic.VFS
       }
       this.monitor.changed.connect(this.monitor_callback);
     }
+
+    /**
+     * @param monitor is a monitor initialized with FileMonitorFlags.NONE.
+     * @param file contains the file that sent the signal and is not guaranteed
+     *             to be equal to the file associated with the monitor.
+     * @param other is always null when using FileMonitorFlags.NONE.
+     * @param event_type is the changed signal sent by file.
+     */
     private void monitor_callback (GLib.FileMonitor monitor, GLib.File file,
                                    GLib.File? other,
                                    GLib.FileMonitorEvent event_type)
     {
       File other_file = null;
-      if (other != null)
+
+      // Return other_file=file if it's a directory and null otherwise.
+      // It makes more sense to always use file but this is done to actually
+      // comply with the current API.
+      if (this.file.file_type == FileType.DIRECTORY)
       {
-        other_file = file_new_for_uri (other.get_uri ());
+        other_file = file_new_for_uri (file.get_uri ());
       }
+      else
+      {
+        // The current API says that if the URI associated with the monitor is a
+        // file then to only report signals if file = this.file. They are not
+        // always equal.
+        GLib.File impl = (GLib.File)this.file.implementation;
+        if(!impl.equal(file))
+        {
+          return;
+        }
+      }
+
       FileMonitorEvent da_event;
       switch (event_type)
       {
-        case GLib.FileMonitorEvent.CHANGED:
+        // Don't catch multiple transitional CHANGES just the "last" one.
         case GLib.FileMonitorEvent.CHANGES_DONE_HINT:
           da_event = FileMonitorEvent.CHANGED;
           break;

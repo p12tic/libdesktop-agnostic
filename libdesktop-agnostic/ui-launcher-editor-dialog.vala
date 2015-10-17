@@ -113,8 +113,8 @@ namespace DesktopAgnostic.UI
       bool is_application = true;
 
       // Action bar
-      this.add_buttons (STOCK_CANCEL, ResponseType.CANCEL,
-                        STOCK_SAVE, ResponseType.APPLY);
+      this.add_buttons (Gtk.Stock.CANCEL, ResponseType.CANCEL,
+                        Gtk.Stock.SAVE, ResponseType.APPLY);
       this.set_default_response (ResponseType.CANCEL);
       this.response.connect (this.on_response);
 
@@ -133,7 +133,7 @@ namespace DesktopAgnostic.UI
       }
       else
       {
-        icon = STOCK_MISSING_IMAGE;
+        icon = Gtk.Stock.MISSING_IMAGE;
       }
       this._icon = new IconButton (icon);
       this._icon.icon_selected.connect (this.on_icon_changed);
@@ -219,7 +219,7 @@ namespace DesktopAgnostic.UI
       this._exec.changed.connect (this.on_exec_changed);
       exec_hbox.pack_start (this._exec, true);
       exec_button = new Button.with_mnemonic (_ ("_Browse..."));
-      exec_image = new Image.from_stock (STOCK_OPEN, IconSize.BUTTON);
+      exec_image = new Image.from_stock (Gtk.Stock.OPEN, IconSize.BUTTON);
       exec_button.set_image (exec_image);
       exec_button.clicked.connect (this.on_exec_browse);
       exec_hbox.pack_start (exec_button, false);
@@ -325,8 +325,8 @@ namespace DesktopAgnostic.UI
 
       dialog = new FileChooserDialog (title, this,
                                       FileChooserAction.OPEN,
-                                      STOCK_CANCEL, ResponseType.CANCEL,
-                                      STOCK_OK, ResponseType.OK);
+                                      Gtk.Stock.CANCEL, ResponseType.CANCEL,
+                                      Gtk.Stock.OK, ResponseType.OK);
       response = dialog.run ();
       if (response == ResponseType.OK)
       {
@@ -359,8 +359,8 @@ namespace DesktopAgnostic.UI
 
       dialog = new FileChooserDialog (_ ("Save As"), this,
                                       FileChooserAction.SAVE,
-                                      STOCK_CANCEL, ResponseType.CANCEL,
-                                      STOCK_SAVE_AS, ResponseType.ACCEPT);
+                                      Gtk.Stock.CANCEL, ResponseType.CANCEL,
+                                      Gtk.Stock.SAVE_AS, ResponseType.ACCEPT);
       response = dialog.run ();
       if (response == ResponseType.ACCEPT)
       {

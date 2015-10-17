@@ -175,25 +175,30 @@ namespace DesktopAgnostic.VFS
       return new FileMonitorGIO (this);
     }
     public override bool
-    load_contents (out string contents, out size_t length) throws Error
+    load_contents (out string contents, out size_t length)
     {
-      uint8 [] glib_contents;
-      if (this._file.load_contents (null, out glib_contents, null))
+      try
       {
+        uint8 [] glib_contents;
+        this._file.load_contents (null, out glib_contents, null);
         contents = (string)(owned)glib_contents;
         length = contents.length;
         return true;
       }
-      else
+      catch (GLib.Error e)
       {
+        warning ("Failed to load the file '%s': %s Code:%d",
+                  this._file.get_parse_name (), e.message, e.code);
+        contents = "";
+        length = 0;
         return false;
       }
     }
     public override bool
     replace_contents (string contents) throws Error
     {
-      return this._file.replace_contents (contents.data, null,
-                                          false, 0, null, null);
+      return this._file.replace_contents (contents.data, null, false,
+                                          FileCreateFlags.NONE, null, null);
     }
     public override bool
     launch () throws Error

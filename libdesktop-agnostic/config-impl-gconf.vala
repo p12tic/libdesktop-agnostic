@@ -256,7 +256,7 @@ namespace DesktopAgnostic.Config
       {
         vt = GConf.ValueType.LIST;
       }
-      else if (this.schema.find_type (type) != null)
+      else if (Schema.find_type (type) != null)
       {
         vt = GConf.ValueType.STRING;
       }
@@ -310,7 +310,7 @@ namespace DesktopAgnostic.Config
       }
       else
       {
-        SchemaType st = this.schema.find_type (type);
+        SchemaType st = Schema.find_type (type);
         if (st == null)
         {
           throw new Error.INVALID_TYPE ("Invalid config value type.");
@@ -349,7 +349,7 @@ namespace DesktopAgnostic.Config
         }
         else
         {
-          SchemaType st = this.schema.find_type (type);
+          SchemaType st = Schema.find_type (type);
           if (st == null)
           {
             throw new Error.INVALID_TYPE ("Invalid config value type: %s.",

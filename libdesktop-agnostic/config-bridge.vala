@@ -323,7 +323,7 @@ namespace DesktopAgnostic.Config
       }
       else
       {
-        unowned ParamSpec[] properties;
+        ParamSpec[] properties;
         string props_str;
         properties = ((ObjectClass)(obj.get_type ().class_peek ())).list_properties ();
         props_str = "";
